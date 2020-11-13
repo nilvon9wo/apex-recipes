@@ -1,0 +1,6 @@
+# Default ignored files
+/shelf/
+/workspace.xml
+# Datasource local storage ignored files
+/../../../../../../:\projects\SFDC\LWC_Sample_Apps_Nov2020\apex-recipes\.idea/dataSources/
+/dataSources.local.xml

@@ -1,18 +1,12 @@
-@isTest
+@IsTest
 private inherited sharing class BatchApexRecipes_Tests {
     @TestSetup
     static void makeData() {
         TestFactory.createSObjectList(new Account(), 200, true);
     }
 
-    @isTest
+    @IsTest
     static void batchApexRecipesTestPositive200Scope() {
-        /**
-         * Batch classes are another form of Asynchronous Apex. Therefore it's critical to
-         * use Test.startTest() and Test.stopTest(). Not only does this force the batch
-         * job to complete before assertions are made, it also helps ensure you don't try
-         * to execute more than one batch which will result in an test exception.
-         */
         Test.startTest();
         Database.executeBatch(new BatchApexRecipes());
         Test.stopTest();
@@ -36,12 +30,7 @@ private inherited sharing class BatchApexRecipes_Tests {
         );
     }
 
-    /**
-     * @description negative test exercising a failure state demonstrating
-     * that our batchClass does in fact keep cross-batch state on the
-     * number of failures
-     */
-    @isTest
+    @IsTest
     static void batchApexRecipesTestNegative() {
         Test.startTest();
         BatchApexRecipes batchJob = new BatchApexRecipes();
