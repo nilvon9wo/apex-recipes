@@ -10,8 +10,18 @@ public with sharing virtual class DAO_AccountSelector {
         return instance;
     }
 
+    public virtual List<Account> selectAll() {
+        return [
+                SELECT Id, Description, Name
+                FROM Account
+        ];
+    }
+
     public virtual Database.QueryLocator getQueryLocatorForAll() {
-        return Database.getQueryLocator([SELECT Id, Name FROM Account]);
+        return Database.getQueryLocator([
+                SELECT Id, Description, Name
+                FROM Account
+        ]);
     }
 
 

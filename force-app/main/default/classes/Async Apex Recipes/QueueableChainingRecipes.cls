@@ -1,43 +1,40 @@
-/**
- * @description Demonstrates how to use the Queueable interface
- * to chain multiple queueable instances together. The methods in this class,
- * with the exception of the constructor, are run automatically by the system
- * as the job runs. To enqueue this job, use:
- * `System.enqueueJob(new QueueableChainingRecipes());`
- *
- * More on the Queuable interface:
- * https://sfdc.co/queueable-apex
- *
- * @group Async Apex Recipes
- * @see QueueableRecipes
- */
 public inherited sharing class QueueableChainingRecipes implements Queueable {
-    /**
-     * @description This recipe demonstrates how one queuable (this one) can
-     * enqueue a second Queueable class.
-     * If the second queueable class utilizes a constructor, information can be
-     * passed through to the next Queueable.
-     * @param context Dependency Injected by the System
-     * @example
-     * System.enqueueJob(new QueueableChainingRecipes());
-     **/
-    public static void execute(QueueableContext context) {
-        List<Account> accounts = [SELECT Id, Description FROM Account];
-        for (Account acct : accounts) {
-            acct.Description += ' Edited by first chained Queuable';
+    private DAO_AccountSelector accountSelector;
+    private XAP_ASYNC_Enqueuer enqueuer;
+    private XAP_DAO_DML_InheritedSharingDml dml;
+
+    private QueueableChainingRecipes(
+            DAO_AccountSelector accountSelector, XAP_ASYNC_Enqueuer enqueuer,
+            XAP_DAO_DML_InheritedSharingDml dml
+    ) {
+        this.accountSelector = accountSelector;
+        this.enqueuer = enqueuer;
+        this.dml = dml;
+    }
+
+    public QueueableChainingRecipes() {
+        this(
+                DAO_AccountSelector.getInstance(),
+                XAP_ASYNC_Enqueuer.getInstance(),
+                XAP_DAO_DML_InheritedSharingDml.getInstance()
+        );
+    }
+
+    public void execute(QueueableContext context) {
+        List<Account> accountList = this.accountSelector.selectAll();
+        for (Account account : accountList) {
+            account.Description += ' Edited by first chained Queuable';
         }
+
         try {
-            update accounts;
-        } catch (DMLException dmle) {
+            this.dml.doUpdate(accountList);
+        } catch (DmlException dmlException) {
             System.debug(
-                LoggingLevel.INFO,
-                'Failed to update accounts. Error is: ' + dmle.getMessage()
+                LoggingLevel.ERROR,
+                'Failed to update accountList. Error is: ' + dmlException.getMessage()
             );
         }
 
-        // This is how you construct and enqueue an additional Queueable job
-        // Note: You can only enqueue ONE job from a queueable
-        QueueableRecipes recipe = new QueueableRecipes();
-        System.enqueueJob(recipe);
+        this.enqueuer.enqueueJob(new QueueableRecipes());
     }
 }
