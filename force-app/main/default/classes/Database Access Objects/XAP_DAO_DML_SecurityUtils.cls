@@ -64,7 +64,7 @@ public class XAP_DAO_DML_SecurityUtils {
 		if (BYPASS_INTERNAL_FLS_AND_CRUD) {
 			return OPERATION_IS_PERMITTED;
 		}
-		if (!fieldDescribe.isCreateable()) {
+		if (fieldDescribe.getName() != 'Id' && !fieldDescribe.isCreateable()) {
 			throw new XAP_DAO_DML_FieldLevelSecurityException(
 					XAP_DAO_DML_OperationTypeEnum.CREATE,
 					sObjectType, fieldDescribe.getSobjectField()
@@ -87,7 +87,7 @@ public class XAP_DAO_DML_SecurityUtils {
 		if (BYPASS_INTERNAL_FLS_AND_CRUD) {
 			return OPERATION_IS_PERMITTED;
 		}
-		if (!fieldDescribe.isUpdateable()) {
+		if (fieldDescribe.getName() != 'Id' && !fieldDescribe.isUpdateable()) {
 			throw new XAP_DAO_DML_FieldLevelSecurityException(
 					XAP_DAO_DML_OperationTypeEnum.MODIFY,
 					sObjectType,

@@ -10,10 +10,12 @@ public inherited sharing class DMLRecipes {
         this(XAP_DAO_DML_SecureDml.getInstance());
     }
     public void insertAccountViaInsertKeyword(String name) {
+        List<Account> accountList = new List<Account>{
+                new Account(Name = name)
+        };
+
         try {
-            this.dml.doInsert(new List<Account>{new Account(
-                    Name = name
-            )});
+            this.dml.doInsert(accountList);
         }
         catch (XAP_DAO_DML_AccessCtrlDmlException accessCtrlDmlException) {
             throw new CustomDMLException('Failed');
@@ -23,150 +25,109 @@ public inherited sharing class DMLRecipes {
         }
     }
 
-    public static void insertAccountsViaDatabaseMethod(
-            String name,
-            Boolean allOrNothing
-    ) {
-        Account account = new Account(Name = name);
-        Account account2 = new Account();
+    public void insertAccountsViaDatabaseMethod(String name, XAP_DAO_DML_OperationModeEnum operationMode) {
+        List<Account> accountList = new List<Account>{
+                new Account(Name = name),
+                new Account()
+        };
 
         try {
-            if (CanTheUser.create(account)) {
-                Database.insert(new List<Account>{account, account2}, allOrNothing);
-            }
+            this.dml.doInsert(accountList, operationMode);
         }
-        catch (DmlException DMLe) {
+        catch (XAP_DAO_DML_AccessCtrlDmlException accessCtrlDmlException) {
+            throw new CustomDMLException('Failed');
+        }
+        catch (DmlException dmlException) {
             throw new CustomDMLException('Failed');
         }
     }
 
-    public static Account upsertAccountViaUpsertKeyword(Account account) {
-        //Upsert = (up)date or in(sert)
-        if (CanTheUser.create(account) && CanTheUser.edit(account)) {
-            try {
-                upsert account; //NOPMD
-                //- Note: This will cause PMD to raise a violation for not
-                // checking CRUD/FLS. However, we're doing just that in the Line
-                // above - PMD just isn't aware of CanTheUser.*
-            }
-            catch (DmlException dmle) {
-                System.debug(LoggingLevel.INFO, dmle.getMessage());
-                throw dmle;
-            }
-        }
+    public Account upsertAccountViaUpsertKeyword(Account account) {
+        List<Account> accountList = new List<Account>{account};
+        this.dml.doUpsert(accountList);
         return account;
     }
 
-    public static Database.UpsertResult upsertAccountViaDatabaseMethod(
+    public XAP_DAO_DML_UpsertResultListWrapper upsertAccountViaDatabaseMethod(
             Account account,
-            Boolean allOrNothing
+            XAP_DAO_DML_OperationModeEnum operationMode
     ) {
-        Database.UpsertResult results;
-        if (CanTheUser.create(account) && CanTheUser.edit(account)) {
-            results = Database.upsert(account, allOrNothing);
+        List<Account> accountList = new List<Account>{account};
+
+        try {
+            return this.dml.doUpsert(accountList, operationMode);
         }
-        else {
-            throw new CustomDMLException(
-                    'User has no access to create and edit accounts'
-            );
+        catch (XAP_DAO_DML_AccessCtrlDmlException accessCtrlDmlException) {
+            throw new CustomDMLException('User has no access to create and edit accountList');
         }
-        return results;
     }
 
-    public static List<Account> updateAcccountViaKeyword(List<Account> accounts) {
-        for (Account account : accounts) {
+    public List<Account> updateAcccountViaKeyword(List<Account> accountList) {
+        for (Account account : accountList) {
+            account.Name += ' Updated via Keyword';
+        }
+
+        try {
+            this.dml.doUpdate(accountList);
+        }
+        catch (DmlException DMLe) {
+            throw new CustomDMLException('Failed');
+        }
+        return accountList;
+    }
+
+    public List<Account> updateAccountViaDatabaseMethod(
+            List<Account> accountList
+    ) {
+        for (Account account : accountList) {
             account.Name += ' Updated via Keyword';
         }
         try {
-            if (CanTheUser.edit(accounts[0])) {
-                update accounts;
-            }
+            this.dml.doUpdate(accountList);
         }
         catch (DmlException DMLe) {
             throw new CustomDMLException('Failed');
         }
-        return accounts;
+        return accountList;
     }
 
-    public static List<Account> updateAccountViaDatabaseMethod(
-            List<Account> accounts
-    ) {
-        for (Account account : accounts) {
-            account.Name += ' Updated via Keyword';
-        }
+    public void deleteAccountViaKeyword(List<Account> accountList) {
         try {
-            if (CanTheUser.edit(accounts[0])) {
-                try {
-                    Database.update(accounts);
-                }
-                catch (DmlException dmle) {
-                    System.debug(LoggingLevel.INFO, dmle.getMessage());
-                    throw dmle;
-                }
-            }
+            this.dml.doDelete(accountList);
         }
         catch (DmlException DMLe) {
             throw new CustomDMLException('Failed');
         }
-        return accounts;
     }
 
-    public static void deleteAccountViaKeyword(List<Account> accounts) {
+    public void deleteAccountViaDatabaseMethod(List<Account> accountList) {
         try {
-            if (CanTheUser.destroy(accounts[0])) {
-                try {
-                    delete accounts;
-                }
-                catch (DmlException dmle) {
-                    System.debug(LoggingLevel.INFO, dmle.getMessage());
-                }
-            }
+            this.dml.doDelete(accountList);
         }
         catch (DmlException DMLe) {
             throw new CustomDMLException('Failed');
         }
     }
 
-    public static void deleteAccountViaDatabaseMethod(List<Account> accounts) {
+    public List<Account> undeleteAccountViaKeyword(List<Account> accountList) {
         try {
-            if (CanTheUser.destroy(accounts[0])) {
-                Database.delete(accounts);
-            }
+            this.dml.doUndelete(accountList);
         }
         catch (DmlException DMLe) {
             throw new CustomDMLException('Failed');
         }
+        return accountList;
     }
 
-    public static List<Account> undeleteAccountViaKeyword(List<Account> accounts) {
-        try {
-            if (CanTheUser.read(accounts[0])) {
-                try {
-                    undelete accounts;
-                }
-                catch (DmlException dmle) {
-                    System.debug(LoggingLevel.INFO, dmle.getMessage());
-                    throw dmle;
-                }
-            }
-        }
-        catch (DmlException DMLe) {
-            throw new CustomDMLException('Failed');
-        }
-        return accounts;
-    }
-
-    public static List<Account> undeleteAccountViaDatabaseMethod(
-            List<Account> accounts
+    public List<Account> undeleteAccountViaDatabaseMethod(
+            List<Account> accountList
     ) {
         try {
-            if (CanTheUser.read(accounts[0])) {
-                Database.undelete(accounts);
-            }
+            this.dml.doUndelete(accountList);
         }
         catch (DmlException DMLe) {
             throw new CustomDMLException('Failed');
         }
-        return accounts;
+        return accountList;
     }
 }

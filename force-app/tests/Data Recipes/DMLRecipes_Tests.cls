@@ -42,7 +42,7 @@ public class DMLRecipes_Tests {
     @IsTest
     static void testDatabaseMethodInsertPositive() {
         Test.startTest();
-        DMLRecipes.insertAccountsViaDatabaseMethod('Texas', false);
+        DML_RECIPES_UNDER_TEST.insertAccountsViaDatabaseMethod('Texas', XAP_DAO_DML_OperationModeEnum.BEST_EFFORT);
         Test.stopTest();
 
         List<Account> acct = [
@@ -66,7 +66,7 @@ public class DMLRecipes_Tests {
         Test.startTest();
         Boolean didCatchTheRightException = false;
         try {
-            DMLRecipes.insertAccountsViaDatabaseMethod('Texas', true);
+            DML_RECIPES_UNDER_TEST.insertAccountsViaDatabaseMethod('Texas', XAP_DAO_DML_OperationModeEnum.ALL_OR_NONE);
         }
         catch (CustomDMLException theException) {
             if (theException.getMessage().contains('Failed')) {
@@ -86,7 +86,7 @@ public class DMLRecipes_Tests {
         Account acct = TestDataHelpers.genAccountWithOptions(true, 'IR');
 
         Test.startTest();
-        DMLRecipes.upsertAccountViaUpsertKeyword(acct);
+        DML_RECIPES_UNDER_TEST.upsertAccountViaUpsertKeyword(acct);
         Test.stopTest();
 
         List<Account> resultingAccounts = [
@@ -115,7 +115,7 @@ public class DMLRecipes_Tests {
 
         Test.startTest();
         acct.Name = 'flufflernutter';
-        DMLRecipes.upsertAccountViaUpsertKeyword(acct);
+        DML_RECIPES_UNDER_TEST.upsertAccountViaUpsertKeyword(acct);
         Test.stopTest();
 
         List<Account> testAccounts = [SELECT Name FROM Account];
@@ -135,7 +135,7 @@ public class DMLRecipes_Tests {
 
         Boolean didCatchTheRightException = false;
         try {
-            DMLRecipes.upsertAccountViaUpsertKeyword(acct);
+            DML_RECIPES_UNDER_TEST.upsertAccountViaUpsertKeyword(acct);
         }
         catch (DmlException dmlexception) {
             if (dmlexception.getDmlMessage(0) == 'invalid cross reference id') {
@@ -153,10 +153,10 @@ public class DMLRecipes_Tests {
         Account badAcct = TestDataHelpers.genAccountWithOptions(true, 'Ca');
         // Note: this is an intentionally invalid ID, used to trigger the failure case.
         badAcct.Id = '0019A000008GTAYQA4'; //NOPMD
-        Database.UpsertResult result;
+        XAP_DAO_DML_UpsertResultListWrapper result;
         Boolean didCatchTheRightException = false;
         try {
-            result = DMLRecipes.upsertAccountViaDatabaseMethod(badAcct, true);
+            result = DML_RECIPES_UNDER_TEST.upsertAccountViaDatabaseMethod(badAcct, XAP_DAO_DML_OperationModeEnum.ALL_OR_NONE);
         }
         catch (DmlException dmlexception) {
             if (dmlexception.getDmlMessage(0) == 'invalid cross reference id') {
@@ -176,7 +176,7 @@ public class DMLRecipes_Tests {
 
         Test.startTest();
         acct.Name += ' + Updated';
-        DMLRecipes.updateAcccountViaKeyword(new List<Account>{acct});
+        DML_RECIPES_UNDER_TEST.updateAcccountViaKeyword(new List<Account>{acct});
         Test.stopTest();
 
         String checkAcct = [SELECT Name FROM Account WHERE Id = :acct.Id].Name;
@@ -195,7 +195,7 @@ public class DMLRecipes_Tests {
         try {
             // Note: this is an intentionally invalid id used for triggering an error state
             acct.Id = '0019A000008GTAYQA4'; //NOPMD
-            DMLRecipes.updateAcccountViaKeyword(new List<Account>{acct});
+            DML_RECIPES_UNDER_TEST.updateAcccountViaKeyword(new List<Account>{acct});
         }
         catch (CustomDMLException theException) {
             if (theException.getMessage().contains('Failed')) {
@@ -217,7 +217,7 @@ public class DMLRecipes_Tests {
 
         Test.startTest();
         acct.Name += ' + Updated';
-        DMLRecipes.updateAccountViaDatabaseMethod(new List<Account>{acct});
+        DML_RECIPES_UNDER_TEST.updateAccountViaDatabaseMethod(new List<Account>{acct});
         Test.stopTest();
 
         String checkAcct = [SELECT Name FROM Account WHERE Id = :acct.Id].Name;
@@ -236,7 +236,7 @@ public class DMLRecipes_Tests {
         try {
             // Note: This is an intentionally invalid ID used for triggering an error state
             acct.Id = '0019A000008GTAYQA4'; //NOPMD
-            DMLRecipes.updateAccountViaDatabaseMethod(
+            DML_RECIPES_UNDER_TEST.updateAccountViaDatabaseMethod(
                     new List<Account>{acct}
             );
         }
@@ -259,7 +259,7 @@ public class DMLRecipes_Tests {
         insert acct;
 
         Test.startTest();
-        DMLRecipes.deleteAccountViaKeyword(new List<Account>{acct});
+        DML_RECIPES_UNDER_TEST.deleteAccountViaKeyword(new List<Account>{acct});
         Test.stopTest();
         try {
             String checkAcct = [SELECT Name FROM Account WHERE Id = :acct.Id]
@@ -286,7 +286,7 @@ public class DMLRecipes_Tests {
 
         Test.startTest();
         try {
-            DMLRecipes.deleteAccountViaKeyword(new List<Account>{acct});
+            DML_RECIPES_UNDER_TEST.deleteAccountViaKeyword(new List<Account>{acct});
         }
         catch (CustomDMLException cde) {
             if (cde.getMessage().containsIgnoreCase('failed')) {
@@ -305,7 +305,7 @@ public class DMLRecipes_Tests {
         insert acct;
 
         Test.startTest();
-        DMLRecipes.deleteAccountViaDatabaseMethod(new List<Account>{acct});
+        DML_RECIPES_UNDER_TEST.deleteAccountViaDatabaseMethod(new List<Account>{acct});
         Test.stopTest();
         try {
             String checkAcct = [SELECT Name FROM Account WHERE Id = :acct.Id]
@@ -332,7 +332,7 @@ public class DMLRecipes_Tests {
 
         Test.startTest();
         try {
-            DMLRecipes.deleteAccountViaDatabaseMethod(
+            DML_RECIPES_UNDER_TEST.deleteAccountViaDatabaseMethod(
                     new List<Account>{acct}
             );
         }
@@ -353,7 +353,7 @@ public class DMLRecipes_Tests {
         insert acct;
         delete acct;
         Test.startTest();
-        DMLRecipes.undeleteAccountViaKeyword(new List<Account>{acct});
+        DML_RECIPES_UNDER_TEST.undeleteAccountViaKeyword(new List<Account>{acct});
         Test.stopTest();
         List<Account> checkAcct = [
                 SELECT Name
@@ -373,7 +373,7 @@ public class DMLRecipes_Tests {
         Boolean didCatchTheRightException = false;
         Test.startTest();
         try {
-            DMLRecipes.undeleteAccountViaKeyword(new List<Account>{acct});
+            DML_RECIPES_UNDER_TEST.undeleteAccountViaKeyword(new List<Account>{acct});
         }
         catch (CustomDMLException theException) {
             if (theException.getMessage().contains('Failed')) {
@@ -393,7 +393,7 @@ public class DMLRecipes_Tests {
         insert acct;
         delete acct;
         Test.startTest();
-        DMLRecipes.undeleteAccountViaDatabaseMethod(new List<Account>{acct});
+        DML_RECIPES_UNDER_TEST.undeleteAccountViaDatabaseMethod(new List<Account>{acct});
         Test.stopTest();
         List<Account> checkAcct = [
                 SELECT Name
@@ -413,7 +413,7 @@ public class DMLRecipes_Tests {
         Boolean didCatchTheRightException = false;
         Test.startTest();
         try {
-            DMLRecipes.undeleteAccountViaDatabaseMethod(
+            DML_RECIPES_UNDER_TEST.undeleteAccountViaDatabaseMethod(
                     new List<Account>{acct}
             );
         }
