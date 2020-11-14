@@ -27,6 +27,37 @@ public with sharing virtual class DAO_AccountSelector extends XAP_DAO_SOQL_SObje
                 .query();
     }
 
+    public virtual List<Account> secureSelectByName(Set<String> nameSet) {
+        return this.createQueryFactory()
+                .setSecurityEnforced()
+                .setCondition(new XAP_DAO_SOQL_WHERE_InStringSetClause(Account.Name, nameSet))
+                .query();
+    }
+
+    public virtual List<Account> secureDynamicSelect(List<String> fieldSet, String whereClause) {
+        return this.createQueryFactory()
+                .setSecurityEnforced()
+                .addFields(fieldSet)
+                .setCondition(new XAP_DAO_SOQL_WHERE_RawClause(whereClause))
+                .query();
+    }
+
+
+    public virtual List<Account> secureSelectWithMoreEmployeesThan(Integer numberOfEmployees) {
+        return this.createQueryFactory()
+                .setSecurityEnforced()
+                .setCondition(new XAP_DAO_SOQL_WHERE_MoreThanClause(Account.NumberOfEmployees, numberOfEmployees))
+                .query();
+    }
+
+    public virtual List<Account> secureSelectOne() {
+        return this.createQueryFactory()
+                .setSecurityEnforced()
+                .setLimit(1)
+                .query();
+    }
+
+
     public virtual List<Account> selectSome(Integer quantity) {
         return this.createQueryFactory()
                 .setLimit(quantity)

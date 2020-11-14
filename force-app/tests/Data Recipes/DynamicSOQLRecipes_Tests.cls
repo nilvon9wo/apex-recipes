@@ -1,26 +1,27 @@
-@isTest
+@IsTest
 private inherited sharing class DynamicSOQLRecipes_Tests {
-    // Test Setup methods are called before every test method
+    private static final DynamicSOQLRecipes RECIPES_UNDER_TEST = new DynamicSOQLRecipes();
+
     @TestSetup
     static void makeData() {
         Account acct = TestDataHelpers.genAccountWithOptions(true, 'MX');
         insert acct;
     }
 
-    @isTest
+    @IsTest
     static void simpleDynamicSOQLQueryTest() {
         Test.startTest();
-        List<Account> results = DynamicSOQLRecipes.simpleDynamicSOQLQuery();
+        List<Account> results = RECIPES_UNDER_TEST.simpleDynamicSOQLQuery();
         Test.stopTest();
 
         System.assert(results.size() == 1, 'Expected to find a single account');
     }
 
-    @isTest
+    @IsTest
     static void simpleBindingSOQLQueryTestPositive() {
         String acctName = [SELECT Name FROM Account LIMIT 1].Name;
         Test.startTest();
-        List<Account> results = DynamicSOQLRecipes.simpleBindingSOQLQuery(
+        List<Account> results = RECIPES_UNDER_TEST.simpleBindingSOQLQuery(
             acctName
         );
         Test.stopTest();
@@ -28,11 +29,11 @@ private inherited sharing class DynamicSOQLRecipes_Tests {
         System.assert(results.size() == 1, 'Expected to find a single account');
     }
 
-    @isTest
+    @IsTest
     static void simpleBindingSOQLQueryTestNegative() {
         String acctName = [SELECT Name FROM Account LIMIT 1].Name + '\'';
         Test.startTest();
-        List<Account> results = DynamicSOQLRecipes.simpleBindingSOQLQuery(
+        List<Account> results = RECIPES_UNDER_TEST.simpleBindingSOQLQuery(
             acctName
         );
         Test.stopTest();
@@ -43,11 +44,11 @@ private inherited sharing class DynamicSOQLRecipes_Tests {
         );
     }
 
-    @isTest
+    @IsTest
     static void resolvedDynamicFieldsSOQLQueryTestPositive() {
         Account acct = [SELECT Name FROM Account LIMIT 1];
         Test.startTest();
-        List<Account> results = DynamicSOQLRecipes.resolvedDynamicFieldsSOQLQuery(
+        List<Account> results = RECIPES_UNDER_TEST.resolvedDynamicFieldsSOQLQuery(
             acct
         );
         Test.stopTest();
@@ -55,14 +56,14 @@ private inherited sharing class DynamicSOQLRecipes_Tests {
         System.assert(results.size() == 1, 'Expected to find an Account');
     }
 
-    @isTest
+    @IsTest
     static void typecastDataIntelligentlyTestPositive() {
         Account acct = [SELECT Name FROM Account LIMIT 1];
         acct.NumberOfEmployees = 55;
         update acct;
 
         Test.startTest();
-        List<Account> results = DynamicSOQLRecipes.typecastDataIntelligently(
+        List<Account> results = RECIPES_UNDER_TEST.typecastDataIntelligently(
             '50'
         );
         Test.stopTest();
@@ -70,14 +71,14 @@ private inherited sharing class DynamicSOQLRecipes_Tests {
         System.assert(results.size() == 1, 'Expected to find an Account');
     }
 
-    @isTest
+    @IsTest
     static void typecastDataIntelligentlyTestNoResult() {
         Account acct = [SELECT Name FROM Account LIMIT 1];
         acct.NumberOfEmployees = 55;
         update acct;
 
         Test.startTest();
-        List<Account> results = DynamicSOQLRecipes.typecastDataIntelligently(
+        List<Account> results = RECIPES_UNDER_TEST.typecastDataIntelligently(
             '500'
         );
         Test.stopTest();
@@ -85,7 +86,7 @@ private inherited sharing class DynamicSOQLRecipes_Tests {
         System.assert(results.size() == 0, 'Expected to not find an Account');
     }
 
-    @isTest
+    @IsTest
     static void simpleQueryBuilderTestPositive() {
         Id acctId = [SELECT Id FROM Account LIMIT 1].Id;
         List<String> fields = new List<String>{
@@ -98,7 +99,7 @@ private inherited sharing class DynamicSOQLRecipes_Tests {
             String.escapeSingleQuotes(acctId) +
             '\'';
         Test.startTest();
-        List<Account> results = DynamicSOQLRecipes.simpleQueryBuilder(
+        List<Account> results = RECIPES_UNDER_TEST.simpleQueryBuilder(
             fields,
             whereClause
         );

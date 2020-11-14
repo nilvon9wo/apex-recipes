@@ -12,6 +12,9 @@ public abstract with sharing class XAP_DAO_SOQL_SObjectSelectorAbs implements XA
 	public static final Boolean INCLUDE_ENFORCE_FLS = true;
 	public static final Boolean EXCLUDE_ENFORCE_FLS = false;
 
+	public static final Boolean INCLUDE_ENFORCE_SECURITY = true;
+	public static final Boolean EXCLUDE_ENFORCE_SECURITY = false;
+
 	public static final Boolean SORTTED_SELECT_FIELDS = true;
 	public static final Boolean UNSORTTED_SELECT_FIELDS = false;
 

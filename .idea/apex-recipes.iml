@@ -28,6 +28,10 @@
                             <option name="selected" value="true" />
                           </MetadataEntry>
                           <MetadataEntry>
+                            <option name="name" value="DynamicSoqlException" />
+                            <option name="selected" value="true" />
+                          </MetadataEntry>
+                          <MetadataEntry>
                             <option name="name" value="TEST_DummyAccountFactoryOutlet" />
                             <option name="selected" value="true" />
                           </MetadataEntry>
@@ -237,6 +241,14 @@
                           </MetadataEntry>
                           <MetadataEntry>
                             <option name="name" value="XAP_DAO_DML_WithSharingDml" />
+                            <option name="selected" value="true" />
+                          </MetadataEntry>
+                          <MetadataEntry>
+                            <option name="name" value="XAP_DAO_SOQL_WHERE_MoreThanClause" />
+                            <option name="selected" value="true" />
+                          </MetadataEntry>
+                          <MetadataEntry>
+                            <option name="name" value="XAP_DAO_SOQL_WHERE_RawClause" />
                             <option name="selected" value="true" />
                           </MetadataEntry>
                           <MetadataEntry>
