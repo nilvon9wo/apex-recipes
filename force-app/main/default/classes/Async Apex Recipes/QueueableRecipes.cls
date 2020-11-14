@@ -16,6 +16,7 @@ public inherited sharing class QueueableRecipes implements Queueable {
                 XAP_DAO_DML_InheritedSharingDml.getInstance()
         );
     }
+
     public void execute(QueueableContext qc) {
         List<Account> accountList = this.accountSelector.selectSome(1000);
 

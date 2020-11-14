@@ -33,6 +33,14 @@ public with sharing virtual class DAO_AccountSelector extends XAP_DAO_SOQL_SObje
                 .query();
     }
 
+    public virtual List<Account> selectAndOrderBy(Integer quantity, SObjectField orderField) {
+        return this.createQueryFactory()
+                .setLimit(quantity)
+                .setOrdering(orderField, XAP_DAO_SOQL_QuerySortOrderEnum.ASCENDING)
+                .query();
+    }
+
+
     public virtual Database.QueryLocator getQueryLocatorForAll() {
         return this.createQueryFactory()
                 .getQueryLocator();
