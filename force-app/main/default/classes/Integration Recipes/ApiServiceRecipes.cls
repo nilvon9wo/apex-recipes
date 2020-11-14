@@ -1,77 +1,49 @@
-/**
- * @description This recipe extends the custom RestClient class and
- * represents a specific API service we need to interact with - in
- * this case a MockBin REST service. This APIService class is responsible
- * for serializing and deserializing the Data Transfer Objects (Model Objects)
- * necessary for input and output from this org to the third party system and
- * back.
- *
- * More on MockBin here: http://mockbin.org/
- *
- * @group Integration Recipes
- * @see RestClient, ApiServiceRecipesDataModel
- */
-public inherited sharing class ApiServiceRecipes extends RestClient {
-    @testVisible
-    private static final string DEFAULTNAMEDCREDENTIAL = 'MockBin';
-    private static final string GETBINPATH = '4cb453a6-a23b-42ea-a6ba-9be1c1f17050';
+public inherited sharing class ApiServiceRecipes {
+    private ARSC_RestClient restClient;
 
-    /**
-     * @description Internal custom exception used by this class for errors
-     */
-    public class ApiException extends Exception {
+    private ApiServiceRecipes(ARSC_RestClient restClient) {
+        this.restClient = restClient;
     }
 
-    /**
-     * @description default constructor. Sets the inherited named credential
-     * to the DEFAULTNAMEDCREDENTIAL constant above.
-     * Setting the namedCredentialName binds all the methods in this class
-     * to the specific namedCredential URL and auth.
-     */
     public ApiServiceRecipes() {
-        namedCredentialName = DEFAULTNAMEDCREDENTIAL;
+        this(ARSC_RestClient.getInstance());
     }
 
-    /**
-     * @description Encapsulates a specific callout to the Named Credential
-     * URL that returns JSON into an method that transforms the raw JSON
-     * into an Apex Object.
-     * @return     `List<ApiServiceRecipesDataModel>`
-     * @example
-     * ApiServiceRecipes asr = new ApiServiceRecipes();
-     * System.debug(asr.getCurrentData());
-     */
-    public List<ApiServiceRecipesDataModel> getCurrentData() {
-        /**
-         * This next line calls the get() method inherrited from
-         * the RestClient class. Because this class extends RestClient
-         * all the instance methods defined there are available here.
-         *
-         * Inheriting this method allows us to focus on the api's
-         * endpoints and data, rather than the mechanics of making
-         * an http callout with the proper headers etc.
-         */
-        HttpResponse response = get(GETBINPATH);
+    @TestVisible
+    private static final String DEFAULT_NAMED_CREDENTIAL = 'MockBin';
+    private static final String GET_BIN_PATH = '4cb453a6-a23b-42ea-a6ba-9be1c1f17050';
 
-        // Since we're doing a GET request, we don't need to handle for
-        // 201, other 'created' responses.
-        switch on response.getStatusCode() {
-            when 200 {
-                try {
-                    return ApiServiceRecipesDataModel.parse(response.getBody());
-                } catch (System.JSONException jse) {
-                    throw new ApiServiceRecipes.ApiException(jse.getMessage());
-                }
-            }
-            // you probably want to handle other response codes like 30x as well
-            when 404 {
-                throw new ApiServiceRecipes.ApiException('404 error!');
-            }
-            when else {
-                throw new ApiServiceRecipes.ApiException(
-                    'Unexpected Response code: ' + response.getStatusCode()
-                );
-            }
+    private static final Type DEFAULT_HTTP_HANDLER = ApiServiceRecipesUnknownExceptionHandler.class;
+
+    private static final Map<Integer, Type> RESPONSE_CONSUMER_BY_STATUS_CODE_MAP = new Map<Integer, Type>{
+        200 => ApiServiceRecipesDataParser.class,
+        404 => ApiServiceRecipesNotFoundHandler.class
+    };
+
+    private static final Map<Type, ApiServiceRecipesHttpResponseConsumer> RESPONSE_CONSUMER_BY_TYPE_MAP
+            = new Map<Type, ApiServiceRecipesHttpResponseConsumer>();
+
+    public List<ApiServiceRecipesDataModel> getCurrentData() {
+        ARSC_RestRequest restRequest = new ARSC_RestRequest()
+                .setNamedCredential(DEFAULT_NAMED_CREDENTIAL)
+                .setPath(GET_BIN_PATH);
+
+        HttpResponse response = this.restClient.get(restRequest);
+        return this.parseDataModels(response);
+    }
+
+    private List<ApiServiceRecipesDataModel> parseDataModels(HttpResponse response) {
+        Type handlerType = RESPONSE_CONSUMER_BY_STATUS_CODE_MAP.get(response.getStatusCode());
+        if (handlerType == null) {
+            handlerType = DEFAULT_HTTP_HANDLER;
         }
+
+        ApiServiceRecipesHttpResponseConsumer responseConsumer = RESPONSE_CONSUMER_BY_TYPE_MAP.get(handlerType);
+        if (responseConsumer == null) {
+            responseConsumer = (ApiServiceRecipesHttpResponseConsumer) handlerType.newInstance();
+            RESPONSE_CONSUMER_BY_TYPE_MAP.put(handlerType, responseConsumer);
+        }
+
+        return responseConsumer.handle(response);
     }
 }

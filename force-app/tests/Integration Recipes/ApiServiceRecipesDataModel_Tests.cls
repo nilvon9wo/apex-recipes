@@ -1,6 +1,5 @@
-@isTest
+@IsTest
 public class ApiServiceRecipesDataModel_Tests {
-    @testVisible
     public static String testJSONBad =
         '[' +
         '  {\"exampleArray\": [' +
@@ -14,7 +13,6 @@ public class ApiServiceRecipesDataModel_Tests {
         '  \"exampleNumber\": 8675309,' +
         '  \"exampleObject\": {';
 
-    @testVisible
     public static String testJSON =
         '[' +
         '  {\"exampleArray\": [' +
@@ -45,10 +43,10 @@ public class ApiServiceRecipesDataModel_Tests {
         '    \"c\": \"d\"' +
         '  },' +
         '  \"exampleString\": \"Hello World\"}]';
-    static testMethod void testParse() {
-        List<ApiServiceRecipesDataModel> obj = ApiServiceRecipesDataModel.parse(
-            ApiServiceRecipesDataModel_Tests.testJSON
-        );
+    @IsTest
+    static void testParse() {
+        List<ApiServiceRecipesDataModel> obj = new ApiServiceRecipesDataParser()
+                .parse(ApiServiceRecipesDataModel_Tests.testJSON);
         System.assert(
             obj != null,
             'Expected the example data to properly parse'

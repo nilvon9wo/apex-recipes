@@ -1,25 +1,13 @@
-@isTest
+@IsTest
 private class ApiServiceRecipes_Tests {
-    @isTest
-    static void testConstructorAssignsNamedCredentialPositive() {
-        Test.startTest();
-        ApiServiceRecipes api = new ApiServiceRecipes();
-        Test.stopTest();
-
-        System.assert(
-            api.namedCredentialName == 'MockBin',
-            'Expected constructor to create an instance that specifies the named credentialname'
-        );
-    }
-
-    @isTest
+    @IsTest
     static void testGetCurrentDataPositive200() {
         ApiServiceRecipes api = new ApiServiceRecipes();
         HttpCalloutMockFactory mock = new HttpCalloutMockFactory(
             200,
             'OK',
             ApiServiceRecipesDataModel_Tests.testJSON,
-            new Map<string, string>()
+            new Map<String, String>()
         );
         Test.setMock(HttpCalloutMock.class, mock);
         Test.startTest();
@@ -61,14 +49,14 @@ private class ApiServiceRecipes_Tests {
         }
     }
 
-    @isTest
+    @IsTest
     static void testGetCurrentDataNegativeJSONExceptionThrown() {
         ApiServiceRecipes api = new ApiServiceRecipes();
         HttpCalloutMockFactory mock = new HttpCalloutMockFactory(
             200,
             'OK',
             ApiServiceRecipesDataModel_Tests.testJSONBad,
-            new Map<string, string>()
+            new Map<String, String>()
         );
         Test.setMock(HttpCalloutMock.class, mock);
         Boolean didCatchTheRightException = false;
@@ -76,7 +64,7 @@ private class ApiServiceRecipes_Tests {
         Test.startTest();
         try {
             api.getCurrentData();
-        } catch (ApiServiceRecipes.ApiException apiException) {
+        } catch (ApiException apiException) {
             if (
                 apiException.getMessage()
                     .containsIgnoreCase('Unexpected end-of-input')
@@ -90,14 +78,14 @@ private class ApiServiceRecipes_Tests {
         );
     }
 
-    @isTest
+    @IsTest
     static void testGetCurrentDataNegative404() {
         ApiServiceRecipes api = new ApiServiceRecipes();
         HttpCalloutMockFactory mock = new HttpCalloutMockFactory(
             404,
             'Not Found',
             '',
-            new Map<string, string>()
+            new Map<String, String>()
         );
         Test.setMock(HttpCalloutMock.class, mock);
         Boolean didCatchTheRightException = false;
@@ -105,7 +93,7 @@ private class ApiServiceRecipes_Tests {
         Test.startTest();
         try {
             api.getCurrentData();
-        } catch (ApiServiceRecipes.ApiException apiException) {
+        } catch (ApiException apiException) {
             if (apiException.getMessage().containsIgnoreCase('404 error')) {
                 didCatchTheRightException = true;
             }
@@ -118,14 +106,14 @@ private class ApiServiceRecipes_Tests {
         );
     }
 
-    @isTest
+    @IsTest
     static void testGetCurrentDataNegative500TriggersWhenElse() {
         ApiServiceRecipes api = new ApiServiceRecipes();
         HttpCalloutMockFactory mock = new HttpCalloutMockFactory(
             503,
             'Not Found',
             '',
-            new Map<string, string>()
+            new Map<String, String>()
         );
         Test.setMock(HttpCalloutMock.class, mock);
         Boolean didCatchTheRightException = false;
@@ -133,7 +121,7 @@ private class ApiServiceRecipes_Tests {
         Test.startTest();
         try {
             api.getCurrentData();
-        } catch (ApiServiceRecipes.ApiException apiException) {
+        } catch (ApiException apiException) {
             if (
                 apiException.getMessage()
                     .containsIgnoreCase('unexpected response code')
