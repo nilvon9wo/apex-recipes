@@ -26,7 +26,7 @@ public abstract with sharing class XAP_DAO_SOQL_SObjectSelectorAbs implements XA
 	private static final String DEFAULT_SORT_DIRECTION = 'DESC';
 	private static final String DEFAULT_NULL_SORT_PLACE = 'NULLS LAST';
 
-	private String orderBy;
+	protected String orderBy;
 
 	private Boolean isIncludingFieldSetFields;
 	private Boolean isEnforcingFLS;

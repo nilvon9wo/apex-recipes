@@ -1,13 +1,14 @@
-@isTest
+@IsTest
 private inherited sharing class MetadataCatalogRecipes_Tests {
-    @isTest
+    private static final MetadataCatalogRecipes RECIPES_UNDER_TEST = new MetadataCatalogRecipes();
+
+    @IsTest
     static void testFindAllFormulaFieldsPositive() {
         Map<String, Map<String, String>> results;
         Test.startTest();
-        results = MetadataCatalogRecipes.findAllFormulaFields();
+        results = RECIPES_UNDER_TEST.findAllFormulaFields();
         Test.stopTest();
 
-        // This assertion isn't terribly specific, but given that end users can modify the org's shape, it'll have to do
         System.assertNotEquals(
             null,
             results,
@@ -15,14 +16,13 @@ private inherited sharing class MetadataCatalogRecipes_Tests {
         );
     }
 
-    @isTest
+    @IsTest
     static void testFindAllContactFieldsThatLookupToAccountPositive() {
-        List<MetadataCatalogRecipes.LookupRelationshipDefinition> relatesToAccounts;
+        List<LookupRelationshipDefinition> relatesToAccounts;
         Test.startTest();
-        relatesToAccounts = MetadataCatalogRecipes.findAllContactFieldsThatLookupToAccount();
+        relatesToAccounts = RECIPES_UNDER_TEST.findAllContactFieldsThatLookupToAccount();
         Test.stopTest();
 
-        // Like the first unit test, this assertion isn't terribly specific, but since end users can modify the org shape, we can only assert that at least one is found
         System.assertNotEquals(
             null,
             relatesToAccounts,
