@@ -1,9 +1,10 @@
-@isTest
+@IsTest
 private inherited sharing class FilesRecipes_Tests {
+    private static final FilesRecipes RECIPES_UNDER_TEST = new FilesRecipes();
     @TestSetup
     static void makeData() {
         Account acct = (Account) TestFactory.createSObject(
-            new Account(name = 'Test Account'),
+            new Account(Name = 'Test Account'),
             true
         );
 
@@ -20,9 +21,9 @@ private inherited sharing class FilesRecipes_Tests {
             } else if (resource.Name.equalsIgnoreCase('helloworld')) {
                 fileName = resource.Name + '.docx';
             } else {
-                filename = resource.Name + '.m4a';
+                fileName = resource.Name + '.m4a';
             }
-            FilesRecipes.createFileAttachedToRecord(
+            RECIPES_UNDER_TEST.createFileAttachedToRecord(
                 resource.Body,
                 acct.Id,
                 fileName
@@ -30,11 +31,11 @@ private inherited sharing class FilesRecipes_Tests {
         }
     }
 
-    @isTest
+    @IsTest
     static void testPublishContent() {
         Account acct = [SELECT Id FROM Account LIMIT 1];
         String text = 'Hello Good Friends, enjoy the stream!';
-        FilesRecipes.createFileFromStringAttachedToRecord(text, acct.Id);
+        RECIPES_UNDER_TEST.createFileFromStringAttachedToRecord(text, acct.Id);
         ContentDocumentLink cdl = [
             SELECT Id, LinkedEntityId, ContentDocument.LatestPublishedVersionId
             FROM ContentDocumentLink
@@ -43,7 +44,7 @@ private inherited sharing class FilesRecipes_Tests {
         ];
 
         Test.startTest();
-        FilesRecipes.publishContent(cdl);
+        RECIPES_UNDER_TEST.publishContent(cdl);
         Test.stopTest();
 
         ContentDistribution dist = [
@@ -58,43 +59,43 @@ private inherited sharing class FilesRecipes_Tests {
         );
     }
 
-    @isTest
+    @IsTest
     static void testUploadFileFromText() {
         Account acct = [SELECT Id FROM Account LIMIT 1];
         String text = 'Hello Good Friends, enjoy the stream!';
 
         Test.startTest();
-        FilesRecipes.createFileFromStringAttachedToRecord(text, acct.Id);
+        RECIPES_UNDER_TEST.createFileFromStringAttachedToRecord(text, acct.Id);
         Test.stopTest();
 
         ContentVersion[] results = [
             SELECT Id, FirstPublishLocationId, Title, PathOnClient
             FROM ContentVersion
-            WHERE FirstPublishLocationId = :acct.Id AND title = 'AwesomeFile1'
+            WHERE FirstPublishLocationId = :acct.Id AND Title = 'AwesomeFile1'
         ];
 
         System.assert(results.size() == 1, 'Expected to find one file');
     }
 
-    @isTest
+    @IsTest
     static void testGetFilteredAttachmentsForRecords() {
         Id attachedRecordId = [SELECT Id FROM Account LIMIT 1].Id;
 
         Test.startTest();
-        List<ContentVersion> audioFiles = FilesRecipes.getFilteredAttachmentsForRecord(
-            FilesRecipes.genericFileType.AUDIO,
+        List<ContentVersion> audioFiles = RECIPES_UNDER_TEST.getFilteredAttachmentsForRecord(
+            GenericFileType.AUDIO,
             attachedRecordId
         );
-        List<ContentVersion> imageFiles = FilesRecipes.getFilteredAttachmentsForRecord(
-            FilesRecipes.genericFileType.IMAGE,
+        List<ContentVersion> imageFiles = RECIPES_UNDER_TEST.getFilteredAttachmentsForRecord(
+            GenericFileType.IMAGE,
             attachedRecordId
         );
-        List<ContentVersion> docFiles = FilesRecipes.getFilteredAttachmentsForRecord(
-            FilesRecipes.genericFileType.DOCUMENT,
+        List<ContentVersion> docFiles = RECIPES_UNDER_TEST.getFilteredAttachmentsForRecord(
+            GenericFileType.DOCUMENT,
             attachedRecordId
         );
-        List<ContentVersion> all = FilesRecipes.getFilteredAttachmentsForRecord(
-            FilesRecipes.genericFileType.ALL,
+        List<ContentVersion> all = RECIPES_UNDER_TEST.getFilteredAttachmentsForRecord(
+            GenericFileType.ALL,
             attachedRecordId
         );
         Test.stopTest();

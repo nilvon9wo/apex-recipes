@@ -68,6 +68,10 @@ public class XAP_DAO_SOQL_QueryFactory {
 		return this;
 	}
 
+	public XAP_DAO_SOQL_QueryFactory setEnforceFLS() {
+		return this.setEnforceFLS(true);
+	}
+
 	public XAP_DAO_SOQL_QueryFactory setEnforceFLS(Boolean enforce) {
 		this.enforceFLS = enforce;
 		return this;
