@@ -17,6 +17,14 @@ public with sharing virtual class DAO_AccountSelector {
         ];
     }
 
+    public virtual List<Account> selectSome(Integer quantity) {
+        return [
+                SELECT Id, Description, Name
+                FROM Account
+                LIMIT :quantity
+        ];
+    }
+
     public virtual Database.QueryLocator getQueryLocatorForAll() {
         return Database.getQueryLocator([
                 SELECT Id, Description, Name

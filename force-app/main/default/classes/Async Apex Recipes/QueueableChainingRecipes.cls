@@ -4,7 +4,8 @@ public inherited sharing class QueueableChainingRecipes implements Queueable {
     private XAP_DAO_DML_InheritedSharingDml dml;
 
     private QueueableChainingRecipes(
-            DAO_AccountSelector accountSelector, XAP_ASYNC_Enqueuer enqueuer,
+            DAO_AccountSelector accountSelector,
+            XAP_ASYNC_Enqueuer enqueuer,
             XAP_DAO_DML_InheritedSharingDml dml
     ) {
         this.accountSelector = accountSelector;
