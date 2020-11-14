@@ -1,4 +1,4 @@
-@isTest
+git@isTest
 private inherited sharing class CustomRestEndpointRecipes_Tests {
     @isTest
     static void httpCalloutGetRecordsToReturnPositive() {

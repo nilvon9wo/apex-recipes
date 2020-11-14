@@ -4,10 +4,10 @@
     <option name="connections">
       <list>
         <IlluminatedCloudConnection>
-          <option name="connectionName" value="ApexRecipes" />
+          <option name="connectionName" value="kessler.bm@creative-moose-bj43tz.com" />
           <option name="connectionType" value="OAUTH" />
           <option name="defaultModuleName" value="apex-recipes" />
-          <option name="offlineSymbolTablePath" value="$PROJECT_DIR$/IlluminatedCloud/ApexRecipes/OfflineSymbolTable.zip" />
+          <option name="offlineSymbolTablePath" value="$PROJECT_DIR$/IlluminatedCloud/kessler_bm_creative_moose_bj43tz_com/OfflineSymbolTable.zip" />
         </IlluminatedCloudConnection>
       </list>
     </option>

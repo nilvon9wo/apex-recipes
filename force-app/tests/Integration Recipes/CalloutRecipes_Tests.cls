@@ -1,5 +1,7 @@
-@isTest
+@IsTest
 private inherited sharing class CalloutRecipes_Tests {
+    private static final CalloutRecipes RECIPES_UNDER_TEST = new CalloutRecipes();
+
     public static String goodUntypedJSON =
         '{\n' +
         ' "Id": "123456", \n' +
@@ -19,7 +21,7 @@ private inherited sharing class CalloutRecipes_Tests {
         ']\n' +
         '}';
 
-    @isTest
+    @IsTest
     static void testRawCalloutPositive() {
         HttpCalloutMockFactory mock = new HttpCalloutMockFactory(
             200,
@@ -30,7 +32,7 @@ private inherited sharing class CalloutRecipes_Tests {
         Test.setMock(HttpCalloutMock.class, mock);
 
         Test.startTest();
-        String results = CalloutRecipes.rawCallout();
+        String results = RECIPES_UNDER_TEST.rawCallout();
         Test.stopTest();
 
         System.assertEquals(
@@ -53,8 +55,8 @@ private inherited sharing class CalloutRecipes_Tests {
 
         Test.startTest();
         try {
-            CalloutRecipes.rawCallout();
-        } catch (CalloutRecipes.CalloutRecipesException cre) {
+            RECIPES_UNDER_TEST.rawCallout();
+        } catch (CalloutRecipesException cre) {
             if (
                 cre.getMessage()
                     .containsIgnoreCase('did not get a success response')
@@ -70,7 +72,7 @@ private inherited sharing class CalloutRecipes_Tests {
         );
     }
 
-    @isTest
+    @IsTest
     static void httpGetCalloutToSecondSalesforceOrgPositive() {
         Account[] accountList = (Account[]) TestFactory.createSObjectList(
             new Account(),
@@ -96,7 +98,7 @@ private inherited sharing class CalloutRecipes_Tests {
         );
     }
 
-    @isTest
+    @IsTest
     static void httpGetCalloutToSecondSalesforceOrgNegative() {
         Contact[] contactList = (Contact[]) TestFactory.createSObjectList(
             new Contact(),
@@ -119,7 +121,7 @@ private inherited sharing class CalloutRecipes_Tests {
         System.assert(calloutResponse == null, 'Expected a null response');
     }
 
-    @isTest
+    @IsTest
     static void httpDeleteCalloutToSecondSalesforceOrgPositive() {
         SObject contact = TestFactory.createSObject(
             new Contact(LastName = 'test'),
@@ -142,7 +144,7 @@ private inherited sharing class CalloutRecipes_Tests {
         System.assert(statusCode == 200, 'Expected a successful delete');
     }
 
-    @isTest
+    @IsTest
     static void httpDeleteCalloutToSecondSalesforceOrgNegative() {
         SObject contact = TestFactory.createSObject(
             new Contact(LastName = 'test'),
@@ -165,7 +167,7 @@ private inherited sharing class CalloutRecipes_Tests {
         System.assert(statusCode == 404, 'Expected an unsuccessful delete');
     }
 
-    @isTest
+    @IsTest
     static void httpPostCalloutToSecondSalesforceOrgPositive() {
         Contact[] contactList = (Contact[]) TestFactory.createSObjectList(
             new Contact(),
@@ -188,7 +190,7 @@ private inherited sharing class CalloutRecipes_Tests {
         System.assert(statusCode == 200, 'Expected a successful response');
     }
 
-    @isTest
+    @IsTest
     static void httpPostCalloutToSecondSalesforceOrgNegative() {
         Contact[] contactList = (Contact[]) TestFactory.createSObjectList(
             new Contact(),
@@ -211,7 +213,7 @@ private inherited sharing class CalloutRecipes_Tests {
         System.assert(statusCode == 400, 'Expected an unsusccessful response');
     }
 
-    @isTest
+    @IsTest
     static void httpPutCalloutToSecondSalesforceOrgPositive() {
         Contact[] contactList = (Contact[]) TestFactory.createSObjectList(
             new Contact(),
@@ -234,7 +236,7 @@ private inherited sharing class CalloutRecipes_Tests {
         System.assert(statusCode == 200, 'Expected a successful response');
     }
 
-    @isTest
+    @IsTest
     static void httpPutCalloutToSecondSalesforceOrgNegative() {
         Contact[] contactList = (Contact[]) TestFactory.createSObjectList(
             new Contact(),
@@ -257,7 +259,7 @@ private inherited sharing class CalloutRecipes_Tests {
         System.assert(statusCode == 404, 'Expected an unsusccessful response');
     }
 
-    @isTest
+    @IsTest
     static void httpPatchCalloutToSecondSalesforceOrgPositive() {
         Account[] accountList = (Account[]) TestFactory.createSObjectList(
             new Account(),
@@ -280,7 +282,7 @@ private inherited sharing class CalloutRecipes_Tests {
         System.assert(statusCode == 200, 'Expected a successful response');
     }
 
-    @isTest
+    @IsTest
     static void httpPatchCalloutToSecondSalesforceOrgNegative() {
         Account[] accountList = (Account[]) TestFactory.createSObjectList(
             new Account(),
@@ -303,7 +305,7 @@ private inherited sharing class CalloutRecipes_Tests {
         System.assert(statusCode == 404, 'Expected a successful response');
     }
 
-    @isTest
+    @IsTest
     static void calloutWithUntypedResponsePositive() {
         String response =
             '{\n' +
@@ -346,7 +348,7 @@ private inherited sharing class CalloutRecipes_Tests {
         );
     }
 
-    @isTest
+    @IsTest
     static void insertAccountAndContactsFromUntypedResponsePositive() {
         String response = CalloutRecipes_Tests.goodUntypedJSON;
 
