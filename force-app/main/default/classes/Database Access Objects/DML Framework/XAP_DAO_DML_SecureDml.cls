@@ -90,6 +90,18 @@ public virtual inherited sharing class XAP_DAO_DML_SecureDml implements XAP_DAO_
 	private static final Set<XAP_DAO_DML_OperationTypeEnum> CAN_UPSERT_SET
 			= new Set<XAP_DAO_DML_OperationTypeEnum>{XAP_DAO_DML_OperationTypeEnum.CREATE, XAP_DAO_DML_OperationTypeEnum.MODIFY};
 
+	public XAP_DAO_DML_UpsertResultListWrapper doUpsert(
+			List<SObject> homogeneousSObjectList,
+			SObjectField foreignKeyField,
+			XAP_DAO_DML_OperationModeEnum operationMode
+	) {
+		if (this.checkPermissions(homogeneousSObjectList, CAN_UPSERT_SET)) {
+			return this.withDmlFor(this.sharingModeEnum)
+					.doUpsert(homogeneousSObjectList, foreignKeyField, operationMode);
+		}
+		throw new XAP_DAO_DML_AccessCtrlDmlException('Insufficient access to upsert ' + homogeneousSObjectList[0].getSObjectType());
+	}
+
 	public XAP_DAO_DML_UpsertResultListWrapper doUpsert(List<SObject> homogeneousSObjectList, XAP_DAO_DML_OperationModeEnum operationMode) {
 		if (this.checkPermissions(homogeneousSObjectList, CAN_UPSERT_SET)) {
 			return this.withDmlFor(this.sharingModeEnum).doUpsert(homogeneousSObjectList, operationMode);

@@ -1,421 +1,224 @@
-/**
- * @description An Apex class can be used to generate a custom REST endpoint
- * that can be exposed to the Salesforce API. In order to achieve this, we can
- * annotate the class with @RestResource and then provide a URL mapping. In
- * this example we are using /IntegrationService/* to expose the class. It can
- * then be accessed at by performing a callout to
- * <INSTANCEURL>/services/apexrest/IntegrationService. Once the class has been
- * designated as a REST resource, we can then annoate our apex methods with
- * @HttpGet, @HttpDelete, @HttpPut, @HttpPost, and @HttpPatch to enable access
- * via it's relative Http Method.
- *
- * Note: The examples in this class are not Apex code, but rather cURL commands.
- * cURL is a command line utiltiy for Windows, Mac and Linux that allows you to
- * interact with Rest Resources and URLs to exchange data. Please excute these
- * examples in your terminal application of choice.  You might also consider a
- * third party UI based tool like Postman to ease things like authentication.
- *
- * Note: There is a @suppressWarnings annotation on this class for Cyclomatic
- * Complexity. You can read more about what Cyclomatic Complexity is here:
- * https://en.wikipedia.org/wiki/Cyclomatic_complexity Classes with a high
- * Cyclomatic Compelexity score are harder to test, and more prone to bugs
- * because of the sheer number of branching logic paths available. This class
- * is made up of a number of small methods, each of whom does CRUD/FLS Checks
- * and therefor every method includes at least one branching path - but not
- * much else. Other classes in this repository do not have such a high
- * Cyclomatic Complexity because the ratio of logic to if/else statments is much
- * lower.
- *
- * See CalloutRecipes for examples on how to call the custom REST endpoint.
- * @group Integration Recipes
- * @see CanTheUser
- */
 @SuppressWarnings('PMD.CyclomaticComplexity')
-@RestResource(urlmapping='/IntegrationService/*')
+@RestResource(UrlMapping='/IntegrationService/*')
 global inherited sharing class CustomRestEndpointRecipes {
-    /**
-     * @description private, test visible circiut breaker boolean.
-     */
+    private DAO_AccountSelector accountSelector;
+    private DAO_ContactSelector contactSelector;
+    private XAP_DAO_DML_SecureDml dml;
+    private XAP_DAO_DML_SecurityUtils securityUtils;
+
+    public CustomRestEndpointRecipes(
+            DAO_AccountSelector accountSelector,
+            DAO_ContactSelector contactSelector,
+            XAP_DAO_DML_SecureDml dml,
+            XAP_DAO_DML_SecurityUtils securityUtils
+    ) {
+        this.accountSelector = accountSelector;
+        this.contactSelector = contactSelector;
+        this.dml = dml;
+        this.securityUtils = securityUtils;
+    }
+
+    public CustomRestEndpointRecipes() {
+        this(
+                DAO_AccountSelector.getInstance(),
+                DAO_ContactSelector.getInstance(),
+                XAP_DAO_DML_SecureDml.getInstance(),
+                XAP_DAO_DML_SecurityUtils.getInstance()
+        );
+    }
+
     @TestVisible
     private static Exception circuitBreaker;
 
-    /**
-     * @description @HttpGet exposes a method to a GET request when the custom
-     * REST endpoint is called. A GET request allows us to return data from
-     * Salesforce. In this example, we're going to query a list of Accounts that
-     * were created and return them to the application that called the endpoint.
-     * When creating a response we can use the RestResponse class to specify
-     * certain fields of the payload that is sent. We are manually setting the
-     * statusCode as 200 for a successful get and 400 on error. In any other
-     * case, Salesforce will supply the error code.
-     *
-     * Note: This method has a false-positive PMD warning. Our Query
-     * includes the keyword 'WITH SECURITY_ENFORCED' which prevents this
-     * Query from accessing fields and objects that they don't have permission
-     * to access. This is a form of inline CRUD/FLS Check.
-     *
-     * The return statement is atomically serialized and returned in the
-     * responseBody.
-     * @return RestResponse  A list of Accounts or the exception message
-     * @example
-     * curl -H "Authorization: Bearer <SessionID>" "https://<Org Base URL>/services/apexrest/IntegrationService"
-     */
     @SuppressWarnings('PMD.ApexCRUDViolation')
     @HttpGet
     global static String getRecordsToReturn() {
-        // Instantiate the RestResponse
-        RestResponse response = RestContext.response;
-        try {
-            List<Account> accounts = [
-                SELECT Id, Name, Phone, Website
-                FROM Account
-                WITH SECURITY_ENFORCED
-            ];
-            if (
-                Test.isRunningTest() &&
-                CustomRestEndpointRecipes.circuitBreaker != null
-            ) {
-                throw CustomRestEndpointRecipes.circuitBreaker;
-            }
-            // Manually set the status code
-            response.statusCode = 200;
-            String serializedAccounts = JSON.serialize(accounts);
-            // We will return the body of the response and salesforce will add
-            // in the REST of the response.
-            return serializedAccounts;
-        } catch (QueryException qe) {
-            // If we have an issue querying the Accounts we can catch the Query
-            // exception
-            // We are unable to test this for code coverage as we can't trigger
-            // the query exception without changing user permissions
-            System.debug(
-                LoggingLevel.INFO,
-                'Failed to query a list of Accounts. Error is: ' +
-                qe.getMessage()
-            );
-            response.statusCode = 400;
-            return qe.getMessage();
-        }
+        return new CustomRestEndpointRecipes()
+                .selectAccounts(RestContext.response);
     }
 
-    /**
-     * @description @HttpDelete exposes the method to a DELETE request when the
-     * custom REST endpoint is called. A DELETE request allows us to delete data
-     * in Salesforce. In this Example, we're going to take a record Id that was
-     * sent in the RestRequest and delete the record from Salesforce. We will
-     * take the RestRequest Parameters and get the ExternalSalesforceId__c param
-     * from the request.
-     * Note: This method has a false-positive PMD warning. Our Query
-     * includes the keyword 'WITH SECURITY_ENFORCED' which prevents this
-     * Query from accessing fields and objects that they don't have permission
-     * to access. This is a form of inline CRUD/FLS Check.
-     * @return RestResponse A success message or the exception message
-     * @example
-     * curl —X DELETE -H "Authorization: Bearer <SessionID>" "https://<Org Base URL>/services/apexrest/IntegrationService"
-     */
+    private String selectAccounts(RestResponse response) {
+        List<Account> accounts;
+        try {
+            if (Test.isRunningTest() && CustomRestEndpointRecipes.circuitBreaker != null) {
+                throw CustomRestEndpointRecipes.circuitBreaker;
+            }
+            accounts = this.accountSelector.secureSelectAll();
+        }
+        catch (QueryException queryException) {
+            return this.respond(response, 400, queryException);
+        }
+
+        return this.respond(response, 200, JSON.serialize(accounts));
+    }
+
     @SuppressWarnings('PMD.ApexCRUDViolation')
     @HttpDelete
     global static String deleteSingleContact() {
-        // Get the details of the RestRequest from the RestContext
-        RestRequest request = RestContext.request;
-        // We can get the Id of the contact from the URL params by isolating the
-        // requestUri from the RestRequest
-        String recordId = request.requestUri.substring(
-            request.requestUri.lastIndexOf('/') + 1
-        );
-        RestResponse response = RestContext.response;
-        if (!CanTheUser.destroy(new Contact())) {
-            response.statusCode = 500;
-            return 'User does not have permission to delete contacts';
-        }
-        try {
-            if (
-                Test.isRunningTest() &&
-                CustomRestEndpointRecipes.circuitBreaker != null
-            ) {
-                throw CustomRestEndpointRecipes.circuitBreaker;
-            }
-            // We can query the Contact against the Id sent in the request and
-            // check that it was found
-            List<Contact> contacts = [
-                SELECT Id
-                FROM Contact
-                WHERE Id = :recordId
-                WITH SECURITY_ENFORCED
-                LIMIT 1
-            ];
-            Contact contact = (contacts.size() == 1) ? contacts.get(0) : null;
-            delete contact;
-            response.statusCode = 200;
-            return 'Successful Delete';
-        } catch (QueryException qe) {
-            // If we have an issue querying the Contact we can catch the Query
-            // exception
-            // We are unable to test this for code coverage as we can't trigger
-            // the query exception without changing user permissions
-            System.debug(
-                LoggingLevel.INFO,
-                'Failed to query the Contact. Error is: ' + qe.getMessage()
-            );
-            response.statusCode = 400;
-            return qe.getMessage();
-        } catch (DMLException dmle) {
-            // If we have an issue deleting the Contact we can catch the DML
-            // exception
-            // We are unable to test this for code coverage as we can't trigger
-            // the DML exception without changing user permissions
-            System.debug(
-                LoggingLevel.INFO,
-                'Failed to delete the Contact: ' + dmle.getMessage()
-            );
-            response.statusCode = 400;
-            return dmle.getMessage();
-        } catch (Exception e) {
-            // Fallback to catch any other exceptions that may occur, for
-            // instance, a null pointer see test
-            response.statusCode = 400;
-            return e.getMessage();
-        }
+        return new CustomRestEndpointRecipes()
+                .deleteContact(RestContext.request, RestContext.response);
     }
 
-    /**
-     * @description @HttpPost exposes the method to a POST request when the
-     * custom REST endpoint is called. A POST request allows us to insert data
-     * into Salesforce. In this Example, we're going take the list of Contacts
-     * that was sent in the request and insert them into Salesforce.
-     *
-     * Note: This method has a false-positive PMD warning. PMD isn't aware of
-     * the purpose or functionality of CanTheUser.* so it doesn't undersatnd
-     * that we are, in fact, checking for Crud / FLS permissions prior to querying.
-     *
-     * @return RestResponse A success message or the exception message
-     * @example
-     * Create file with the following JSON, named newContact.json
-     *     {
-     *       "firstName" : "Apex",
-     *       "lastName": "Recipes",
-     *       "phone" : "919-867-5309",
-     *     }
-     * curl -H "Authorization: Bearer <SessionID>" -H "Content-Type: application/json" -d @newContact.json "https://<Org Base URL>/services/apexrest/IntegrationService"
-     */
+    private String deleteContact(RestRequest request, RestResponse response) {
+        try {
+            this.securityUtils.checkSObjectIsDeletable(Contact.SObjectType);
+        }
+        catch (XAP_DAO_DML_CrudException ex) {
+            return this.respond(response, 500, 'User does not have permission to delete contacts');
+        }
+
+        Id contactId;
+        try {
+            contactId = request.requestURI.substring(
+                    request.requestURI.lastIndexOf('/') + 1
+            );
+        }
+        catch (StringException ex) {
+            return this.respond(response, 400, 'Attempt to de-reference a null object');
+        }
+
+        try {
+            if (Test.isRunningTest() && CustomRestEndpointRecipes.circuitBreaker != null) {
+                throw CustomRestEndpointRecipes.circuitBreaker;
+            }
+            this.doDelete(contactId);
+        }
+        catch (QueryException queryException) {
+            return this.respond(response, 400, queryException);
+        }
+        catch (DmlException dmlException) {
+            return this.respond(response, 400, dmlException);
+        }
+
+        return this.respond(response, 200, 'Successful Delete');
+    }
+
+    private void doDelete(Id contactId) {
+        List<Contact> contactList = this.contactSelector.secureSelectById(new Set<Id>{contactId});
+        this.dml.doDelete(contactList);
+    }
+
+
     @SuppressWarnings('PMD.ApexCRUDViolation')
     @HttpPost
     global static String parseAndCreateNewContacts() {
-        RestRequest request = RestContext.request;
-        RestResponse response = RestContext.response;
-        try {
-            if (
-                Test.isRunningTest() &&
-                CustomRestEndpointRecipes.circuitBreaker != null
-            ) {
-                throw CustomRestEndpointRecipes.circuitBreaker;
-            }
-            String requestBody = request.requestBody.toString();
-            // Deseralize the requestBody into a list of Contacts
-            List<Contact> contactRecords = (List<Contact>) JSON.deserialize(
-                requestBody,
-                List<Contact>.class
-            );
-            // insert the requsts Contacts
-            if (CanTheUser.create(contactRecords[0])) {
-                insert contactRecords;
-                response.statusCode = 200;
-                return 'Successful Insert';
-            } else {
-                response.statusCode = 500;
-                return 'User does not have permission to create Contacts';
-            }
-        } catch (JSONException je) {
-            // If we have an issue deserializing the Contacts we can catch the
-            // JSON exception
-            System.debug(
-                LoggingLevel.INFO,
-                'Failed to deserialize the list of Contacts. Error is: ' +
-                je.getMessage()
-            );
-            response.statusCode = 400;
-            return je.getMessage();
-        } catch (DMLException dmle) {
-            // If we have an issue inserting the Contacts we can catch the DML
-            // exception
-            // We are unable to test this for code coverage as we can't trigger
-            // the DML exception without changing user permissions
-            System.debug(
-                LoggingLevel.INFO,
-                'Failed to insert the Contacts: ' + dmle.getMessage()
-            );
-            response.statusCode = 400;
-            return dmle.getMessage();
-        } catch (Exception e) {
-            // Fallback to catch any other exceptions that may occur
-            response.statusCode = 400;
-            return e.getMessage();
-        }
+        return new CustomRestEndpointRecipes()
+                .createContact(RestContext.request, RestContext.response);
     }
 
-    /**
-     * @description @HttpPut exposes the method to a PUT request when the custom
-     * REST endpoint is called.  A PUT request allows us to Upsert data into
-     * Salesforce. In this Example, we're going take the list of Contacts that
-     * was sent in the request and upsert them into Salesforce.
-     *
-     * This method has a false-positive PMD warning. PMD isn't aware of
-     * the purpose or functionality of CanTheUser.* so it doesn't undersatnd
-     * that we are, in fact, checking for Crud / FLS permissions prior to
-     * querying.
-     *
-     * @return RestResponse A success message or the exception message
-     * @example
-     * Create file with the following JSON, named newContact.json
-     *     {
-     *       "firstName" : "Apex",
-     *       "lastName": "Recipes",
-     *       "phone" : "919-867-5309",
-     *       "ExternalSalesforceId__c": "
-     *     }
-     * curl -H "Authorization: Bearer <SessionID>" -H "Content-Type: application/json" -d @newContact.json "https://<Org Base URL>/services/apexrest/IntegrationService"
-     * Then, Modify the first name of your newContact.json file so it says "Apex2" and run
-     * curl —X PUT -H "Authorization: Bearer <SessionID>" -H "Content-Type: application/json" -d @newContact.json "https://<Org Base URL>/services/apexrest/IntegrationService"
-     */
+    private String createContact(RestRequest request, RestResponse response){
+        try {
+            if (Test.isRunningTest() && CustomRestEndpointRecipes.circuitBreaker != null) {
+                throw CustomRestEndpointRecipes.circuitBreaker;
+            }
+            if (request.requestBody == null || String.isBlank(request.requestBody.toString())) {
+                return this.respond(response, 400, 'Argument cannot be null.');
+            }
+            List<Contact> contactList
+                    = (List<Contact>) JSON.deserialize(request.requestBody.toString(), List<Contact>.class);
+            try {
+                this.dml.doInsert(contactList);
+            }
+            catch (XAP_DAO_DML_CrudException crudException) {
+                return this.respond(response, 500, 'User does not have permission to create Contacts');
+            }
+        }
+        catch (JSONException jsonException) {
+            return this.respond(response, 400, jsonException);
+        }
+        catch (DmlException dmlException) {
+            return this.respond(response, 400, dmlException);
+        }
+
+        return this.respond(response, 200, 'Successful Insert');
+    }
+
     @SuppressWarnings('PMD.ApexCRUDViolation')
     @HttpPut
     global static String upsertContactRecords() {
-        RestRequest request = RestContext.request;
-        RestResponse response = RestContext.response;
-        try {
-            if (
-                Test.isRunningTest() &&
-                CustomRestEndpointRecipes.circuitBreaker != null
-            ) {
-                throw CustomRestEndpointRecipes.circuitBreaker;
-            }
-            String requestBody = request.requestBody.toString();
-            // Deserialize the requestBody into a list of Contacts
-            List<Contact> contactRecords = (List<Contact>) JSON.deserialize(
-                requestBody,
-                List<Contact>.class
-            );
-
-            if (
-                CanTheUser.create(contactRecords[0]) &&
-                CanTheUser.edit(contactRecords[0])
-            ) {
-                // upsert the Contacts by their ExternalId__c
-                upsert contactRecords ExternalSalesforceId__c;
-                response.statusCode = 200;
-                return 'Successful Upsert';
-            } else {
-                response.statusCode = 500;
-                return 'User does not have create or edit permissions';
-            }
-        } catch (JSONException je) {
-            // If we have an issue deserializing the Contacts we can catch the
-            // JSON exception
-            System.debug(
-                LoggingLevel.INFO,
-                'Failed to deserialize the list of Contacts. Error is: ' +
-                je.getMessage()
-            );
-            response.statusCode = 400;
-            return je.getMessage();
-        } catch (DMLException dmle) {
-            // If we have an issue upserting the Contacts we can catch the DML
-            // exception
-            System.debug(
-                LoggingLevel.INFO,
-                'Failed to upsert the Contacts: ' + dmle.getMessage()
-            );
-            response.statusCode = 400;
-            return dmle.getMessage();
-        } catch (Exception e) {
-            // Fallback to catch any other exceptions that may occur
-            response.statusCode = 400;
-            return e.getMessage();
-        }
+        return new CustomRestEndpointRecipes()
+                .upsertContact(RestContext.request, RestContext.response);
     }
 
-    /**
-     * @description @HttpPatch exposes the method to a PATCH request when the
-     * custom REST endpoint is called. A PATCH request allows us to Update
-     * data in Salesforce. In this Example, we're going take the list of
-     * Accounts that was sent in the request and update in Salesforce.
-     *
-     * Note: This method has a false-positive PMD warning. PMD isn't aware of
-     * the purpose or functionality of CanTheUser.* so it doesn't undersatnd
-     * that we are, in fact, checking for CRUD / FLS permissions prior to
-     * querying.
-     *
-     * @return RestResponse A success message or the exception message
-     * @example
-     * Create file with the following JSON, named newContact.json
-     *     {
-     *       "firstName" : "Apex",
-     *       "lastName": "Recipes",
-     *       "phone" : "919-867-5309",
-     *       "ExternalSalesforceId__c": "
-     *     }
-     * curl -H "Authorization: Bearer <SessionID>" -H "Content-Type: application/json" -d @newContact.json "https://<Org Base URL>/services/apexrest/IntegrationService"
-     * Then, Modify the first name of your newContact.json file so it says "Apex2" and run
-     * curl —X PATCH -H "Authorization: Bearer <SessionID>" -H "Content-Type: application/json" -d @newContact.json "https://<Org Base URL>/services/apexrest/IntegrationService"
-     */
+    private String upsertContact(RestRequest request, RestResponse response) {
+        try {
+            if (Test.isRunningTest() && CustomRestEndpointRecipes.circuitBreaker != null) {
+                throw CustomRestEndpointRecipes.circuitBreaker;
+            }
+            if (request.requestBody == null || String.isBlank(request.requestBody.toString())) {
+                return this.respond(response, 400, 'Argument cannot be null.');
+            }
+            List<Contact> contactList
+                    = (List<Contact>) JSON.deserialize(request.requestBody.toString(), List<Contact>.class);
+
+            try {
+                this.dml.doUpsert(contactList, Contact.ExternalSalesforceId__c, XAP_DAO_DML_OperationModeEnum.ALL_OR_NONE);
+            }
+            catch (XAP_DAO_DML_CrudException crudException) {
+                return this.respond(response, 500, 'User does not have create or edit permissions');
+            }
+        }
+        catch (JSONException jsonException) {
+            return this.respond(response, 400, jsonException);
+        }
+        catch (DmlException dmlException) {
+            return this.respond(response, 400, dmlException);
+        }
+
+        return this.respond(response, 200, 'Successful Upsert');
+    }
+
     @SuppressWarnings('PMD.ApexCRUDViolation')
     @HttpPatch
     global static String updateAccountRecords() {
-        RestRequest request = RestContext.request;
-        RestResponse response = RestContext.response;
+        return new CustomRestEndpointRecipes()
+                .updateAccount(RestContext.request, RestContext.response);
+    }
+
+    private String updateAccount(RestRequest request, RestResponse response) {
         try {
-            if (
-                Test.isRunningTest() &&
-                CustomRestEndpointRecipes.circuitBreaker != null
-            ) {
+            if (Test.isRunningTest() && CustomRestEndpointRecipes.circuitBreaker != null) {
                 throw CustomRestEndpointRecipes.circuitBreaker;
             }
-            String requestBody = request.requestBody.toString();
-            // Deseralize the requestBody into a list of Accounts
-            List<Account> accountRecords = (List<Account>) JSON.deserialize(
-                requestBody,
-                List<Account>.class
-            );
 
-            if (!CanTheUser.edit(accountRecords[0])) {
-                response.statusCode = 500;
-                return 'User has no edit access to Accounts';
+            if (request.requestBody == null || String.isBlank(request.requestBody.toString())) {
+                return this.respond(response, 400, 'Argument cannot be null.');
             }
+            List<Account> accountList
+                    = (List<Account>) JSON.deserialize(request.requestBody.toString(), List<Account>.class);
 
-            // Loop through the list of Accounts and reassign the ExternalId__c
-            // to the Account Id for matching
-            for (Account account : accountRecords) {
+            for (Account account : accountList) {
                 account.Id = account.ExternalSalesforceId__c;
                 account.Name = account.Name;
                 account.Website = account.Website;
             }
-            // Update the account records
-            update accountRecords;
-            response.statusCode = 200;
-            return 'Successful Update';
-        } catch (JSONException je) {
-            // If we have an issue deserializing the Accounts we can catch the
-            // JSON exception
-            System.debug(
-                LoggingLevel.INFO,
-                'Failed to deserialize the list of Accounts. Error is: ' +
-                je.getMessage()
-            );
-            response.statusCode = 400;
-            return je.getMessage();
-        } catch (DMLException dmle) {
-            // If we have an issue updating the Accounts we can catch the DML
-            // exception
-            System.debug(
-                LoggingLevel.INFO,
-                'Failed to update the accounts: ' + dmle.getMessage()
-            );
-            response.statusCode = 400;
-            return dmle.getMessage();
-        } catch (Exception e) {
-            // Fallback to catch any other exceptions that may occur
-            response.statusCode = 400;
-            return e.getMessage();
+
+            try {
+                this.dml.doUpdate(accountList);
+            }
+            catch (XAP_DAO_DML_CrudException crudException) {
+                return this.respond(response, 500, 'User has no edit access to Accounts');
+            }
         }
+        catch (JSONException jsonException) {
+            return this.respond(response, 400, jsonException);
+        }
+        catch (DmlException dmlException) {
+            return this.respond(response, 400, dmlException);
+        }
+
+        return this.respond(response, 200, 'Successful Update');
+
     }
+
+    private String respond(RestResponse response, Integer statusCode, Exception ex) {
+        return this.respond(response, statusCode, ex.getMessage());
+    }
+
+    private String respond(RestResponse response, Integer statusCode, String message) {
+        System.debug(LoggingLevel.ERROR, 'Failure: ' + message);
+        response.statusCode = statusCode;
+        return message;
+    }
+
 }

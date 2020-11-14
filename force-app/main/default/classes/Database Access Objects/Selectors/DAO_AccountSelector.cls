@@ -25,9 +25,11 @@ public with sharing virtual class DAO_AccountSelector extends XAP_DAO_SOQL_SObje
                 Account.Description,
                 Account.Id,
                 Account.Name,
+                Account.Phone,
                 Account.ShippingCity,
                 Account.ShippingState,
-                Account.ShippingStreet
+                Account.ShippingStreet,
+                Account.Website
         };
     }
 

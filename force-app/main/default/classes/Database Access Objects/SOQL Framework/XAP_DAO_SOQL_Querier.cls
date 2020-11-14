@@ -45,7 +45,7 @@ public virtual class XAP_DAO_SOQL_Querier {
 				);
 			}
 		}
-		System.debug('########## localizedTemplate: ' + localizedTemplate);
+
 		return localizedTemplate;
 	}
 

@@ -1,24 +1,14 @@
 public inherited sharing class AuraEnabledRecipes {
     private DAO_AccountSelector accountSelector;
     private XAP_DAO_DML_SecureDml dml;
-    private XAP_DAO_DML_SecurityUtils securityUtils;
 
-    public AuraEnabledRecipes(
-            DAO_AccountSelector accountSelector,
-            XAP_DAO_DML_SecureDml dml,
-            XAP_DAO_DML_SecurityUtils securityUtils
-    ) {
+    public AuraEnabledRecipes(DAO_AccountSelector accountSelector, XAP_DAO_DML_SecureDml dml) {
         this.accountSelector = accountSelector;
         this.dml = dml;
-        this.securityUtils = securityUtils;
     }
 
     public AuraEnabledRecipes() {
-        this(
-                DAO_AccountSelector.getInstance(),
-                XAP_DAO_DML_SecureDml.getInstance(),
-                XAP_DAO_DML_SecurityUtils.getInstance()
-        );
+        this(DAO_AccountSelector.getInstance(), XAP_DAO_DML_SecureDml.getInstance());
     }
 
     private static final String DEFAULT_RETURN_VALUE = 'hello world';

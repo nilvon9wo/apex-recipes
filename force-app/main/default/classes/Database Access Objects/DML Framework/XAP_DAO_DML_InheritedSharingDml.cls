@@ -41,7 +41,7 @@ public virtual inherited sharing class XAP_DAO_DML_InheritedSharingDml implement
 
 	// Upsert Methods -----------------------------------------------------------------------------------------
 
-	public virtual XAP_DAO_DML_UpsertResultListWrapper doUpsert(List<SObject> homogeneousSObjectList, XAP_DAO_DML_OperationModeEnum operationMode) {
+	public XAP_DAO_DML_UpsertResultListWrapper doUpsert(List<SObject> homogeneousSObjectList, SObjectField foreignKeyField, XAP_DAO_DML_OperationModeEnum operationMode) {
 		if (homogeneousSObjectList == null || homogeneousSObjectList.isEmpty()) {
 			return null;
 		}
@@ -51,7 +51,13 @@ public virtual inherited sharing class XAP_DAO_DML_InheritedSharingDml implement
 		List<SObject> concreteSObjectList = (List<SObject>) Type.forName(listType).newInstance();
 		concreteSObjectList.addAll(homogeneousSObjectList);
 
-		return new XAP_DAO_DML_UpsertResultListWrapper(Database.upsert(homogeneousSObjectList, this.convert(operationMode)));
+		return (foreignKeyField != null)
+				? new XAP_DAO_DML_UpsertResultListWrapper(Database.upsert(homogeneousSObjectList, foreignKeyField, this.convert(operationMode)))
+				:new XAP_DAO_DML_UpsertResultListWrapper(Database.upsert(homogeneousSObjectList, this.convert(operationMode)));
+	}
+
+	public virtual XAP_DAO_DML_UpsertResultListWrapper doUpsert(List<SObject> homogeneousSObjectList, XAP_DAO_DML_OperationModeEnum operationMode) {
+		return this.doUpsert(homogeneousSObjectList, null, operationMode);
 	}
 
 	public virtual XAP_DAO_DML_UpsertResultListWrapper doUpsert(List<SObject> homogeneousSObjectList) {
@@ -82,4 +88,5 @@ public virtual inherited sharing class XAP_DAO_DML_InheritedSharingDml implement
 	private Boolean convert(XAP_DAO_DML_OperationModeEnum operationMode) {
 		return this.operationModeHelper.toBoolean(operationMode);
 	}
+
 }

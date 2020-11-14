@@ -40,6 +40,10 @@ public virtual without sharing class XAP_DAO_DML_WithoutSharingDml implements XA
 		return this.inheritedSharingDml.doUpdate(sObjectList);
 	}
 
+	public XAP_DAO_DML_UpsertResultListWrapper doUpsert(List<SObject> homogeneousSObjectList, SObjectField foreignKeyField, XAP_DAO_DML_OperationModeEnum operationMode) {
+		return this.inheritedSharingDml.doUpsert(homogeneousSObjectList, foreignKeyField, operationMode);
+	}
+
 	public XAP_DAO_DML_UpsertResultListWrapper doUpsert(List<SObject> homogeneousSObjectList, XAP_DAO_DML_OperationModeEnum operationMode) {
 		return this.inheritedSharingDml.doUpsert(homogeneousSObjectList, operationMode);
 	}

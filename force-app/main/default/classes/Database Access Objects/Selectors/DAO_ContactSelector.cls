@@ -37,6 +37,13 @@ public with sharing virtual class DAO_ContactSelector extends XAP_DAO_SOQL_SObje
         };
     }
 
+    public virtual List<Contact> secureSelectById(Set<Id> idSet) {
+        return this.createQueryFactory()
+                .setEnforceFLS()
+                .setSecurityEnforced()
+                .setCondition(new XAP_DAO_SOQL_WHERE_InIdSetClause(idSet))
+                .query();
+    }
     public virtual List<Contact> secureSelectByShippingStateWithParentAccount(Set<String> shippingStateSet) {
         XAP_DAO_SOQL_QueryFactory contactQueryFactory = this.createQueryFactory()
                 .setSecurityEnforced()
