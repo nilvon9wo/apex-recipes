@@ -1,14 +1,14 @@
 public with sharing class ARSC_RestRequest {
-    private HttpRequest httpRequest = new HttpRequest();
-
-    @TestVisible
-    private static Map<String, String> defaultHeaderValueByKeyMap = new Map<String, String>{
-            'Content-Type' => 'application/json',
-            'Accept' => 'application/json'
+    private static final Set<ARSC_HttpVerb> METHODS_WITH_BODY_SET = new Set<ARSC_HttpVerb>{
+            ARSC_HttpVerb.PATCH,
+            ARSC_HttpVerb.POST,
+            ARSC_HttpVerb.PUT
     };
 
-    private static final Set<ARSC_HttpVerb> METHODS_WITH_BODY_SET = new Set<ARSC_HttpVerb>{
-            ARSC_HttpVerb.POST, ARSC_HttpVerb.PUT, ARSC_HttpVerb.PATCH
+    @TestVisible
+    private static final Map<String, String> DEFAULT_HEADER_VALUE_BY_KEY_MAP = new Map<String, String>{
+            'Content-Type' => 'application/json',
+            'Accept' => 'application/json'
     };
 
     @TestVisible
@@ -74,7 +74,7 @@ public with sharing class ARSC_RestRequest {
         get {
             return (headers != null)
                     ? this.headers
-                    : defaultHeaderValueByKeyMap;
+                    : DEFAULT_HEADER_VALUE_BY_KEY_MAP;
         }
         private set;
     }
@@ -83,6 +83,7 @@ public with sharing class ARSC_RestRequest {
         return this;
     }
 
+    private HttpRequest httpRequest = new HttpRequest();
     public HttpRequest toHttpRequest() {
         return this.setEndPoint()
                 .setRequestHeaders()
