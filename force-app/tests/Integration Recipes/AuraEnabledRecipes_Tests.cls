@@ -1,9 +1,9 @@
-@isTest
+@IsTest
 private inherited sharing class AuraEnabledRecipes_Tests {
-    @isTest
+    @IsTest
     static void testUpdateAccountNamePositive() {
         Account acct = (Account) TestFactory.createSObject(
-            new Account(name = 'Original Name'),
+            new Account(Name = 'Original Name'),
             true
         );
 
@@ -19,10 +19,10 @@ private inherited sharing class AuraEnabledRecipes_Tests {
         );
     }
 
-    @isTest
+    @IsTest
     static void testUpdateAccountNameNegativeInvalidName() {
         Account acct = (Account) TestFactory.createSObject(
-            new Account(name = 'Original'),
+            new Account(Name = 'Original'),
             true
         );
 
@@ -46,10 +46,10 @@ private inherited sharing class AuraEnabledRecipes_Tests {
         );
     }
 
-    @isTest
+    @IsTest
     static void testUpdateAccountNameNegativeMinAccessProfile() {
         Account acct = (Account) TestFactory.createSObject(
-            new Account(name = 'Original Name'),
+            new Account(Name = 'Original Name'),
             true
         );
         Boolean didCatchTheRightException = false;
@@ -73,7 +73,7 @@ private inherited sharing class AuraEnabledRecipes_Tests {
         );
     }
 
-    @isTest
+    @IsTest
     static void testGetFieldValue() {
         System.assert(
             AuraEnabledRecipes.getFieldValue().equalsIgnoreCase('hello world'),

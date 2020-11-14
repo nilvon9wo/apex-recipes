@@ -31,6 +31,14 @@ public with sharing virtual class DAO_AccountSelector extends XAP_DAO_SOQL_SObje
         };
     }
 
+    public virtual List<Account> secureSelectById(Set<Id> idSet) {
+        return this.createQueryFactory()
+                .setEnforceFLS()
+                .setSecurityEnforced()
+                .setCondition(new XAP_DAO_SOQL_WHERE_InIdSetClause(idSet))
+                .query();
+    }
+
     public virtual List<Account> selectAll() {
         return this.createQueryFactory()
                 .query();
