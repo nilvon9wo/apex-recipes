@@ -1,38 +1,32 @@
-@isTest
+@IsTest
 @SuppressWarnings('PMD.CyclomaticComplexity')
-/**
- * @description There is a @suppressWarnings annotation on this class for Cyclomatic Complexity.
- * You can read more about what Cyclomatic Complexity is here: https://en.wikipedia.org/wiki/Cyclomatic_complexity
- * Classes with a high Cyclomatic Compelexity score are harder to test, and more prone to
- * bugs because of the sheer number of branching logic paths available. This class' is made
- * up of a number of small methods, each of whom does Crud/FLS Checks and therefor every method
- * includes at least one branching path. Because this class is designed to teach safe DML
- * I've decided to mute this warning. Other classes in this Repo do not have such a high
- * Cyclomatic Complexity, because the ratio of logic to if/else statments is much lower.
- *
- */
 public class DMLRecipes_Tests {
-    @isTest
+    private static final User TEST_USER = TEST_DummyUserFactoryOutlet.TEST_ADMIN_USER;
+    private static final DMLRecipes DML_RECIPES_UNDER_TEST = new DMLRecipes();
+    @IsTest
     static void testInsertPositive() {
         Test.startTest();
-        DMLRecipes.insertAccountViaInsertKeyword('mumbledore');
+        System.runAs(TEST_USER) {
+            DML_RECIPES_UNDER_TEST.insertAccountViaInsertKeyword('mumbledore');
+        }
         Test.stopTest();
 
-        List<Account> acct = [SELECT ID FROM Account WHERE name = 'mumbledore'];
+        List<Account> acct = [SELECT Id FROM Account WHERE Name = 'mumbledore'];
         System.assertEquals(
-            1,
-            acct.size(),
-            'We should have found the account we just created'
+                1,
+                acct.size(),
+                'We should have found the account we just created'
         );
     }
 
-    @isTest
+    @IsTest
     static void testInsertNegative() {
         Test.startTest();
         Boolean didCatchTheRightException = false;
         try {
-            DMLRecipes.insertAccountViaInsertKeyword('');
-        } catch (DMLRecipes.CustomDmlException theException) {
+            DML_RECIPES_UNDER_TEST.insertAccountViaInsertKeyword('');
+        }
+        catch (CustomDMLException theException) {
             if (theException.getMessage().contains('Failed')) {
                 didCatchTheRightException = true;
             }
@@ -40,40 +34,41 @@ public class DMLRecipes_Tests {
         Test.stopTest();
 
         System.assert(
-            didCatchTheRightException,
-            'Should have caught the exception'
+                didCatchTheRightException,
+                'Should have caught the exception'
         );
     }
 
-    @isTest
+    @IsTest
     static void testDatabaseMethodInsertPositive() {
         Test.startTest();
         DMLRecipes.insertAccountsViaDatabaseMethod('Texas', false);
         Test.stopTest();
 
         List<Account> acct = [
-            SELECT ID, Name
-            FROM Account
-            WHERE name = 'Texas'
+                SELECT Id, Name
+                FROM Account
+                WHERE Name = 'Texas'
         ];
 
         System.assert(
-            acct.size() == 1,
-            'Expected the list of accounts to have a single account'
+                acct.size() == 1,
+                'Expected the list of accounts to have a single account'
         );
         System.assert(
-            acct[0].name == 'Texas',
-            'Expected the account name to be Texas'
+                acct[0].Name == 'Texas',
+                'Expected the account name to be Texas'
         );
     }
 
-    @isTest
+    @IsTest
     static void testDatabaseMethodInsertNegative() {
         Test.startTest();
         Boolean didCatchTheRightException = false;
         try {
             DMLRecipes.insertAccountsViaDatabaseMethod('Texas', true);
-        } catch (DMLRecipes.CustomDmlException theException) {
+        }
+        catch (CustomDMLException theException) {
             if (theException.getMessage().contains('Failed')) {
                 didCatchTheRightException = true;
             }
@@ -81,12 +76,12 @@ public class DMLRecipes_Tests {
         Test.stopTest();
 
         System.assert(
-            didCatchTheRightException,
-            'Should have caught the exception'
+                didCatchTheRightException,
+                'Should have caught the exception'
         );
     }
 
-    @isTest
+    @IsTest
     static void testUpsertAccountViaUpsertKeywordTestPositive() {
         Account acct = TestDataHelpers.genAccountWithOptions(true, 'IR');
 
@@ -95,27 +90,27 @@ public class DMLRecipes_Tests {
         Test.stopTest();
 
         List<Account> resultingAccounts = [
-            SELECT Name
-            FROM Account
-            WHERE name = :acct.Name
+                SELECT Name
+                FROM Account
+                WHERE Name = :acct.Name
         ];
         System.assertEquals(
-            1,
-            resultingAccounts.size(),
-            'We expect to find a single account with that name'
+                1,
+                resultingAccounts.size(),
+                'We expect to find a single account with that name'
         );
     }
 
-    @isTest
+    @IsTest
     static void testUpsertAccountViaUpsertKeywordPositive() {
         Account acct = TestDataHelpers.genAccountWithOptions(true, 'IR');
         insert acct; // Gives us the ID property.
-        List<Account> accounts = [SELECT Name FROM Account WHERE id = :acct.Id];
+        List<Account> accounts = [SELECT Name FROM Account WHERE Id = :acct.Id];
 
         System.assertEquals(
-            1,
-            accounts.size(),
-            'We expect to find one account'
+                1,
+                accounts.size(),
+                'We expect to find one account'
         );
 
         Test.startTest();
@@ -126,13 +121,13 @@ public class DMLRecipes_Tests {
         List<Account> testAccounts = [SELECT Name FROM Account];
 
         System.assertEquals(
-            1,
-            testAccounts.size(),
-            'There should be only one account'
+                1,
+                testAccounts.size(),
+                'There should be only one account'
         );
     }
 
-    @isTest
+    @IsTest
     static void testUpsertAccountViaUpsertKeywordNegative() {
         Account acct = TestDataHelpers.genAccountWithOptions(true, 'Ca');
         // Note: this is an intentionally invalid ID, used to trigger the failure case.
@@ -141,18 +136,19 @@ public class DMLRecipes_Tests {
         Boolean didCatchTheRightException = false;
         try {
             DMLRecipes.upsertAccountViaUpsertKeyword(acct);
-        } catch (DmlException dmlexception) {
+        }
+        catch (DmlException dmlexception) {
             if (dmlexception.getDmlMessage(0) == 'invalid cross reference id') {
                 didCatchTheRightException = true;
             }
         }
         System.assert(
-            didCatchTheRightException,
-            'Expected to get an Invalid Cross Reference Id exception'
+                didCatchTheRightException,
+                'Expected to get an Invalid Cross Reference Id exception'
         );
     }
 
-    @isTest
+    @IsTest
     static void testUpsertAccountViaDatabaseMethodNegative() {
         Account badAcct = TestDataHelpers.genAccountWithOptions(true, 'Ca');
         // Note: this is an intentionally invalid ID, used to trigger the failure case.
@@ -161,35 +157,36 @@ public class DMLRecipes_Tests {
         Boolean didCatchTheRightException = false;
         try {
             result = DMLRecipes.upsertAccountViaDatabaseMethod(badAcct, true);
-        } catch (DMLException dmlexception) {
+        }
+        catch (DmlException dmlexception) {
             if (dmlexception.getDmlMessage(0) == 'invalid cross reference id') {
                 didCatchTheRightException = true;
             }
         }
         System.assert(
-            didCatchTheRightException,
-            'Expected to get an Invalid Cross Reference Id exception'
+                didCatchTheRightException,
+                'Expected to get an Invalid Cross Reference Id exception'
         );
     }
 
-    @isTest
+    @IsTest
     static void testUpdateAcccountViaKeywordPositive() {
         Account acct = TestDataHelpers.genAccountWithOptions(true, 'It');
         insert acct;
 
         Test.startTest();
         acct.Name += ' + Updated';
-        DMLRecipes.updateAcccountViaKeyword(new List<Account>{ acct });
+        DMLRecipes.updateAcccountViaKeyword(new List<Account>{acct});
         Test.stopTest();
 
-        String checkAcct = [SELECT name FROM Account WHERE id = :acct.Id].Name;
+        String checkAcct = [SELECT Name FROM Account WHERE Id = :acct.Id].Name;
         System.assert(
-            checkAcct.containsIgnoreCase('updated'),
-            'Expected to find the keyword updated in the account name'
+                checkAcct.containsIgnoreCase('updated'),
+                'Expected to find the keyword updated in the account name'
         );
     }
 
-    @isTest
+    @IsTest
     static void testUpdateAcccountViaKeywordNegative() {
         Account acct = TestDataHelpers.genAccountWithOptions(true, 'It');
         insert acct;
@@ -198,8 +195,9 @@ public class DMLRecipes_Tests {
         try {
             // Note: this is an intentionally invalid id used for triggering an error state
             acct.Id = '0019A000008GTAYQA4'; //NOPMD
-            DMLRecipes.updateAcccountViaKeyword(new List<Account>{ acct });
-        } catch (DMLRecipes.CustomDmlException theException) {
+            DMLRecipes.updateAcccountViaKeyword(new List<Account>{acct});
+        }
+        catch (CustomDMLException theException) {
             if (theException.getMessage().contains('Failed')) {
                 didCatchTheRightException = true;
             }
@@ -207,29 +205,29 @@ public class DMLRecipes_Tests {
         Test.stopTest();
 
         System.assert(
-            didCatchTheRightException,
-            'Expected to receive a CustomDMLException with message Failed'
+                didCatchTheRightException,
+                'Expected to receive a CustomDMLException with message Failed'
         );
     }
 
-    @isTest
+    @IsTest
     static void testUpdateAcccountViaDatabaseMethodPositive() {
         Account acct = TestDataHelpers.genAccountWithOptions(true, 'It');
         insert acct;
 
         Test.startTest();
         acct.Name += ' + Updated';
-        DMLRecipes.updateAccountViaDatabaseMethod(new List<Account>{ acct });
+        DMLRecipes.updateAccountViaDatabaseMethod(new List<Account>{acct});
         Test.stopTest();
 
-        String checkAcct = [SELECT name FROM Account WHERE id = :acct.Id].Name;
+        String checkAcct = [SELECT Name FROM Account WHERE Id = :acct.Id].Name;
         System.assert(
-            checkAcct.containsIgnoreCase('updated'),
-            'Expected to find the keyword updated in the account name'
+                checkAcct.containsIgnoreCase('updated'),
+                'Expected to find the keyword updated in the account name'
         );
     }
 
-    @isTest
+    @IsTest
     static void testUpdateAcccountViaDatabaseMethodNegative() {
         Account acct = TestDataHelpers.genAccountWithOptions(true, 'It');
         insert acct;
@@ -239,9 +237,10 @@ public class DMLRecipes_Tests {
             // Note: This is an intentionally invalid ID used for triggering an error state
             acct.Id = '0019A000008GTAYQA4'; //NOPMD
             DMLRecipes.updateAccountViaDatabaseMethod(
-                new List<Account>{ acct }
+                    new List<Account>{acct}
             );
-        } catch (DMLRecipes.CustomDmlException theException) {
+        }
+        catch (CustomDMLException theException) {
             if (theException.getMessage().contains('Failed')) {
                 didCatchTheRightException = true;
             }
@@ -249,36 +248,37 @@ public class DMLRecipes_Tests {
         Test.stopTest();
 
         System.assert(
-            didCatchTheRightException,
-            'Expected to recieve a CustomDMLException with message Failed'
+                didCatchTheRightException,
+                'Expected to recieve a CustomDMLException with message Failed'
         );
     }
 
-    @isTest
+    @IsTest
     static void testDeleteAccountViaKeywordPositive() {
         Account acct = TestDataHelpers.genAccountWithOptions(true, 'It');
         insert acct;
 
         Test.startTest();
-        DMLRecipes.deleteAccountViaKeyword(new List<Account>{ acct });
+        DMLRecipes.deleteAccountViaKeyword(new List<Account>{acct});
         Test.stopTest();
         try {
-            String checkAcct = [SELECT name FROM Account WHERE id = :acct.Id]
-            .Name; //NOPMD
-        } catch (QueryException qe) {
+            String checkAcct = [SELECT Name FROM Account WHERE Id = :acct.Id]
+                    .Name; //NOPMD
+        }
+        catch (QueryException qe) {
             if (
-                qe.getMessage()
-                    .containsIgnoreCase('list has no rows for assignment')
-            ) {
+                    qe.getMessage()
+                            .containsIgnoreCase('list has no rows for assignment')
+                    ) {
                 System.assert(
-                    true,
-                    'Expected to get query exception as record was deleted'
+                        true,
+                        'Expected to get query exception as record was deleted'
                 );
             }
         }
     }
 
-    @isTest
+    @IsTest
     static void testDeleteAccountViaKeywordNegative() {
         Account acct = TestDataHelpers.genAccountWithOptions(true, 'It');
         insert acct;
@@ -286,43 +286,45 @@ public class DMLRecipes_Tests {
 
         Test.startTest();
         try {
-            DMLRecipes.deleteAccountViaKeyword(new List<Account>{ acct });
-        } catch (DMLRecipes.CustomDmlException cde) {
+            DMLRecipes.deleteAccountViaKeyword(new List<Account>{acct});
+        }
+        catch (CustomDMLException cde) {
             if (cde.getMessage().containsIgnoreCase('failed')) {
                 System.assert(
-                    true,
-                    'Expected to get query exception as record was deleted'
+                        true,
+                        'Expected to get query exception as record was deleted'
                 );
             }
         }
         Test.stopTest();
     }
 
-    @isTest
+    @IsTest
     static void testDeleteAccountViaDatabaseMethodPositive() {
         Account acct = TestDataHelpers.genAccountWithOptions(true, 'It');
         insert acct;
 
         Test.startTest();
-        DMLRecipes.deleteAccountViaDatabaseMethod(new List<Account>{ acct });
+        DMLRecipes.deleteAccountViaDatabaseMethod(new List<Account>{acct});
         Test.stopTest();
         try {
-            String checkAcct = [SELECT name FROM Account WHERE id = :acct.Id]
-            .Name; //NOPMD
-        } catch (QueryException qe) {
+            String checkAcct = [SELECT Name FROM Account WHERE Id = :acct.Id]
+                    .Name; //NOPMD
+        }
+        catch (QueryException qe) {
             if (
-                qe.getMessage()
-                    .containsIgnoreCase('list has no rows for assignment')
-            ) {
+                    qe.getMessage()
+                            .containsIgnoreCase('list has no rows for assignment')
+                    ) {
                 System.assert(
-                    true,
-                    'Expected to get query exception as record was deleted'
+                        true,
+                        'Expected to get query exception as record was deleted'
                 );
             }
         }
     }
 
-    @isTest
+    @IsTest
     static void testDeleteAccountViaDatabaseMethodNegative() {
         Account acct = TestDataHelpers.genAccountWithOptions(true, 'It');
         insert acct;
@@ -331,78 +333,80 @@ public class DMLRecipes_Tests {
         Test.startTest();
         try {
             DMLRecipes.deleteAccountViaDatabaseMethod(
-                new List<Account>{ acct }
+                    new List<Account>{acct}
             );
-        } catch (DMLRecipes.CustomDmlException cde) {
+        }
+        catch (CustomDMLException cde) {
             if (cde.getMessage().containsIgnoreCase('failed')) {
                 System.assert(
-                    true,
-                    'Expected to get query exception as record was deleted'
+                        true,
+                        'Expected to get query exception as record was deleted'
                 );
             }
         }
         Test.stopTest();
     }
 
-    @isTest
+    @IsTest
     static void testUndeleteAccountViaKeywordPositive() {
         Account acct = TestDataHelpers.genAccountWithOptions(true, 'IR');
         insert acct;
         delete acct;
         Test.startTest();
-        DMLRecipes.undeleteAccountViaKeyword(new List<Account>{ acct });
+        DMLRecipes.undeleteAccountViaKeyword(new List<Account>{acct});
         Test.stopTest();
         List<Account> checkAcct = [
-            SELECT name
-            FROM Account
-            WHERE id = :acct.Id
+                SELECT Name
+                FROM Account
+                WHERE Id = :acct.Id
         ];
         System.assert(
-            checkAcct.size() == 1,
-            'Expected to find a single account'
+                checkAcct.size() == 1,
+                'Expected to find a single account'
         );
     }
 
-    @isTest
+    @IsTest
     static void testUndeleteAccountViaKeywordNegative() {
         Account acct = TestDataHelpers.genAccountWithOptions(true, 'IR');
         insert acct;
         Boolean didCatchTheRightException = false;
         Test.startTest();
         try {
-            DMLRecipes.undeleteAccountViaKeyword(new List<Account>{ acct });
-        } catch (DMLRecipes.CustomDmlException theException) {
+            DMLRecipes.undeleteAccountViaKeyword(new List<Account>{acct});
+        }
+        catch (CustomDMLException theException) {
             if (theException.getMessage().contains('Failed')) {
                 didCatchTheRightException = true;
             }
         }
         Test.stopTest();
         System.assert(
-            didCatchTheRightException,
-            'Expected to find a single account'
+                didCatchTheRightException,
+                'Expected to find a single account'
         );
     }
 
-    @isTest
+    @IsTest
     static void testUndeleteAccountViaDatabaseMethodPositive() {
         Account acct = TestDataHelpers.genAccountWithOptions(true, 'IR');
         insert acct;
         delete acct;
         Test.startTest();
-        DMLRecipes.undeleteAccountViaDatabaseMethod(new List<Account>{ acct });
+        DMLRecipes.undeleteAccountViaDatabaseMethod(new List<Account>{acct});
         Test.stopTest();
         List<Account> checkAcct = [
-            SELECT name
-            FROM Account
-            WHERE id = :acct.Id
+                SELECT Name
+                FROM Account
+                WHERE Id = :acct.Id
         ];
         System.assert(
-            checkAcct.size() == 1,
-            'Expected to find a single account'
+                checkAcct.size() == 1,
+                'Expected to find a single account'
         );
     }
 
-    @isTest
+    @IsTest
     static void testUndeleteAccountViaDatabaseMethodNegative() {
         Account acct = TestDataHelpers.genAccountWithOptions(true, 'IR');
         insert acct;
@@ -410,17 +414,18 @@ public class DMLRecipes_Tests {
         Test.startTest();
         try {
             DMLRecipes.undeleteAccountViaDatabaseMethod(
-                new List<Account>{ acct }
+                    new List<Account>{acct}
             );
-        } catch (DMLRecipes.CustomDmlException theException) {
+        }
+        catch (CustomDMLException theException) {
             if (theException.getMessage().contains('Failed')) {
                 didCatchTheRightException = true;
             }
         }
         Test.stopTest();
         System.assert(
-            didCatchTheRightException,
-            'Expected to find a single account'
+                didCatchTheRightException,
+                'Expected to find a single account'
         );
     }
 }

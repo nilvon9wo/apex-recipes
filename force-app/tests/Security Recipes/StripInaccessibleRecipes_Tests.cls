@@ -220,7 +220,7 @@ private inherited sharing class StripInaccessibleRecipes_Tests {
                     assertionChecks.put(acct.Id, true);
                 }
             } catch (Exception e) {
-                System.debug(LoggingLevel.INFO, '###### ' + e.getMessage());
+                System.debug(LoggingLevel.ERROR, '!!!!!! ' + e.getMessage());
             }
         }
         System.assertNotEquals(
