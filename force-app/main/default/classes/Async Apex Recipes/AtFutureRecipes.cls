@@ -15,20 +15,16 @@ public inherited sharing class AtFutureRecipes {
     }
 
     private AtFutureRecipes doCallout(String url) {
-        HttpRequest request = this.createRequest(url);
-        HttpResponse response = new Http().send(request);
+        HttpRequest request = new ARSC_RestRequest()
+            .setEndPoint('https://' + url)
+            .toHttpRequest();
+        HttpResponse response = new Http()
+                .send(request);
 
         if (response.getStatusCode() != 200) {
             this.tripCircuitBreaker();
         }
         return this;
-    }
-
-    private HttpRequest createRequest(String url) {
-        HttpRequest request = new HttpRequest();
-        request.setEndpoint('https://' + url);
-        request.setMethod('GET');
-        return request;
     }
 
     private AtFutureRecipes tripCircuitBreaker() {

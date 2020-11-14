@@ -12,6 +12,13 @@ public with sharing class ARSC_RestRequest {
     };
 
     @TestVisible
+    public String endPoint { get; private set; }
+    public ARSC_RestRequest setEndPoint(String value) {
+        this.endPoint = value;
+        return this;
+    }
+
+    @TestVisible
     public String namedCredential { get; private set; }
     public ARSC_RestRequest setNamedCredential(String value) {
         this.namedCredential = value;
@@ -93,18 +100,27 @@ public with sharing class ARSC_RestRequest {
     }
 
     private ARSC_RestRequest setEndPoint() {
+        if (!String.isBlank(this.endPoint) && !String.isBlank(this.namedCredential)) {
+            throw new ARSC_RestRequestException('Ambiguous request: both endPoint and namedCredential have been set.');
+        }
+
         String encodedQuery = EncodingUtil.urlEncode(this.query, 'UTF-8');
         if (this.method == ARSC_HttpVerb.PATCH) {
             encodedQuery += '?_HttpMethod=PATCH';
         }
+        String endPoint = !String.isBlank(this.endPoint)
+                ? this.endPoint
+                : this.createEndPoint(encodedQuery);
 
-        this.httpRequest.setEndpoint(
-                'callout:' +
-                        this.namedCredential +
-                        this.ensureStringEndsInSlash(this.path) +
-                        encodedQuery
-        );
+        this.httpRequest.setEndpoint(endPoint);
         return this;
+    }
+
+    private String createEndPoint(String encodedQuery) {
+        return 'callout:' +
+                this.namedCredential +
+                this.ensureStringEndsInSlash(this.path) +
+                encodedQuery;
     }
 
     private ARSC_RestRequest setRequestHeaders() {
