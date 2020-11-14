@@ -1,4 +1,4 @@
-public with sharing virtual class DAO_AccountSelector {
+public with sharing virtual class DAO_AccountSelector extends XAP_DAO_SOQL_SObjectSelectorAbs {
     protected DAO_AccountSelector() {
     }
 
@@ -10,27 +10,31 @@ public with sharing virtual class DAO_AccountSelector {
         return instance;
     }
 
+    public SObjectType getSObjectType() {
+        return Account.SObjectType;
+    }
+
+    public List<SObjectField> getSObjectFieldList() {
+        return new List<SObjectField>{
+                Account.Description,
+                Account.Id,
+                Account.Name
+        };
+    }
+
     public virtual List<Account> selectAll() {
-        return [
-                SELECT Id, Description, Name
-                FROM Account
-        ];
+        return this.createQueryFactory()
+                .query();
     }
 
     public virtual List<Account> selectSome(Integer quantity) {
-        return [
-                SELECT Id, Description, Name
-                FROM Account
-                LIMIT :quantity
-        ];
+        return this.createQueryFactory()
+                .setLimit(quantity)
+                .query();
     }
 
     public virtual Database.QueryLocator getQueryLocatorForAll() {
-        return Database.getQueryLocator([
-                SELECT Id, Description, Name
-                FROM Account
-        ]);
+        return this.createQueryFactory()
+                .getQueryLocator();
     }
-
-
 }
