@@ -1,224 +1,83 @@
-/**
- * @description Demonstrates how to make various types of SOQL calls
- * including multi-object queries, and aggregate queries
- * @group Data Recipes
- * @see CanTheUser
- */
 public inherited sharing class SOQLRecipes {
-    /**
-     * @description Demonstrates the proper way to query accounts with SOQL
-     *   keeping FLS and CRUD in account.
-     *
-     * @return list<Account>
-     * @example
-     * List<Account> results = SOQLRecipes.querySingleObject();
-     * System.debug(results);
-     **/
-    public static list<Account> getRecords() {
-        List<Account> accounts = new List<Account>();
-        accounts = [
-            SELECT Name, ShippingStreet, ShippingCity
-            FROM Account
-            WITH SECURITY_ENFORCED
-        ];
-        return accounts;
+    private DAO_AccountSelector accountSelector;
+    private DAO_ContactSelector contactSelector;
+    private DAO_JunctionSelector junctionSelector;
+    private DAO_OpportunitySelector opportunitySelector;
+
+    private SOQLRecipes(
+            DAO_AccountSelector accountSelector,
+            DAO_ContactSelector contactSelector,
+            DAO_JunctionSelector junctionSelector,
+            DAO_OpportunitySelector opportunitySelector
+    ) {
+        this.accountSelector = accountSelector;
+        this.contactSelector = contactSelector;
+        this.junctionSelector = junctionSelector;
+        this.opportunitySelector = opportunitySelector;
     }
 
-    /**
-     * @description Demonstrates how to loop over a SOQL query
-     *
-     * @return integer
-     * @example
-     * System.debug(SOQLRecipes.getLargeNumberOfRecords());
-     **/
-    public static integer getLargeNumberOfRecords() {
-        Integer count = 0;
-        /**
-         * You'll see this pattern, called a SQOL for loop used
-         * whenever you're iterating over a massive number of rows.
-         * Doing a SOQL for loop like this helps you avoid hitting
-         * Heap limits.
-         */
-
-        for (Account acct : [SELECT Name FROM Account WITH SECURITY_ENFORCED]) {
-            count++;
-        }
-        return count;
+    public SOQLRecipes() {
+        this(
+                DAO_AccountSelector.getInstance(),
+                DAO_ContactSelector.getInstance(),
+                DAO_JunctionSelector.getInstance(),
+                DAO_OpportunitySelector.getInstance()
+        );
     }
 
-    /**
-     * @description Demonstrates how to use a WHERE clause in a SOQL query
-     *
-     * @return List<Account>
-     * @example
-     * System.debug(SOQLRecipes.getRecordsByFieldValue());
-     **/
-    public static List<Account> getRecordsByFieldValue() {
-        return [
-            SELECT Name
-            FROM Account
-            WHERE ShippingCountry = 'UK'
-            WITH SECURITY_ENFORCED
-        ];
+    public List<Account> getRecords() {
+        return this.accountSelector.secureSelectAll();
     }
 
-    /**
-     * @description Demonstrates how to use a complex WHERE clause in a SOQL
-     * query
-     * @return List<Account>
-     * @example
-     * System.debug(SOQLRecipes.getRecordsByMultipleFieldValues());
-     **/
-    public static List<Account> getRecordsByMultipleFieldValues() {
-        return [
-            SELECT Name
-            FROM Account
-            WHERE
-                ShippingCountry = 'US'
-                AND ShippingState = 'IN'
-                AND (Industry = 'Fast Food - made whole'
-                OR Industry = 'Slow Food - Made quickly')
-            WITH SECURITY_ENFORCED
-        ];
+    public Integer getLargeNumberOfRecords() {
+        AccountSecureCounter counter = new AccountSecureCounter();
+        this.accountSelector.doSecureForAll(counter);
+        return counter.count;
     }
 
-    /**
-     * @description Demonstrates how to use the LIMIT clause in a SOQL statement
-     * @return List<Account>
-     * @example
-     * System.debug(SOQLRecipes.getSpecificNumberOfRecords());
-     **/
-    public static List<Account> getSpecificNumberOfRecords() {
-        //LIMIT clause
-        return [
-            SELECT name
-            FROM Account
-            WITH SECURITY_ENFORCED
-            ORDER BY Industry DESC
-            LIMIT 10
-        ];
+    public List<Account> getRecordsByFieldValue() {
+        return this.accountSelector.secureSelectByShippingCountry(new Set<String>{'UK'});
     }
 
-    /**
-     * @description Demonstrates how to use a bound variable to define the LIMIT
-     * @param wantedNumberOfRows the number of rows desired
-     *
-     * @return List<Account>
-     * @example
-     * System.debug(SOQLRecipes.getFirstXRecords(5));
-     **/
-    public static List<Account> getFirstXRecords(Integer wantedNumberOfRows) {
-        return [
-            SELECT name
-            FROM Account
-            WITH SECURITY_ENFORCED
-            ORDER BY Industry DESC
-            LIMIT :wantedNumberOfRows
-        ];
+    public List<Account> getRecordsByMultipleFieldValues() {
+        return this.accountSelector.secureSelectWithCondition(new XAP_DAO_SOQL_WHERE_AndClause(new List<XAP_DAO_SOQL_WHERE_ClauseIntf>{
+                new XAP_DAO_SOQL_WHERE_IsStringClause(Account.ShippingCountry, 'US'),
+                new XAP_DAO_SOQL_WHERE_IsStringClause(Account.ShippingState, 'IN'),
+                new XAP_DAO_SOQL_WHERE_InStringSetClause(Account.Industry, new Set<String>{
+                        'Fast Food - made whole', 'Slow Food - Made quickly'
+                })
+        }));
     }
 
-    /**
-     * @description Demonstrates how to use a bound variable in a WHERE clause
-     * @param state String representing a US State code (AK, KS, etc.)
-     * @return List<Account>
-     * @example
-     * System.debug(SOQLRecipes.getAccountRecordsInState('ks'));
-     **/
-    public static List<Account> getAccountRecordsInState(String state) {
-        return [
-            SELECT Name
-            FROM Account
-            WHERE ShippingState = :state
-            WITH SECURITY_ENFORCED
-        ];
+    public List<Account> getSpecificNumberOfRecords() {
+        return this.accountSelector.secureSelectAndOrderDescendingBy(10, Account.Industry);
     }
 
-    /**
-     * @description Demonstrates how to get a limited number of results with a
-     * given offset; Ie: get the second set of 10 records.
-     *
-     * @return List<Account>
-     * @example
-     * System.debug('SOQLRecipes.getSecond10AccountRecords()');
-     **/
-    public static List<Account> getSecond10AccountRecords() {
-        return [
-            SELECT id
-            FROM Account
-            WITH SECURITY_ENFORCED
-            ORDER BY Industry DESC
-            LIMIT 10
-            OFFSET 10
-        ];
+    public List<Account> getFirstXRecords(Integer wantedNumberOfRows) {
+        return this.accountSelector.secureSelectAndOrderDescendingBy(wantedNumberOfRows, Account.Industry);
     }
 
-    /**
-     * @description Demonstrates how to query an object, as well as it's related
-     * child objects
-     *
-     * @return List<Account>
-     * @example
-     * System.debug(SOQLRecipes.getRecordsWithRelatedRecords());
-     **/
-    public static List<Account> getRecordsWithRelatedRecords() {
-        return [
-            SELECT Name, (SELECT Name, AccountId FROM Contacts)
-            FROM Account
-            WITH SECURITY_ENFORCED
-        ];
+    public List<Account> getAccountRecordsInState(String state) {
+        return this.accountSelector.secureSelectByShippingState(new Set<String>{state});
     }
 
-    /**
-     * @description Demonstrates how to query fields from a parent object
-     * through the relationship field
-     *
-     * @return List<Contact>
-     * @example
-     * System.debug(SOQLRecipes.getParentRecordDetailsFromChildRecord());
-     **/
-    public static List<Contact> getParentRecordDetailsFromChildRecord() {
-        return [
-            SELECT Id, Name, Email, account.Name, account.ShippingState
-            FROM Contact
-            WHERE account.ShippingState = 'KS'
-            WITH SECURITY_ENFORCED
-        ];
+    public List<Account> getSecond10AccountRecords() {
+        return this.accountSelector.secureSelectWithOffsetAndOrderDescendingBy(10, 10, Account.Industry);
     }
 
-    /**
-     * @description Demonstrates how to write a query that pulls information
-     * from two parent objects through a junction object
-     *
-     * @return List<Junction__c>
-     * @example
-     * System.debug(SOQLRecipes.getDetailsFromBothParentRecords());
-     **/
-    public static List<Junction__c> getDetailsFromBothParentRecords() {
-        return [
-            SELECT Id, parent1__r.Name, parent2__r.Name
-            FROM Junction__c
-            WITH SECURITY_ENFORCED
-        ];
+    public List<Account> getRecordsWithRelatedRecords() {
+        return this.accountSelector.secureSelectAllWithContacts();
     }
 
-    /**
-     * @description demonstrates how to use aggregate methods, like Sum() or
-     * Count() in a SOQL query. This example generates the sum of opportunities
-     * associated with a specified Account
-     *
-     * @param accountId an AccountId
-     * @return Double
-     * @example
-     * Id accountId = [SELECT id FROM Account LIMIT 1].Id;
-     * System.debug(SOQLRecipes.getSumOfOpportunityRecords(accountId));
-     **/
-    public static Double getSumOfOpportunityRecords(Id accountId) {
-        List<AggregateResult> groupedResults = [
-            SELECT SUM(Amount) total
-            FROM Opportunity
-            WHERE accountId = :accountId
-            WITH SECURITY_ENFORCED
-        ];
-        return (double) groupedResults[0].get('total');
+    public List<Contact> getParentRecordDetailsFromChildRecord() {
+        return this.contactSelector.secureSelectByShippingStateWithParentAccount(new Set<String>{'KS'});
+    }
+
+    public List<Junction__c> getDetailsFromBothParentRecords() {
+        return this.junctionSelector.secureSelectWithParents();
+    }
+
+    public Double getSumOfOpportunityRecords(Id accountId) {
+        return this.opportunitySelector.sumAmountForAccount(accountId);
     }
 }

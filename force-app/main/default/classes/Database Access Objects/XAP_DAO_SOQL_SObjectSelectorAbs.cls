@@ -265,4 +265,18 @@ public abstract with sharing class XAP_DAO_SOQL_SObjectSelectorAbs implements XA
 		}
 		return queryFactory;
 	}
+
+	public XAP_DAO_SOQL_SObjectSelectorAbs with(
+			XAP_DAO_SOQL_QueryFactory queryFactory,
+			XAP_DAO_SOQL_SObjectConsumerIntf consumer
+	) {
+		Database.QueryLocatorIterator queryLocatorIterator = queryFactory.getQueryLocator()
+			.iterator();
+
+		while(queryLocatorIterator.hasNext()) {
+			consumer.doWith(queryLocatorIterator.next());
+		}
+
+		return this;
+	}
 }

@@ -1,19 +1,19 @@
-@isTest
+@IsTest
 private class SOQLRecipes_Tests {
-    @isTest
+    private static final SOQLRecipes RECIPES_UNDER_TEST = new SOQLRecipes();
+
+    @IsTest
     static void testPermSetGrantsAccessToAccountNamePositve() {
-        // create user account
         User testUser = TestFactory.createTestUser(true, 'Standard User');
-        // assign the permission set
         Id permSetId = [
             SELECT Id
             FROM PermissionSet
-            WHERE name = 'Proving_With_Security_Enforced_works'
+            WHERE Name = 'Proving_With_Security_Enforced_works'
             LIMIT 1
         ]
         .Id;
         PermissionSetAssignment psa = new PermissionSetAssignment(
-            PermissionSetId = permsetId,
+            PermissionSetId = permSetId,
             AssigneeId = testUser.Id
         );
         insert psa;
@@ -21,7 +21,7 @@ private class SOQLRecipes_Tests {
         System.runAs(testUser) {
             TestDataHelpers.createAccount(false, '');
             Test.startTest();
-            List<Account> testAccounts = SOQLRecipes.getRecords();
+            List<Account> testAccounts = RECIPES_UNDER_TEST.getRecords();
             Test.stopTest();
             System.assertEquals(
                 1,
@@ -31,7 +31,7 @@ private class SOQLRecipes_Tests {
         }
     }
 
-    @isTest
+    @IsTest
     static void testProfileDeniesAccountAccessNegative() {
         TestDataHelpers.createAccount(false, '');
         User testUser = TestFactory.createMinAccessUser(true);
@@ -39,12 +39,12 @@ private class SOQLRecipes_Tests {
         System.runAs(testUser) {
             Test.startTest();
             try {
-                SOQLRecipes.getRecords();
-            } catch (QueryException qe) {
+                RECIPES_UNDER_TEST.getRecords();
+            } catch (XAP_DAO_SOQL_DomainSecurityException qe) {
                 if (
                     qe.getMessage()
                         .containsIgnoreCase(
-                            'secure query included inaccessible'
+                            'Permission to access an Account denied.'
                         )
                 ) {
                     didCatchProperException = true;
@@ -54,11 +54,11 @@ private class SOQLRecipes_Tests {
         }
         System.assert(
             didCatchProperException,
-            'Expected to have recieved a secure query exception'
+            'Expected to have received a secure query exception'
         );
     }
 
-    @isTest
+    @IsTest
     static void testSimplegetRecordsPositive() {
         TestDataHelpers.createAccount(false, '');
 
@@ -68,7 +68,7 @@ private class SOQLRecipes_Tests {
             'Expected only one account'
         );
         Test.startTest();
-        List<Account> testAccounts = SOQLRecipes.getRecords();
+        List<Account> testAccounts = RECIPES_UNDER_TEST.getRecords();
         Test.stopTest();
         System.assertEquals(
             testAccounts.size(),
@@ -81,7 +81,7 @@ private class SOQLRecipes_Tests {
         );
     }
 
-    @isTest
+    @IsTest
     static void testCountOfLargeDataVolumesPositive() {
         /**
          * this next line is a feature of the trigger handler in use
@@ -100,7 +100,7 @@ private class SOQLRecipes_Tests {
             'expected to have created 3k records'
         );
         Test.startTest();
-        Integer count = SOQLRecipes.getLargeNumberOfRecords();
+        Integer count = RECIPES_UNDER_TEST.getLargeNumberOfRecords();
         Test.stopTest(); // forces all asych work to complete
         System.assertEquals(count, 3000, 'Expected to find 3k records');
     }
@@ -108,7 +108,7 @@ private class SOQLRecipes_Tests {
     /**
      * @description Executes a positive test case against getRecordsByFieldValue
      */
-    @isTest
+    @IsTest
     static void testQueryWithFilterWithNoMatchingAcctsPositive() {
         TestDataHelpers.createAccount(false, '');
         System.assertEquals(
@@ -117,7 +117,7 @@ private class SOQLRecipes_Tests {
             'Expected only one account'
         );
         Test.startTest();
-        List<Account> testAccounts = SOQLRecipes.getRecordsByFieldValue();
+        List<Account> testAccounts = RECIPES_UNDER_TEST.getRecordsByFieldValue();
         Test.stopTest();
         System.assertEquals(
             testAccounts.size(),
@@ -126,11 +126,11 @@ private class SOQLRecipes_Tests {
         );
     }
 
-    @isTest
+    @IsTest
     static void testQueryWithFilterNegativeNoPermsToAccountNegative() {
         TestDataHelpers.createAccount(true, 'UK');
         System.assertEquals(
-            [SELECT ID FROM ACCOUNT].size(),
+            [SELECT Id FROM Account].size(),
             1,
             'expected only one account'
         );
@@ -140,12 +140,12 @@ private class SOQLRecipes_Tests {
         Boolean didCatchProperException = false;
         System.runAs(minAccess) {
             try {
-                testAccounts = SOQLRecipes.getRecordsByFieldValue();
-            } catch (QueryException qe) {
+                testAccounts = RECIPES_UNDER_TEST.getRecordsByFieldValue();
+            } catch (XAP_DAO_SOQL_DomainSecurityException qe) {
                 if (
                     qe.getMessage()
                         .containsIgnoreCase(
-                            'secure query included inaccessible field'
+                            'Permission to access an Account denied.'
                         )
                 ) {
                     didCatchProperException = true;
@@ -166,7 +166,7 @@ private class SOQLRecipes_Tests {
         );
     }
 
-    @isTest
+    @IsTest
     static void testQueryWithFilterPositive() {
         TestDataHelpers.createAccount(true, 'UK');
         System.assertEquals(
@@ -175,7 +175,7 @@ private class SOQLRecipes_Tests {
             'Expected only one account'
         );
         Test.startTest();
-        List<Account> testAccounts = SOQLRecipes.getRecordsByFieldValue();
+        List<Account> testAccounts = RECIPES_UNDER_TEST.getRecordsByFieldValue();
         Test.stopTest();
         System.assertEquals(
             testAccounts.size(),
@@ -184,7 +184,7 @@ private class SOQLRecipes_Tests {
         );
     }
 
-    @isTest
+    @IsTest
     static void testComplexFilterOmnibusPositive() {
         TestFactory.createSObject(
             new Account(
@@ -206,7 +206,7 @@ private class SOQLRecipes_Tests {
         );
 
         Test.startTest();
-        List<Account> results = SOQLRecipes.getRecordsByMultipleFieldValues();
+        List<Account> results = RECIPES_UNDER_TEST.getRecordsByMultipleFieldValues();
         Test.stopTest();
         System.assertEquals(
             results.size(),
@@ -215,11 +215,11 @@ private class SOQLRecipes_Tests {
         );
     }
 
-    @isTest
+    @IsTest
     static void testComplexFilterOmnibusPositiveNoResults() {
         TestFactory.createSObjectList(new Account(), 5, true);
         Test.startTest();
-        List<Account> results = SOQLRecipes.getRecordsByMultipleFieldValues();
+        List<Account> results = RECIPES_UNDER_TEST.getRecordsByMultipleFieldValues();
         Test.stopTest();
         System.assertEquals(
             0,
@@ -228,7 +228,7 @@ private class SOQLRecipes_Tests {
         );
     }
 
-    @isTest
+    @IsTest
     static void testLimitClauseMoreThan10AccountsPositive() {
         /**
          * Our method is limited to 10, so we need to
@@ -236,10 +236,10 @@ private class SOQLRecipes_Tests {
          * 1. that we have exactly 10 results when there's more than 10 rows in
          * 2. when there's less than 10 rows, we see the exact number of rows.
          */
-        List<Account> toInsert = TestDataHelpers.genXnumberOfAccounts(15);
-        insert toinsert;
+        List<Account> toInsert = TestDataHelpers.genXNumberOfAccounts(15);
+        insert toInsert;
         Test.startTest();
-        List<Account> accts = SOQLRecipes.getSpecificNumberOfRecords();
+        List<Account> accts = RECIPES_UNDER_TEST.getSpecificNumberOfRecords();
         Test.stopTest();
         System.assertEquals(
             10,
@@ -252,31 +252,17 @@ private class SOQLRecipes_Tests {
      * @description Executes a postiive test case against
      * .getSpecifiedNumberOfResults()
      */
-    @isTest
+    @IsTest
     static void testLimitClauseLessThan10AccountsPositive() {
         // our method is limited to 10, so we need to
         // make two assertions.
         // 1. that we have exactly 10 results when there's more than 10 rows in
         // 2. when there's less than 10 rows, we see the exact number of rows.
 
-        List<Account> toInsert = TestDataHelpers.genXnumberOfAccounts(3);
-        insert toinsert;
-        Test.startTest();
-        List<Account> accts = SOQLRecipes.getSpecificNumberOfRecords();
-        Test.stopTest();
-        System.assertEquals(
-            3,
-            accts.size(),
-            'We inserted 3 accounts, expected this method to give us back 3'
-        );
-    }
-
-    @isTest
-    static void testDynamicLimitClausePositive() {
-        List<Account> toInsert = TestDataHelpers.genXnumberOfAccounts(8);
+        List<Account> toInsert = TestDataHelpers.genXNumberOfAccounts(3);
         insert toInsert;
         Test.startTest();
-        List<Account> accts = SOQLRecipes.getFirstXRecords(3);
+        List<Account> accts = RECIPES_UNDER_TEST.getSpecificNumberOfRecords();
         Test.stopTest();
         System.assertEquals(
             3,
@@ -285,17 +271,31 @@ private class SOQLRecipes_Tests {
         );
     }
 
-    @isTest
+    @IsTest
+    static void testDynamicLimitClausePositive() {
+        List<Account> toInsert = TestDataHelpers.genXNumberOfAccounts(8);
+        insert toInsert;
+        Test.startTest();
+        List<Account> accts = RECIPES_UNDER_TEST.getFirstXRecords(3);
+        Test.stopTest();
+        System.assertEquals(
+            3,
+            accts.size(),
+            'We inserted 3 accounts, expected this method to give us back 3'
+        );
+    }
+
+    @IsTest
     static void testGetAccountFilterByStatePositive() {
-        List<Account> toInsert = TestDataHelpers.genXnumberOfAccounts(3);
+        List<Account> toInsert = TestDataHelpers.genXNumberOfAccounts(3);
         for (Account acct : toInsert) {
-            acct.shippingState = 'Tx';
+            acct.ShippingState = 'Tx';
         }
         insert toInsert;
 
         Test.startTest();
-        List<Account> accts = SOQLRecipes.getAccountRecordsInState('Tx');
-        List<Account> acctsInWA = SOQLRecipes.getAccountRecordsInState('Wa');
+        List<Account> accts = RECIPES_UNDER_TEST.getAccountRecordsInState('Tx');
+        List<Account> acctsInWA = RECIPES_UNDER_TEST.getAccountRecordsInState('Wa');
         Test.stopTest();
 
         System.assertEquals(
@@ -311,17 +311,17 @@ private class SOQLRecipes_Tests {
     }
 
     // we get a full 10 results when there's > 20 records
-    @isTest
+    @IsTest
     static void testGetRecords11Through20Positive() {
-        List<Account> toInsert = TestDataHelpers.genXnumberOfAccounts(25);
+        List<Account> toInsert = TestDataHelpers.genXNumberOfAccounts(25);
         insert toInsert;
 
         Test.startTest();
-        List<Account> accts = SOQLRecipes.getSecond10AccountRecords();
+        List<Account> accts = RECIPES_UNDER_TEST.getSecond10AccountRecords();
         Test.stopTest();
 
         List<Account> first10Accounts = [
-            SELECT id
+            SELECT Id
             FROM Account
             WITH SECURITY_ENFORCED
             ORDER BY Industry DESC
@@ -342,32 +342,32 @@ private class SOQLRecipes_Tests {
     }
 
     // we get say 5, when there's only 15 records
-    @isTest
+    @IsTest
     static void testGetRecords11Through15Positive() {
-        List<Account> toInsert = TestDataHelpers.genXnumberOfAccounts(15);
-        insert toinsert;
+        List<Account> toInsert = TestDataHelpers.genXNumberOfAccounts(15);
+        insert toInsert;
 
         Test.startTest();
-        List<Account> accts = SOQLRecipes.getSecond10AccountRecords();
+        List<Account> accts = RECIPES_UNDER_TEST.getSecond10AccountRecords();
         Test.stopTest();
 
         System.assertEquals(5, accts.size(), 'Expected to get 5 records back');
     }
 
-    @isTest
+    @IsTest
     static void testGetAccountsAndContactsPositive() {
-        List<Account> accts = TestDataHelpers.genXnumberOfAccounts(5);
+        List<Account> accts = TestDataHelpers.genXNumberOfAccounts(5);
         insert accts;
         List<Contact> contacts = new List<Contact>();
         for (Account acct : accts) {
             for (Integer i = 0; i < 5; i++) {
-                Contacts.add(TestDataHelpers.genContactForAccount(acct.Id));
+                contacts.add(TestDataHelpers.genContactForAccount(acct.Id));
             }
         }
         insert contacts;
 
         Test.startTest();
-        List<Account> returnAccounts = SOQLRecipes.getRecordsWithRelatedRecords();
+        List<Account> returnAccounts = RECIPES_UNDER_TEST.getRecordsWithRelatedRecords();
         Test.stopTest();
 
         // we get 5 accounts.
@@ -391,16 +391,16 @@ private class SOQLRecipes_Tests {
                     'Expected the Name to not be null'
                 );
                 System.assert(
-                    accountMap.keySet().contains(testContact.accountId),
+                    accountMap.keySet().contains(testContact.AccountId),
                     'Expected that the accountIds are known to us'
                 );
             }
         }
     }
 
-    @isTest
+    @IsTest
     static void testGetAccountInfoWhenQueryingContactPositive() {
-        List<Account> accts = TestDataHelpers.genXnumberOfAccounts(1);
+        List<Account> accts = TestDataHelpers.genXNumberOfAccounts(1);
         accts[0].ShippingState = 'KS';
         insert accts;
         Contact cnt = new Contact(
@@ -410,7 +410,7 @@ private class SOQLRecipes_Tests {
         insert cnt;
 
         Test.startTest();
-        List<Contact> testContacts = SOQLRecipes.getParentRecordDetailsFromChildRecord();
+        List<Contact> testContacts = RECIPES_UNDER_TEST.getParentRecordDetailsFromChildRecord();
         Test.stopTest();
 
         System.assertEquals(
@@ -420,12 +420,12 @@ private class SOQLRecipes_Tests {
         );
         System.assertNotEquals(
             null,
-            TestContacts[0].account.Name,
+            testContacts[0].Account.Name,
             'Expected our account name to be populated'
         );
     }
 
-    @isTest
+    @IsTest
     static void testgetDetailsFromBothParentRecordsPositive() {
         Junction_Demo_1__c jd1 = new Junction_Demo_1__c();
         Junction_Demo_2__c jd2 = new Junction_Demo_2__c();
@@ -435,13 +435,13 @@ private class SOQLRecipes_Tests {
 
         Junction__c junction = new Junction__c(
             parent1__c = jd1.Id,
-            parent2__c = jd2.Id
+            Parent2__c = jd2.Id
         );
 
         insert junction;
 
         Test.startTest();
-        List<Junction__c> results = SOQLRecipes.getDetailsFromBothParentRecords();
+        List<Junction__c> results = RECIPES_UNDER_TEST.getDetailsFromBothParentRecords();
         Test.stopTest();
 
         System.assertNotEquals(
@@ -451,31 +451,31 @@ private class SOQLRecipes_Tests {
         );
         System.assertNotEquals(
             null,
-            results[0].parent2__r.Name,
+            results[0].Parent2__r.Name,
             'Expected parent2\'s name field to not be null'
         );
     }
 
-    @isTest
+    @IsTest
     static void testgetSumOfOpportunityRecordsPositive() {
         Account acct = TestDataHelpers.genAccountWithOptions(true, 'It');
         insert acct;
         List<Opportunity> opps = new List<Opportunity>();
-        for (integer i = 0; i < 5; i++) {
+        for (Integer i = 0; i < 5; i++) {
             opps.add(
                 new Opportunity(
-                    accountId = acct.Id,
-                    amount = 1000.00,
-                    stageName = 'Qualification',
-                    name = 'Epic Opportunity ' + i,
-                    closeDate = Date.today().addDays(14)
+                    AccountId = acct.Id,
+                    Amount = 1000.00,
+                    StageName = 'Qualification',
+                    Name = 'Epic Opportunity ' + i,
+                    CloseDate = Date.today().addDays(14)
                 )
             );
         }
         insert opps;
 
         Test.startTest();
-        Double results = SOQLRecipes.getSumOfOpportunityRecords(acct.Id);
+        Double results = RECIPES_UNDER_TEST.getSumOfOpportunityRecords(acct.Id);
         Test.stopTest();
 
         System.assertEquals(

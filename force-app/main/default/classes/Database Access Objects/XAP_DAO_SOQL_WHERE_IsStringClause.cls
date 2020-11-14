@@ -8,7 +8,10 @@ public class XAP_DAO_SOQL_WHERE_IsStringClause implements XAP_DAO_SOQL_WHERE_Cla
     }
 
     public XAP_DAO_SOQL_QueryInterpolation toQueryInterpolation() {
-        String template = fieldName + ' =  :${targetValue}';
+        String template = fieldName + ' = :${targetValue}';
+        System.debug('######### template: ' + template);
+
+
         return new XAP_DAO_SOQL_QueryInterpolation(template, new Map<String, Object>{
                 'targetValue' => this.targetValue
         });

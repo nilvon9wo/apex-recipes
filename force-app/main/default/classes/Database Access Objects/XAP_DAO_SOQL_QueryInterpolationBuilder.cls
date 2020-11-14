@@ -184,6 +184,7 @@ public class XAP_DAO_SOQL_QueryInterpolationBuilder {
 	}
 
 	private String toSOQL(String keyword, Object value) {
+		System.debug('######## value: ' + value);
 		return (value != null)
 				? ' ' + keyword + ' ' + value
 				: '';
