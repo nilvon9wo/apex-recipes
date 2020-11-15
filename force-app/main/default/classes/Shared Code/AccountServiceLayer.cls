@@ -1,4 +1,14 @@
 public inherited sharing class AccountServiceLayer {
+    private CanTheUser canUser;
+
+    public AccountServiceLayer(CanTheUser canUser) {
+        this.canUser = canUser;
+    }
+
+    public AccountServiceLayer() {
+        this(new CanTheUser());
+    }
+
     @TestVisible
     private static String didExecuteMethod;
 
@@ -12,6 +22,11 @@ public inherited sharing class AccountServiceLayer {
 
     @SuppressWarnings('PMD.ApexCRUDViolation')
     public static void changeShippingStreet(List<Account> accounts) {
+        new AccountServiceLayer()
+                .changeShipStreet(accounts);
+    }
+
+    private void changeShipStreet(List<Account> accounts) {
         List<Account> updated = new List<Account>();
         for (Account account : accounts) {
             Account uAcct = account.clone(true);
@@ -19,13 +34,13 @@ public inherited sharing class AccountServiceLayer {
             updated.add(uAcct);
         }
         if (
-            CanTheUser.edit(updated[0]) &&
-            CanTheUser.flsUpdatable('Account', 'shippingStreet')
-        ) {
+                this.canUser.edit(updated[0]) &&
+                        this.canUser.flsUpdatable('Account', 'shippingStreet')
+                ) {
             update updated;
         } else {
             throw new CanTheUserException(
-                'User has no permission to edit accounts'
+                    'User has no permission to edit accounts'
             );
         }
     }

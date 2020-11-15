@@ -1,21 +1,24 @@
 public inherited sharing class AccountTriggerHandler extends TriggerHandler {
+    private CanTheUser canUser;
     private List<Account> triggerNew;
     private List<Account> triggerOld;
     private Map<Id, Account> triggerMapNew;
     private Map<Id, Account> triggerMapOld;
 
-    @TestVisible
-    private static Exception circuitBreaker;
-
-    public class AccountTriggerHandlerException extends Exception {
-    }
-
-    public AccountTriggerHandler() {
+    public AccountTriggerHandler(CanTheUser canUser) {
+        this.canUser = canUser;
         this.triggerOld = (List<Account>) Trigger.old;
         this.triggerNew = (List<Account>) Trigger.new;
         this.triggerMapNew = (Map<Id, Account>) Trigger.newMap;
         this.triggerMapOld = (Map<Id, Account>) Trigger.oldMap;
     }
+    
+    public AccountTriggerHandler() {
+        this(new CanTheUser());
+    }
+
+    @TestVisible
+    private static Exception circuitBreaker;
 
     public override void beforeInsert() {
         AccountServiceLayer.incrementCounterInDescription(
@@ -40,7 +43,7 @@ public inherited sharing class AccountTriggerHandler extends TriggerHandler {
     @SuppressWarnings('PMD.ApexCRUDViolation')
     public override void afterUpdate() {
         List<Task> newTasks = new List<Task>();
-        if (CanTheUser.create(new Task()) && CanTheUser.read(new Task())) {
+        if (this.canUser.create(new Task()) && this.canUser.read(new Task())) {
             for (Account acct : this.triggerNew) {
                 Task tsk = new Task(
                     WhatId = acct.Id,
@@ -79,7 +82,7 @@ public inherited sharing class AccountTriggerHandler extends TriggerHandler {
         }
 
         try {
-            if (CanTheUser.create(new Account())) {
+            if (this.canUser.create(new Account())) {
                 insert clonedAccounts;
             }
         } catch (DmlException dmle) {
@@ -101,7 +104,7 @@ public inherited sharing class AccountTriggerHandler extends TriggerHandler {
         }
 
         try {
-            if (CanTheUser.create(new Task())) {
+            if (this.canUser.create(new Task())) {
                 insert newTasks;
             }
         } catch (DmlException dmle) {
@@ -129,7 +132,7 @@ public inherited sharing class AccountTriggerHandler extends TriggerHandler {
         }
 
         try {
-            if (CanTheUser.create(new Task())) {
+            if (this.canUser.create(new Task())) {
                 insert newTasks;
             }
         } catch (DmlException dmle) {

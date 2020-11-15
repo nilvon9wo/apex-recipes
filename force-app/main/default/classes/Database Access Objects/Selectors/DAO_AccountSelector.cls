@@ -61,6 +61,18 @@ public with sharing virtual class DAO_AccountSelector extends XAP_DAO_SOQL_SObje
         return accountQueryFactory.query();
     }
 
+    public virtual List<Account> secureSelectAllWithContactsWithoutCrudEnforcement() {
+        this.turnCrudEnforcementOff();
+        this.contactSelector.turnCrudEnforcementOff();
+
+        List<Account> accountList = this.secureSelectAllWithContacts();
+
+        this.turnCrudEnforcementOn();
+        this.contactSelector.turnCrudEnforcementOn();
+
+        return accountList;
+    }
+
 
     public virtual List<Account> secureSelectByName(Set<String> nameSet) {
         return this.createQueryFactory()

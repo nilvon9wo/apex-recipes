@@ -110,6 +110,16 @@ public abstract with sharing class XAP_DAO_SOQL_SObjectSelectorAbs implements XA
 		return this.isEnforcingCRUD;
 	}
 
+	public XAP_DAO_SOQL_SObjectSelectorAbs turnCrudEnforcementOff() {
+		this.isEnforcingCRUD = EXCLUDE_ENFORCE_CRUD;
+		return this;
+	}
+
+	public XAP_DAO_SOQL_SObjectSelectorAbs turnCrudEnforcementOn() {
+		this.isEnforcingCRUD = INCLUDE_ENFORCE_CRUD;
+		return this;
+	}
+
 	public String getSObjectName() {
 		return this.describeWrapper.getDescribe().getName();
 	}

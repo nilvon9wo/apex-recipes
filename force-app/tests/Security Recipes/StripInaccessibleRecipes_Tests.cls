@@ -1,9 +1,11 @@
-@isTest
+@IsTest
 private inherited sharing class StripInaccessibleRecipes_Tests {
+    private static final StripInaccessibleRecipes RECIPES_UNDER_TEST = new StripInaccessibleRecipes();
+
     @TestSetup
     static void createCampaigns() {
         TestFactory.createSObjectList(
-            new Campaign(budgetedCost = 200, actualCost = 299),
+            new Campaign(BudgetedCost = 200, ActualCost = 299),
             150,
             true
         );
@@ -17,7 +19,7 @@ private inherited sharing class StripInaccessibleRecipes_Tests {
         for (Account acct : accounts) {
             contacts.addAll(
                 (List<Contact>) TestFactory.createSObjectList(
-                    new Contact(accountId = acct.Id),
+                    new Contact(AccountId = acct.Id),
                     10
                 )
             );
@@ -25,10 +27,10 @@ private inherited sharing class StripInaccessibleRecipes_Tests {
         insert contacts;
     }
 
-    @isTest
+    @IsTest
     static void testStripInaccessibleFromQueryPositive() {
         Test.startTest();
-        List<Campaign> results = StripInaccessibleRecipes.stripInaccessibleFromQuery();
+        List<Campaign> results = RECIPES_UNDER_TEST.stripInaccessibleFromQuery();
         Test.stopTest();
 
         System.assertNotEquals(
@@ -51,7 +53,7 @@ private inherited sharing class StripInaccessibleRecipes_Tests {
         }
     }
 
-    @isTest
+    @IsTest
     static void testStripInaccessibleFromQueryNegative() {
         User minAccess = TestFactory.createMinAccessUser(true);
         Boolean didCatchTheRightException = false;
@@ -59,7 +61,7 @@ private inherited sharing class StripInaccessibleRecipes_Tests {
         System.runAs(minAccess) {
             Test.startTest();
             try {
-                StripInaccessibleRecipes.stripInaccessibleFromQuery();
+                RECIPES_UNDER_TEST.stripInaccessibleFromQuery();
             } catch (NoAccessException nae) {
                 if (
                     nae.getMessage().containsIgnoreCase('no access to entity')
@@ -76,7 +78,7 @@ private inherited sharing class StripInaccessibleRecipes_Tests {
         );
     }
 
-    @isTest
+    @IsTest
     static void testStripInaccessibleFromQueryMinAccessWithPermsetPositive() {
         User minAccessWithPermset = TestFactory.createMinAccessUser(true);
         TestFactory.assignPermSetToUser(
@@ -87,7 +89,7 @@ private inherited sharing class StripInaccessibleRecipes_Tests {
         List<Campaign> results;
         Test.startTest();
         System.runAs(minAccessWithPermset) {
-            results = StripInaccessibleRecipes.stripInaccessibleFromQuery();
+            results = RECIPES_UNDER_TEST.stripInaccessibleFromQuery();
         }
         Test.stopTest();
         System.assertNotEquals(
@@ -104,7 +106,7 @@ private inherited sharing class StripInaccessibleRecipes_Tests {
         }
     }
 
-    @isTest
+    @IsTest
     static void testStripInaccessibleFromQueryMinAccessWithPermsetNegative() {
         User minAccessWithPermset = TestFactory.createMinAccessUser(true);
         TestFactory.assignPermSetToUser(
@@ -115,7 +117,7 @@ private inherited sharing class StripInaccessibleRecipes_Tests {
         List<Campaign> results;
         Test.startTest();
         System.runAs(minAccessWithPermset) {
-            results = StripInaccessibleRecipes.stripInaccessibleFromQuery();
+            results = RECIPES_UNDER_TEST.stripInaccessibleFromQuery();
         }
         Test.stopTest();
 
@@ -145,7 +147,7 @@ private inherited sharing class StripInaccessibleRecipes_Tests {
         }
     }
 
-    @isTest
+    @IsTest
     static void testStripInaccessibleFromSubQueryMinAccessWithpermsetPositive() {
         User minAccess = TestFactory.createMinAccessUser(true);
         TestFactory.assignPermSetToUser(
@@ -160,14 +162,14 @@ private inherited sharing class StripInaccessibleRecipes_Tests {
         List<Account> results;
         Test.startTest();
         System.runAs(minAccess) {
-            results = StripInaccessibleRecipes.stripInaccessibleFromSubquery();
+            results = RECIPES_UNDER_TEST.stripInaccessibleFromSubquery();
         }
         Test.stopTest();
         for (Account acct : results) {
-            assertionChecks.put(acct.id, false);
+            assertionChecks.put(acct.Id, false);
             List<Contact> contacts = acct.getSObjects('Contacts');
             if (contacts.size() != 0) {
-                assertionChecks.put(acct.id, true);
+                assertionChecks.put(acct.Id, true);
             }
         }
         System.assertNotEquals(
@@ -183,7 +185,7 @@ private inherited sharing class StripInaccessibleRecipes_Tests {
         }
     }
 
-    @isTest
+    @IsTest
     static void testStripInaccessibleFromSubQueryMinAccessWithPermsetNegative() {
         User minAccess = TestFactory.createMinAccessUser(true);
         TestFactory.assignPermSetToUser(
@@ -195,7 +197,7 @@ private inherited sharing class StripInaccessibleRecipes_Tests {
         List<Account> results;
         Test.startTest();
         System.runAs(minAccess) {
-            results = StripInaccessibleRecipes.stripInaccessibleFromSubquery();
+            results = RECIPES_UNDER_TEST.stripInaccessibleFromSubquery();
         }
         Test.stopTest();
 
@@ -236,7 +238,7 @@ private inherited sharing class StripInaccessibleRecipes_Tests {
         }
     }
 
-    @isTest
+    @IsTest
     static void testStripInaccessibleBeforeDMLMinAccessWithPermSetPositive() {
         User minAccessWithPermSet = TestFactory.createMinAccessUser(true);
         TestFactory.assignPermSetToUser(
@@ -244,21 +246,21 @@ private inherited sharing class StripInaccessibleRecipes_Tests {
             'Provides_create_access_to_Contact_and_contact_email_field'
         );
         List<Contact> contacts = (List<Contact>) TestFactory.createSObjectList(
-            new Contact(email = 'foo@bar.com', title = 'Awesome'),
+            new Contact(Email = 'foo@bar.com', Title = 'Awesome'),
             150
         );
 
         Test.startTest();
         System.runAs(minAccessWithPermSet) {
-            StripInaccessibleRecipes.stripInaccessibleBeforeDML(contacts);
+            RECIPES_UNDER_TEST.stripInaccessibleBeforeDML(contacts);
         }
         Test.stopTest();
 
         // Our @TestSetup method creates 1500 contacts, so this query specifically limits to the known email adddress
-        List<contact> checkContacts = [
-            SELECT email, title
+        List<Contact> checkContacts = [
+            SELECT Email, Title
             FROM Contact
-            WHERE email = 'foo@bar.com'
+            WHERE Email = 'foo@bar.com'
         ];
         System.assertEquals(
             150,
@@ -268,13 +270,13 @@ private inherited sharing class StripInaccessibleRecipes_Tests {
         for (Contact cnt : checkContacts) {
             System.assertNotEquals(
                 'Awesome',
-                cnt.title,
+                cnt.Title,
                 'Expected stripInaccessible to strip out the title field'
             );
         }
     }
 
-    @isTest
+    @IsTest
     static void testStripInaccessibleBeforeDMLMinAccessProfileNegative() {
         User minAccess = TestFactory.createMinAccessUser(true);
         List<Contact> contacts = (List<Contact>) TestFactory.createSObjectList(
@@ -285,7 +287,7 @@ private inherited sharing class StripInaccessibleRecipes_Tests {
         Test.startTest();
         System.runAs(minAccess) {
             try {
-                StripInaccessibleRecipes.stripInaccessibleBeforeDML(contacts);
+                RECIPES_UNDER_TEST.stripInaccessibleBeforeDML(contacts);
             } catch (NoAccessException nae) {
                 if (
                     nae.getMessage().containsIgnoreCase('no access to entity')
@@ -302,7 +304,7 @@ private inherited sharing class StripInaccessibleRecipes_Tests {
         );
     }
 
-    @isTest
+    @IsTest
     static void testStripInaccessibleFromUntrustedDataMinAccessWithPermSetPositive() {
         User minAccessWithPermSet = TestFactory.createMinAccessUser(true);
         TestFactory.assignPermSetToUser(
@@ -311,12 +313,12 @@ private inherited sharing class StripInaccessibleRecipes_Tests {
         );
         List<Account> accounts = [SELECT Name FROM Account];
         for (Account acct : accounts) {
-            acct.shippingStreet = '123 main st.';
+            acct.ShippingStreet = '123 main st.';
         }
 
         Test.startTest();
         System.runAs(minAccessWithPermSet) {
-            StripInaccessibleRecipes.stripInaccessibleFromUntrustedData(
+            RECIPES_UNDER_TEST.stripInaccessibleFromUntrustedData(
                 JSON.serialize(accounts)
             );
         }
@@ -340,11 +342,11 @@ private inherited sharing class StripInaccessibleRecipes_Tests {
         }
     }
 
-    @isTest
+    @IsTest
     static void testStripInaccessibleFromUntrustedDataNegative() {
         User minAccess = TestFactory.createMinAccessUser(true);
         List<Account> acct = (List<Account>) TestFactory.createSObjectList(
-            new Account(name = 'secure'),
+            new Account(Name = 'secure'),
             1,
             true
         );
@@ -354,7 +356,7 @@ private inherited sharing class StripInaccessibleRecipes_Tests {
         Test.startTest();
         System.runAs(minAccess) {
             try {
-                StripInaccessibleRecipes.stripInaccessibleFromUntrustedData(
+                RECIPES_UNDER_TEST.stripInaccessibleFromUntrustedData(
                     JSON.serialize(acct)
                 );
             } catch (NoAccessException nae) {

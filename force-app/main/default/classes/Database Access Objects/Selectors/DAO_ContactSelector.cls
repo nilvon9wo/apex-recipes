@@ -36,6 +36,7 @@ public with sharing virtual class DAO_ContactSelector extends XAP_DAO_SOQL_SObje
                 Contact.AccountId,
                 Contact.Email,
                 Contact.Id,
+                Contact.LastName,
                 Contact.Name
         };
     }
