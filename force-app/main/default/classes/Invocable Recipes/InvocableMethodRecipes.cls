@@ -1,12 +1,14 @@
 public inherited sharing class InvocableMethodRecipes {
     private DAO_ContactSelector contactSelector;
+    private XAP_COLL_SObjectValueSetExtractor setExtractor;
 
-    private InvocableMethodRecipes(DAO_ContactSelector contactSelector) {
+    private InvocableMethodRecipes(DAO_ContactSelector contactSelector, XAP_COLL_SObjectValueSetExtractor setExtractor) {
         this.contactSelector = contactSelector;
+        this.setExtractor = setExtractor;
     }
 
     public InvocableMethodRecipes() {
-        this(DAO_ContactSelector.getInstance());
+        this(DAO_ContactSelector.getInstance(), XAP_COLL_SObjectValueSetExtractor.getInstance());
     }
 
     @InvocableMethod(
@@ -23,20 +25,34 @@ public inherited sharing class InvocableMethodRecipes {
     public List<ContactSearchResult> selectRelatedContacts(
             List<ContactSearchRequest> inputParameterList
     ) {
-        SObject input = inputParameterList[0].inputs[0];
-        String firstRecordId = input.Id;
-        String sObjectType = input.Id.getSobjectType()
+        List<SObject> sObjectList = new List<SObject>();
+        for (ContactSearchRequest request : inputParameterList) {
+            for(SObject sObj : request.inputs) {
+                sObjectList.add(sObj);
+            }
+        }
+
+        List<ContactSearchResult> resultList = new List<ContactSearchResult>();
+        for (Contact contact : this.selectContactList(sObjectList)) {
+            resultList.add(new ContactSearchResult(contact));
+        }
+        return resultList;
+    }
+
+    private List<Contact> selectContactList(List<SObject> sObjectList) {
+        String sObjectType = sObjectList[0].getSObjectType()
                 .getDescribe()
                 .getName()
                 .toLowerCase();
 
-        List<Contact> contactList;
         switch on sObjectType {
             when 'account' {
-                contactList = this.contactSelector.secureSelectByAccountId(new Set<Id>{firstRecordId});
+                Set<Id> idSet = new Map<Id, SObject>(sObjectList).keySet();
+                return this.contactSelector.secureSelectByAccountId(idSet);
             }
             when 'task' {
-                contactList = this.contactSelector.secureSelectById(new Set<Id>{((Task) input).WhoId});
+                Set<Id> idSet = this.setExtractor.extractNonNullIdsFrom(sObjectList, Task.WhoId);
+                return this.contactSelector.secureSelectById(idSet);
             }
             when else {
                 throw new InvocableMethodRecipesException(
@@ -44,8 +60,5 @@ public inherited sharing class InvocableMethodRecipes {
                 );
             }
         }
-        return new List<ContactSearchResult>{
-                new ContactSearchResult(contactList[0])
-        };
     }
 }
