@@ -276,7 +276,7 @@ public inherited sharing class CanTheUser {
         FLSType checkType
     ) {
         Cache.Partition defaultSession = PlatformCacheRecipes.getDefaultPartition(
-            PlatformCacheRecipes.PatitionType.SESSION
+            PartitionType.SESSION
         );
         Map<String, Map<FLSType, Boolean>> objResults = (Map<String, Map<FLSType, Boolean>>) defaultSession
             .get(PermissionCache.class, obj);

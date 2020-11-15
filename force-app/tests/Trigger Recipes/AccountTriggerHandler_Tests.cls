@@ -1,9 +1,9 @@
-@isTest
+@IsTest
 private inherited sharing class AccountTriggerHandler_Tests {
-    @isTest
+    @IsTest
     static void beforeInsertTestPositive() {
         Account acct = (Account) TestFactory.createSObject(
-            new Account(name = 'TheBestAccount'),
+            new Account(Name = 'TheBestAccount'),
             false
         );
 
@@ -19,7 +19,7 @@ private inherited sharing class AccountTriggerHandler_Tests {
         );
     }
 
-    @isTest
+    @IsTest
     static void afterInsertBulkTestPositive() {
         Test.startTest();
         TestFactory.createSObjectList(new Account(), 200, true);
@@ -47,7 +47,7 @@ private inherited sharing class AccountTriggerHandler_Tests {
         }
     }
 
-    @isTest
+    @IsTest
     static void testAfterInsertPositive() {
         // There's debate on where to test the functionality of this code.
         // Some might argue it's in the AccountServiceLayer_tests
@@ -80,7 +80,7 @@ private inherited sharing class AccountTriggerHandler_Tests {
         }
     }
 
-    @isTest
+    @IsTest
     static void testBeforeUpdatePositive() {
         // There's debate on where to test the functionality of this code.
         // Some might argue it's in the AccountServiceLayer_tests
@@ -113,7 +113,7 @@ private inherited sharing class AccountTriggerHandler_Tests {
         }
     }
 
-    @isTest
+    @IsTest
     static void testBeforeUpdateWithAddErrorNegative() {
         Boolean didCatchProperException = false;
         Test.startTest();
@@ -144,7 +144,7 @@ private inherited sharing class AccountTriggerHandler_Tests {
         );
     }
 
-    @isTest
+    @IsTest
     static void afterUpdateTestPositive() {
         Account[] testData = (Account[]) TestFactory.createSObjectList(
             new Account(ShippingStreet = '123 sesame st.'),
@@ -163,7 +163,7 @@ private inherited sharing class AccountTriggerHandler_Tests {
             SELECT Id, Subject
             FROM Task
             WHERE
-                whatId IN :testData
+                WhatId IN :testData
                 AND Subject LIKE 'account was updated, please verify'
         ];
         System.assertEquals(
@@ -179,7 +179,7 @@ private inherited sharing class AccountTriggerHandler_Tests {
         }
     }
 
-    @isTest
+    @IsTest
     static void afterUpdateTestNegativeDMLException() {
         Account[] testData = (Account[]) TestFactory.createSObjectList(
             new Account(ShippingStreet = '123 sesame st.'),
@@ -216,10 +216,10 @@ private inherited sharing class AccountTriggerHandler_Tests {
         );
     }
 
-    @isTest
+    @IsTest
     static void beforeDeleteTestPositive() {
         Account acct = (Account) TestFactory.createSObject(
-            new Account(name = 'TheBestAccount'),
+            new Account(Name = 'TheBestAccount'),
             true
         );
         Id accountId = acct.Id;
@@ -245,7 +245,7 @@ private inherited sharing class AccountTriggerHandler_Tests {
         );
     }
 
-    @isTest
+    @IsTest
     static void afterDeleteTestPositive() {
         Account[] testData = (Account[]) TestFactory.createSObjectList(
             new Account(ShippingStreet = '123 sesame st.'),

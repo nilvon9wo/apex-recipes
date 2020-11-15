@@ -1,15 +1,6 @@
-@isTest
-/**
- * @description This test class exists not only to test the Platform Cache
- * Recipes class, but also to illustrate a key principle of unit testing:
- * Each test should test one, specific thing. Not a number of things, not a
- * multitude of methods, but one specific thing. It would have been trivial
- * to write this test class with test methods that tested session and org
- * cache functionality in the same method. However, doing so could potentially
- * confuse the results when, say, only ORG cache methods were failing.
- */
+@IsTest
 private class PlatformCacheRecipes_Tests {
-    @isTest
+    @IsTest
     static void testStoreValueInSessionCachePositive() {
         Test.startTest();
         PlatformCacheRecipes.storeValueInSessionCache(
@@ -20,7 +11,7 @@ private class PlatformCacheRecipes_Tests {
 
         System.assert(
             PlatformCacheRecipes.getDefaultPartition(
-                    PlatformCacheRecipes.PatitionType.SESSION
+                    PartitionType.SESSION
                 )
                 .getKeys()
                 .contains('Account'),
@@ -29,14 +20,14 @@ private class PlatformCacheRecipes_Tests {
         System.assertEquals(
             'This is a test',
             PlatformCacheRecipes.getDefaultPartition(
-                    PlatformCacheRecipes.PatitionType.SESSION
+                    PartitionType.SESSION
                 )
                 .get('Account'),
             'expected Account key to hold \'this is a test\''
         );
     }
 
-    @isTest
+    @IsTest
     static void testStoreValueInSessionCacheWithTTLPositive() {
         Test.startTest();
         PlatformCacheRecipes.storeValueInSessionCache(
@@ -48,7 +39,7 @@ private class PlatformCacheRecipes_Tests {
 
         System.assert(
             PlatformCacheRecipes.getDefaultPartition(
-                    PlatformCacheRecipes.PatitionType.SESSION
+                    PartitionType.SESSION
                 )
                 .getKeys()
                 .contains('Account'),
@@ -57,14 +48,14 @@ private class PlatformCacheRecipes_Tests {
         System.assertEquals(
             'This is a test',
             PlatformCacheRecipes.getDefaultPartition(
-                    PlatformCacheRecipes.PatitionType.SESSION
+                    PartitionType.SESSION
                 )
                 .get('Account'),
             'expected Account key to hold \'this is a test\''
         );
     }
 
-    @isTest
+    @IsTest
     static void testGetValueFromSessionCachePositive() {
         PlatformCacheRecipes.storeValueInSessionCache(
             'Account',
@@ -82,7 +73,7 @@ private class PlatformCacheRecipes_Tests {
         );
     }
 
-    @isTest
+    @IsTest
     static void testGetValueFromSessionCacheNegativeNoValueForKey() {
         Test.startTest();
         String results = PlatformCacheRecipes.getValueFromSessionCache(
@@ -96,7 +87,7 @@ private class PlatformCacheRecipes_Tests {
         );
     }
 
-    @isTest
+    @IsTest
     static void testRemoveKeyFromSessionCachePositive() {
         PlatformCacheRecipes.storeValueInSessionCache(
             'Account',
@@ -107,7 +98,7 @@ private class PlatformCacheRecipes_Tests {
         Test.stopTest();
         System.assert(
             !PlatformCacheRecipes.getDefaultPartition(
-                    PlatformCacheRecipes.PatitionType.SESSION
+                    PartitionType.SESSION
                 )
                 .getKeys()
                 .contains('Account'),
@@ -115,13 +106,13 @@ private class PlatformCacheRecipes_Tests {
         );
     }
 
-    @isTest
+    @IsTest
     static void testRemoveKeyFromSessionCacheNegativeNoKey() {
         Boolean didCatchProperException = false;
         Test.startTest();
         try {
             PlatformCacheRecipes.removeKeyFromSessionCache('fakekey');
-        } catch (PlatformCacheRecipes.CacheException ce) {
+        } catch ( CacheException ce) {
             if (ce.getMessage().containsIgnoreCase('key not found')) {
                 didCatchProperException = true;
             }
@@ -134,7 +125,7 @@ private class PlatformCacheRecipes_Tests {
     }
 
     // ORG partition
-    @isTest
+    @IsTest
     static void testStoreValueInOrgCachePositive() {
         Test.startTest();
         PlatformCacheRecipes.storeValueInOrgCache('Account', 'This is a test');
@@ -142,7 +133,7 @@ private class PlatformCacheRecipes_Tests {
 
         System.assert(
             PlatformCacheRecipes.getDefaultPartition(
-                    PlatformCacheRecipes.PatitionType.ORG
+                    PartitionType.ORG
                 )
                 .getKeys()
                 .contains('Account'),
@@ -151,14 +142,14 @@ private class PlatformCacheRecipes_Tests {
         System.assertEquals(
             'This is a test',
             PlatformCacheRecipes.getDefaultPartition(
-                    PlatformCacheRecipes.PatitionType.ORG
+                    PartitionType.ORG
                 )
                 .get('Account'),
             'expected Account key to hold \'this is a test\''
         );
     }
 
-    @isTest
+    @IsTest
     static void testStoreValueInOrgCacheWithTTLPositive() {
         Test.startTest();
         PlatformCacheRecipes.storeValueInOrgCache(
@@ -170,7 +161,7 @@ private class PlatformCacheRecipes_Tests {
 
         System.assert(
             PlatformCacheRecipes.getDefaultPartition(
-                    PlatformCacheRecipes.PatitionType.ORG
+                    PartitionType.ORG
                 )
                 .getKeys()
                 .contains('Account'),
@@ -179,18 +170,18 @@ private class PlatformCacheRecipes_Tests {
         System.assertEquals(
             'This is a test',
             PlatformCacheRecipes.getDefaultPartition(
-                    PlatformCacheRecipes.PatitionType.ORG
+                    PartitionType.ORG
                 )
                 .get('Account'),
             'expected Account key to hold \'this is a test\''
         );
     }
 
-    @isTest
+    @IsTest
     static void testGetValueFromOrgCachePositive() {
         PlatformCacheRecipes.storeValueInOrgCache('Contact', 'This is a test');
         Test.startTest();
-        String results = PlatformCacheRecipes.getValueFromOrgCache('Contact');
+        String results = PlatformCacheRecipes.getValuefromOrgCache('Contact');
         Test.stopTest();
         System.assertEquals(
             'This is a test',
@@ -199,10 +190,10 @@ private class PlatformCacheRecipes_Tests {
         );
     }
 
-    @isTest
+    @IsTest
     static void testGetValueFromOrgCacheNegativeNoValueForKey() {
         Test.startTest();
-        String results = PlatformCacheRecipes.getValueFromOrgCache('Account');
+        String results = PlatformCacheRecipes.getValuefromOrgCache('Account');
         Test.stopTest();
         System.assertEquals(
             'Cache Miss',
@@ -211,7 +202,7 @@ private class PlatformCacheRecipes_Tests {
         );
     }
 
-    @isTest
+    @IsTest
     static void testRemoveKeyFromOrgCachePositive() {
         PlatformCacheRecipes.storeValueInOrgCache('Account', 'This is a test');
         Test.startTest();
@@ -219,7 +210,7 @@ private class PlatformCacheRecipes_Tests {
         Test.stopTest();
         System.assert(
             !PlatformCacheRecipes.getDefaultPartition(
-                    PlatformCacheRecipes.PatitionType.ORG
+                    PartitionType.ORG
                 )
                 .getKeys()
                 .contains('Account'),
@@ -227,13 +218,13 @@ private class PlatformCacheRecipes_Tests {
         );
     }
 
-    @isTest
+    @IsTest
     static void testRemoveKeyFromOrgCacheNegativeNoKey() {
         Boolean didCatchProperException = false;
         Test.startTest();
         try {
             PlatformCacheRecipes.removeKeyFromOrgCache('fakekey');
-        } catch (PlatformCacheRecipes.CacheException ce) {
+        } catch ( CacheException ce) {
             if (ce.getMessage().containsIgnoreCase('key not found')) {
                 didCatchProperException = true;
             }

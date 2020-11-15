@@ -1,24 +1,15 @@
-/**
- * @description demonstrates how to use the Cache.CacheBuilder Interface
- */
 public inherited sharing class PlatformCacheBuilderRecipes implements Cache.CacheBuilder {
-    /**
-     * @description The doLoad method is required by the CacheBuilder interface
-     * This method needs to return an Object - and that's the key to the Cache
-     * builder interface - You must have this method return a single Object that
-     * is either calculated by this method, or returned from the Cache by the
-     * key
-     * @param key   String used to help generate the Cache Key
-     * @return     `Object` This object should be casted at the call location
-     * @see CanTheUser
-     * @example Account[] accounts = (Account[]) Cache.Session.get(PlatformCacheBuilderRecipes.class, 'myAccounts')
-     */
+    private DAO_AccountSelector accountSelector;
+
+    private PlatformCacheBuilderRecipes(DAO_AccountSelector accountSelector) {
+        this.accountSelector = accountSelector;
+    }
+
+    public PlatformCacheBuilderRecipes() {
+        this(DAO_AccountSelector.getInstance());
+    }
+
     public Object doLoad(String key) {
-        Account[] accounts = [
-            SELECT Id, Name
-            FROM Account
-            WITH SECURITY_ENFORCED
-        ];
-        return accounts;
+        return this.accountSelector.secureSelectAll();
     }
 }
