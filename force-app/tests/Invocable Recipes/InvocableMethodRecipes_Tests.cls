@@ -1,10 +1,10 @@
-@isTest
+@IsTest
 public class InvocableMethodRecipes_Tests {
-    @isTest
+    @IsTest
     static void contactSearchRequestConstructorPositive() {
         Test.startTest();
-        InvocableMethodRecipes.ContactSearchRequest request = new InvocableMethodRecipes.ContactSearchRequest();
-        request.inputs = new List<Account>{ new Account(name = 'test') };
+        ContactSearchRequest request = new ContactSearchRequest();
+        request.inputs = new List<Account>{ new Account(Name = 'test') };
         Test.stopTest();
 
         System.assertEquals(
@@ -14,23 +14,23 @@ public class InvocableMethodRecipes_Tests {
         );
     }
 
-    @isTest
+    @IsTest
     static void endToEndInvocableMethodTestAccountPositive() {
         Account account = (Account) TestFactory.createSObject(
-            new Account(name = 'Test'),
+            new Account(Name = 'Test'),
             true
         );
         Contact contact = (Contact) TestFactory.createSObject(
-            new Contact(lastName = 'Nomical', accountId = account.Id),
+            new Contact(LastName = 'Nomical', AccountId = account.Id),
             true
         );
-        List<InvocableMethodRecipes.ContactSearchRequest> requests = new List<InvocableMethodRecipes.ContactSearchRequest>();
-        InvocableMethodRecipes.ContactSearchRequest request = new InvocableMethodRecipes.ContactSearchRequest();
+        List<ContactSearchRequest> requests = new List<ContactSearchRequest>();
+        ContactSearchRequest request = new ContactSearchRequest();
         request.inputs = new List<SObject>{ account };
         requests.add(request);
 
         Test.startTest();
-        List<InvocableMethodRecipes.ContactSearchResult> results = InvocableMethodRecipes.findRelatedContacts(
+        List<ContactSearchResult> results = InvocableMethodRecipes.findRelatedContacts(
             requests
         );
         Test.stopTest();
@@ -42,27 +42,27 @@ public class InvocableMethodRecipes_Tests {
         );
     }
 
-    @isTest
+    @IsTest
     static void endToEndInvocableMethodTestTaskPositive() {
         Account account = (Account) TestFactory.createSObject(
-            new Account(name = 'Test'),
+            new Account(Name = 'Test'),
             true
         );
         Contact contact = (Contact) TestFactory.createSObject(
-            new Contact(lastName = 'Nomical', accountId = account.Id),
+            new Contact(LastName = 'Nomical', AccountId = account.Id),
             true
         );
         Task task = (Task) TestFactory.createSObject(
-            new Task(whoId = contact.Id, subject = 'test'),
+            new Task(WhoId = contact.Id, Subject = 'test'),
             true
         );
-        List<InvocableMethodRecipes.ContactSearchRequest> requests = new List<InvocableMethodRecipes.ContactSearchRequest>();
-        InvocableMethodRecipes.ContactSearchRequest request = new InvocableMethodRecipes.ContactSearchRequest();
+        List<ContactSearchRequest> requests = new List<ContactSearchRequest>();
+        ContactSearchRequest request = new ContactSearchRequest();
         request.inputs = new List<SObject>{ task };
         requests.add(request);
 
         Test.startTest();
-        List<InvocableMethodRecipes.ContactSearchResult> results = InvocableMethodRecipes.findRelatedContacts(
+        List<ContactSearchResult> results = InvocableMethodRecipes.findRelatedContacts(
             requests
         );
         Test.stopTest();
