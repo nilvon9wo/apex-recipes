@@ -1,4 +1,4 @@
-@isTest
+@IsTest
 private class TriggerHandler_Test {
     private static final String TRIGGER_CONTEXT_ERROR = 'Trigger handler called outside of Trigger execution';
 
@@ -8,20 +8,10 @@ private class TriggerHandler_Test {
 
     static {
         handler = new TriggerHandler_Test.TestHandler();
-        // override its internal trigger detection
         handler.isTriggerExecuting = true;
     }
 
-    /***************************************
-     * unit tests
-     ***************************************/
-
-    // contexts tests
-
-    /**
-     * @description Tests the BeforeInsert method is properly brokered.
-     */
-    @isTest
+    @IsTest
     static void testBeforeInsert() {
         beforeInsertMode();
         handler.run();
@@ -32,7 +22,7 @@ private class TriggerHandler_Test {
         );
     }
 
-    @isTest
+    @IsTest
     static void testBeforeUpdate() {
         beforeUpdateMode();
         handler.run();
@@ -43,7 +33,7 @@ private class TriggerHandler_Test {
         );
     }
 
-    @isTest
+    @IsTest
     static void testBeforeDelete() {
         beforeDeleteMode();
         handler.run();
@@ -54,7 +44,7 @@ private class TriggerHandler_Test {
         );
     }
 
-    @isTest
+    @IsTest
     static void testAfterInsert() {
         afterInsertMode();
         handler.run();
@@ -65,7 +55,7 @@ private class TriggerHandler_Test {
         );
     }
 
-    @isTest
+    @IsTest
     static void testAfterUpdate() {
         afterUpdateMode();
         handler.run();
@@ -76,7 +66,7 @@ private class TriggerHandler_Test {
         );
     }
 
-    @isTest
+    @IsTest
     static void testAfterDelete() {
         afterDeleteMode();
         handler.run();
@@ -87,7 +77,7 @@ private class TriggerHandler_Test {
         );
     }
 
-    @isTest
+    @IsTest
     static void testAfterUndelete() {
         afterUndeleteMode();
         handler.run();
@@ -98,12 +88,12 @@ private class TriggerHandler_Test {
         );
     }
 
-    @isTest
+    @IsTest
     static void testNonTriggerContext() {
         try {
             handler.run();
             System.assert(false, 'The handler ran but should have thrown');
-        } catch (TriggerHandler.TriggerHandlerException te) {
+        } catch (TriggerHandlerException te) {
             System.assertEquals(
                 TRIGGER_CONTEXT_ERROR,
                 te.getMessage(),
@@ -120,13 +110,10 @@ private class TriggerHandler_Test {
         }
     }
 
-    // test bypass api
-
-    @isTest
+    @IsTest
     static void testBypassAPI() {
         afterUpdateMode();
 
-        // test a bypass and run handler
         TriggerHandler.bypass('TestHandler');
         handler.run();
         System.assertEquals(
@@ -141,7 +128,6 @@ private class TriggerHandler_Test {
         );
         resetTest();
 
-        // clear that bypass and run handler
         TriggerHandler.clearBypass('TestHandler');
         handler.run();
         System.assertEquals(
@@ -156,7 +142,6 @@ private class TriggerHandler_Test {
         );
         resetTest();
 
-        // test a re-bypass and run handler
         TriggerHandler.bypass('TestHandler');
         handler.run();
         System.assertEquals(
@@ -171,7 +156,6 @@ private class TriggerHandler_Test {
         );
         resetTest();
 
-        // clear all bypasses and run handler
         TriggerHandler.clearAllBypasses();
         handler.run();
         System.assertEquals(
@@ -187,30 +171,24 @@ private class TriggerHandler_Test {
         resetTest();
     }
 
-    // instance method tests
-
-    @isTest
+    @IsTest
     static void testLoopCount() {
         beforeInsertMode();
 
-        // set the max loops to 2
         handler.setMaxLoopCount(2);
 
-        // run the handler twice
         handler.run();
         handler.run();
 
-        // clear the tests
         resetTest();
 
         try {
-            // try running it. This should exceed the limit.
             handler.run();
             System.assert(
                 false,
                 'The handler should throw on the 3rd run when maxloopcount is 3'
             );
-        } catch (TriggerHandler.TriggerHandlerException te) {
+        } catch (TriggerHandlerException te) {
             // we're expecting to get here
             System.assertEquals(
                 null,
@@ -227,21 +205,18 @@ private class TriggerHandler_Test {
             );
         }
 
-        // clear the tests
         resetTest();
 
-        // now clear the loop count
         handler.clearMaxLoopCount();
 
         try {
-            // re-run the handler. We shouldn't throw now.
             handler.run();
             System.assertEquals(
                 'beforeInsert',
                 lastMethodCalled,
                 'Last method should be beforeInsert'
             );
-        } catch (TriggerHandler.TriggerHandlerException te) {
+        } catch (TriggerHandlerException te) {
             System.assert(
                 false,
                 'Running the handler after clearing the loop count should not throw'
@@ -257,7 +232,7 @@ private class TriggerHandler_Test {
         }
     }
 
-    @isTest
+    @IsTest
     static void testLoopCountClass() {
         TriggerHandler.LoopCount lc = new TriggerHandler.LoopCount();
         System.assertEquals(5, lc.getMax(), 'Max should be five on init');
@@ -291,9 +266,7 @@ private class TriggerHandler_Test {
         );
     }
 
-    // private method tests
-
-    @isTest
+    @IsTest
     static void testGetHandlerName() {
         System.assertEquals(
             'TestHandler',
@@ -302,9 +275,7 @@ private class TriggerHandler_Test {
         );
     }
 
-    // test virtual methods
-
-    @isTest
+    @IsTest
     static void testVirtualMethods() {
         TriggerHandler h = new TriggerHandler();
         h.beforeInsert();
@@ -320,18 +291,9 @@ private class TriggerHandler_Test {
         );
     }
 
-    /***************************************
-     * testing utilities
-     ***************************************/
-
-    /**
-     * @description Resets the test
-     */
     private static void resetTest() {
         lastMethodCalled = null;
     }
-
-    // modes for testing
 
     private static void beforeInsertMode() {
         handler.setTriggerContext('before insert', true);
@@ -360,8 +322,6 @@ private class TriggerHandler_Test {
     private static void afterUndeleteMode() {
         handler.setTriggerContext('after undelete', true);
     }
-
-    // test implementation of the TriggerHandler
 
     private class TestHandler extends TriggerHandler {
         public override void beforeInsert() {
