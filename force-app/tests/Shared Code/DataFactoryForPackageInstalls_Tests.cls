@@ -1,10 +1,6 @@
-@isTest
-/**
- * @description Class generates junction objects for orgs where Apex Recipes
- * is installed via a package.
- */
+@IsTest
 private class DataFactoryForPackageInstalls_Tests {
-    @isTest
+    @IsTest
     static void testGenerateDataPositive() {
         Test.startTest();
         DataFactoryForPackageInstalls.generateData();

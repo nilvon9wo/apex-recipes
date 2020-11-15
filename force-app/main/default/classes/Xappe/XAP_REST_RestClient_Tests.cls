@@ -1,16 +1,16 @@
 @IsTest
-private inherited sharing class ARSC_RestClient_Tests {
+private inherited sharing class XAP_REST_RestClient_Tests {
     private static final User TEST_USER = TEST_DummyUserFactoryOutlet.TEST_ADMIN_USER;
-    private static final ARSC_RestClient CLIENT_UNDER_TEST = ARSC_RestClient.getInstance();
+    private static final XAP_REST_RestClient CLIENT_UNDER_TEST = XAP_REST_RestClient.getInstance();
     private static final XAP_HTTP_HttpSingleCalloutMock MOCK_CALLOUT = new XAP_HTTP_HttpSingleCalloutMock();
 
     @IsTest
     static void testStaticMakeApiCallFullParamsPositive() {
         // Arrange
         prepCalloutMock();
-        ARSC_RestRequest testRequest = new ARSC_RestRequest()
+        XAP_REST_RestRequest testRequest = new XAP_REST_RestRequest()
                 .setNamedCredential('DummyNamedCredential')
-                .setMethod(ARSC_HttpVerb.GET)
+                .setMethod(XAP_REST_HttpVerb.GET)
                 .setPath('/')
                 .setQuery('')
                 .setBody('')
@@ -31,9 +31,9 @@ private inherited sharing class ARSC_RestClient_Tests {
     @IsTest
     static void testStaticMakeApiCallNoHeadersoOrBodyParamsPositive() {
         prepCalloutMock();
-        ARSC_RestRequest testRequest = new ARSC_RestRequest()
+        XAP_REST_RestRequest testRequest = new XAP_REST_RestRequest()
                 .setNamedCredential('DummyNamedCredential')
-                .setMethod(ARSC_HttpVerb.GET)
+                .setMethod(XAP_REST_HttpVerb.GET)
                 .setPath('/')
                 .setQuery('');
 
@@ -52,9 +52,9 @@ private inherited sharing class ARSC_RestClient_Tests {
     @IsTest
     static void testStaticMakeApiCallNoHeadersoOrBodyOrQueryParamsPositive() {
         prepCalloutMock();
-        ARSC_RestRequest testRequest = new ARSC_RestRequest()
+        XAP_REST_RestRequest testRequest = new XAP_REST_RestRequest()
                 .setNamedCredential('DummyNamedCredential')
-                .setMethod(ARSC_HttpVerb.GET)
+                .setMethod(XAP_REST_HttpVerb.GET)
                 .setPath('/');
 
         // Act
@@ -72,7 +72,7 @@ private inherited sharing class ARSC_RestClient_Tests {
     @IsTest
     static void testGetWithPathAndQueryPositive() {
         prepCalloutMock();
-        ARSC_RestRequest testRequest = new ARSC_RestRequest()
+        XAP_REST_RestRequest testRequest = new XAP_REST_RestRequest()
                 .setNamedCredential('DummyNamedCredential')
                 .setPath('/')
                 .setQuery('?test');
@@ -92,7 +92,7 @@ private inherited sharing class ARSC_RestClient_Tests {
     @IsTest
     static void testDelWithPathPositive() {
         prepCalloutMock();
-        ARSC_RestRequest testRequest = new ARSC_RestRequest()
+        XAP_REST_RestRequest testRequest = new XAP_REST_RestRequest()
                 .setNamedCredential('DummyNamedCredential')
                 .setPath('/');
 
@@ -112,7 +112,7 @@ private inherited sharing class ARSC_RestClient_Tests {
     static void testPostWithPathQueryAndBodyPositive() {
         Integer testStatusCode = 201;
         prepCalloutMock(testStatusCode);
-        ARSC_RestRequest testRequest = new ARSC_RestRequest()
+        XAP_REST_RestRequest testRequest = new XAP_REST_RestRequest()
                 .setNamedCredential('DummyNamedCredential')
                 .setPath('/')
                 .setQuery('')
@@ -134,7 +134,7 @@ private inherited sharing class ARSC_RestClient_Tests {
     static void testPutWithPathAndBodyPositive() {
         Integer testStatusCode = 201;
         prepCalloutMock(testStatusCode);
-        ARSC_RestRequest testRequest = new ARSC_RestRequest()
+        XAP_REST_RestRequest testRequest = new XAP_REST_RestRequest()
                 .setNamedCredential('DummyNamedCredential')
                 .setPath('/')
                 .setBody('{"Id": "003ae3fn12df25k309"}');
@@ -155,7 +155,7 @@ private inherited sharing class ARSC_RestClient_Tests {
     static void testPutWithPathQueryAndBodyPositive() {
         Integer testStatusCode = 201;
         prepCalloutMock(testStatusCode);
-        ARSC_RestRequest testRequest = new ARSC_RestRequest()
+        XAP_REST_RestRequest testRequest = new XAP_REST_RestRequest()
                 .setNamedCredential('DummyNamedCredential')
                 .setPath('/')
                 .setQuery('')
@@ -177,7 +177,7 @@ private inherited sharing class ARSC_RestClient_Tests {
     static void testPatchWithPathQueryAndBodyPositive() {
         Integer testStatusCode = 201;
         prepCalloutMock(testStatusCode);
-        ARSC_RestRequest testRequest = new ARSC_RestRequest()
+        XAP_REST_RestRequest testRequest = new XAP_REST_RestRequest()
                 .setNamedCredential('DummyNamedCredential')
                 .setPath('/')
                 .setBody('{"Id": "003ae3fn12df25k309"}');

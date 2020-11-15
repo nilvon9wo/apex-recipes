@@ -1,8 +1,8 @@
-public with sharing class ARSC_RestRequest {
-    private static final Set<ARSC_HttpVerb> METHODS_WITH_BODY_SET = new Set<ARSC_HttpVerb>{
-            ARSC_HttpVerb.PATCH,
-            ARSC_HttpVerb.POST,
-            ARSC_HttpVerb.PUT
+public with sharing class XAP_REST_RestRequest {
+    private static final Set<XAP_REST_HttpVerb> METHODS_WITH_BODY_SET = new Set<XAP_REST_HttpVerb>{
+            XAP_REST_HttpVerb.PATCH,
+            XAP_REST_HttpVerb.POST,
+            XAP_REST_HttpVerb.PUT
     };
 
     @TestVisible
@@ -13,27 +13,27 @@ public with sharing class ARSC_RestRequest {
 
     @TestVisible
     public String endPoint { get; private set; }
-    public ARSC_RestRequest setEndPoint(String value) {
+    public XAP_REST_RestRequest setEndPoint(String value) {
         this.endPoint = value;
         return this;
     }
 
     @TestVisible
     public String namedCredential { get; private set; }
-    public ARSC_RestRequest setNamedCredential(String value) {
+    public XAP_REST_RestRequest setNamedCredential(String value) {
         this.namedCredential = value;
         return this;
     }
 
-    public ARSC_HttpVerb method {
+    public XAP_REST_HttpVerb method {
         get {
             return (method != null)
                     ? this.method
-                    : ARSC_HttpVerb.GET;
+                    : XAP_REST_HttpVerb.GET;
         }
         private set;
     }
-    public ARSC_RestRequest setMethod(ARSC_HttpVerb value) {
+    public XAP_REST_RestRequest setMethod(XAP_REST_HttpVerb value) {
         this.method = value;
         return this;
     }
@@ -46,7 +46,7 @@ public with sharing class ARSC_RestRequest {
         }
         private set;
     }
-    public ARSC_RestRequest setPath(String value) {
+    public XAP_REST_RestRequest setPath(String value) {
         this.path = value;
         return this;
     }
@@ -59,7 +59,7 @@ public with sharing class ARSC_RestRequest {
         }
         private set;
     }
-    public ARSC_RestRequest setQuery(String value) {
+    public XAP_REST_RestRequest setQuery(String value) {
         this.query = value;
         return this;
     }
@@ -72,7 +72,7 @@ public with sharing class ARSC_RestRequest {
         }
         private set;
     }
-    public ARSC_RestRequest setBody(String value) {
+    public XAP_REST_RestRequest setBody(String value) {
         this.body = value;
         return this;
     }
@@ -85,7 +85,7 @@ public with sharing class ARSC_RestRequest {
         }
         private set;
     }
-    public ARSC_RestRequest setHeaders(Map<String, String> value) {
+    public XAP_REST_RestRequest setHeaders(Map<String, String> value) {
         this.headers = value;
         return this;
     }
@@ -99,13 +99,13 @@ public with sharing class ARSC_RestRequest {
                 .httpRequest;
     }
 
-    private ARSC_RestRequest setEndPoint() {
+    private XAP_REST_RestRequest setEndPoint() {
         if (!String.isBlank(this.endPoint) && !String.isBlank(this.namedCredential)) {
-            throw new ARSC_RestRequestException('Ambiguous request: both endPoint and namedCredential have been set.');
+            throw new XAP_REST_RestRequestException('Ambiguous request: both endPoint and namedCredential have been set.');
         }
 
         String encodedQuery = EncodingUtil.urlEncode(this.query, 'UTF-8');
-        if (this.method == ARSC_HttpVerb.PATCH) {
+        if (this.method == XAP_REST_HttpVerb.PATCH) {
             encodedQuery += '?_HttpMethod=PATCH';
         }
         String endPoint = !String.isBlank(this.endPoint)
@@ -123,7 +123,7 @@ public with sharing class ARSC_RestRequest {
                 encodedQuery;
     }
 
-    private ARSC_RestRequest setRequestHeaders() {
+    private XAP_REST_RestRequest setRequestHeaders() {
         for (String header : this.headers.keySet()) {
             this.httpRequest.setHeader(header, this.headers.get(header));
         }
@@ -131,7 +131,7 @@ public with sharing class ARSC_RestRequest {
     }
 
 
-    private ARSC_RestRequest setMethod() {
+    private XAP_REST_RestRequest setMethod() {
         String verb;
         switch on this.method {
             when DEL {
@@ -148,7 +148,7 @@ public with sharing class ARSC_RestRequest {
         return this;
     }
 
-    private ARSC_RestRequest setBody() {
+    private XAP_REST_RestRequest setBody() {
         if (
                 String.isNotBlank(this.body)
                         && METHODS_WITH_BODY_SET.contains(this.method)

@@ -1,4 +1,4 @@
-public enum ARSC_HttpVerb {
+public enum XAP_REST_HttpVerb {
     GET,
     POST,
     PATCH,

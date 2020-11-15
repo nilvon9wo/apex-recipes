@@ -15,7 +15,7 @@ public inherited sharing class AtFutureRecipes {
     }
 
     private AtFutureRecipes doCallout(String url) {
-        HttpRequest request = new ARSC_RestRequest()
+        HttpRequest request = new XAP_REST_RestRequest()
             .setEndPoint('https://' + url)
             .toHttpRequest();
         HttpResponse response = new Http()

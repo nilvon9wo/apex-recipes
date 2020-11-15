@@ -1,12 +1,12 @@
 public inherited sharing class ApiServiceRecipes {
-    private ARSC_RestClient restClient;
+    private XAP_REST_RestClient restClient;
 
-    private ApiServiceRecipes(ARSC_RestClient restClient) {
+    private ApiServiceRecipes(XAP_REST_RestClient restClient) {
         this.restClient = restClient;
     }
 
     public ApiServiceRecipes() {
-        this(ARSC_RestClient.getInstance());
+        this(XAP_REST_RestClient.getInstance());
     }
 
     @TestVisible
@@ -24,7 +24,7 @@ public inherited sharing class ApiServiceRecipes {
             = new Map<Type, ApiServiceRecipesHttpResponseConsumer>();
 
     public List<ApiServiceRecipesDataModel> getCurrentData() {
-        ARSC_RestRequest restRequest = new ARSC_RestRequest()
+        XAP_REST_RestRequest restRequest = new XAP_REST_RestRequest()
                 .setNamedCredential(DEFAULT_NAMED_CREDENTIAL)
                 .setPath(GET_BIN_PATH);
 

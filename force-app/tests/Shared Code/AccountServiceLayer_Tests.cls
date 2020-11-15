@@ -1,6 +1,6 @@
-@isTest
+@IsTest
 private inherited sharing class AccountServiceLayer_Tests {
-    @isTest
+    @IsTest
     static void justWriteALogStatementPositive() {
         Test.startTest();
         AccountServiceLayer.justWriteALogStatement('Hello Stream Viewers');
@@ -13,7 +13,7 @@ private inherited sharing class AccountServiceLayer_Tests {
         );
     }
 
-    @isTest
+    @IsTest
     static void testChangeShippingStreetNegativeNoEditAccess() {
         TriggerHandler.bypass('AccountTriggerHandler');
         Account[] accounts = (Account[]) TestFactory.createSObjectList(
@@ -28,7 +28,7 @@ private inherited sharing class AccountServiceLayer_Tests {
         System.runAs(testUser) {
             try {
                 AccountServiceLayer.changeShippingStreet(accounts);
-            } catch (CanTheUser.CanTheUserException ctue) {
+            } catch (CanTheUserException ctue) {
                 if (
                     ctue.getMessage()
                         .containsIgnoreCase('no permission to edit')
@@ -46,7 +46,7 @@ private inherited sharing class AccountServiceLayer_Tests {
         );
     }
 
-    @isTest
+    @IsTest
     static void incrementDescriptionOnBulkAccountsPositive() {
         List<Account> theAccounts = (List<Account>) TestFactory.createSObjectList(
             new Account(),
@@ -66,16 +66,16 @@ private inherited sharing class AccountServiceLayer_Tests {
         );
         for (Account ua : updatedAccounts) {
             System.assert(
-                integer.valueOf(ua.Description) == 1,
+                Integer.valueOf(ua.Description) == 1,
                 'Expected the code to have incremented to 1'
             );
         }
     }
 
-    @isTest
+    @IsTest
     static void incrementDescriptionOnBulkAccountsPositiveInvalidInteger() {
         List<Account> theAccounts = (List<Account>) TestFactory.createSObjectList(
-            new Account(description = 'Hello'),
+            new Account(Description = 'Hello'),
             5
         );
         Test.startTest();
@@ -91,16 +91,16 @@ private inherited sharing class AccountServiceLayer_Tests {
         );
         for (Account ua : updatedAccounts) {
             System.assert(
-                integer.valueOf(ua.Description) == 1,
+                Integer.valueOf(ua.Description) == 1,
                 'Expected the code to have incremented to 1'
             );
         }
     }
 
-    @isTest
+    @IsTest
     static void incrementDescriptionOnBulkAccountsNegativeInvalidIntegerSaves() {
         List<Account> theAccounts = (List<Account>) TestFactory.createSObjectList(
-            new Account(description = 'Hello'),
+            new Account(Description = 'Hello'),
             5
         );
         Boolean didCatchTheRightException = false;
@@ -111,7 +111,7 @@ private inherited sharing class AccountServiceLayer_Tests {
                 theAccounts,
                 true
             );
-        } catch (AccountServiceLayer.ASLException asle) {
+        } catch (ASLException asle) {
             if (asle.getMessage().containsIgnoreCase('id not specified')) {
                 didCatchTheRightException = true;
             }
@@ -124,10 +124,10 @@ private inherited sharing class AccountServiceLayer_Tests {
         );
     }
 
-    @isTest
+    @IsTest
     static void safelySaveNegative() {
         List<Account> theAccounts = (List<Account>) TestFactory.createSObjectList(
-            new Account(description = 'Hello'),
+            new Account(Description = 'Hello'),
             5
         );
         System.assertEquals(
@@ -144,7 +144,7 @@ private inherited sharing class AccountServiceLayer_Tests {
         Test.startTest();
         try {
             AccountServiceLayer.safelySave(theAccounts);
-        } catch (AccountServiceLayer.ASLException asle) {
+        } catch (ASLException asle) {
             System.debug(LoggingLevel.INFO, asle.getMessage());
             didCatchTheRightException = true;
         }
@@ -156,10 +156,10 @@ private inherited sharing class AccountServiceLayer_Tests {
         );
     }
 
-    @isTest
+    @IsTest
     static void safelySaveNegativeNoAccessException() {
         List<Account> theAccounts = (List<Account>) TestFactory.createSObjectList(
-            new Account(description = 'Hello'),
+            new Account(Description = 'Hello'),
             5
         );
         User testUser = TestFactory.createMinAccessUser(true);
@@ -169,7 +169,7 @@ private inherited sharing class AccountServiceLayer_Tests {
         System.runAs(testUser) {
             try {
                 AccountServiceLayer.safelySave(theAccounts);
-            } catch (AccountServiceLayer.ASLException asle) {
+            } catch (ASLException asle) {
                 if (asle.getMessage().containsIgnoreCase('No Access')) {
                     didCatchTheRightException = true;
                 }

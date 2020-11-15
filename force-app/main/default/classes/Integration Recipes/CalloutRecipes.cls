@@ -1,16 +1,16 @@
 public inherited sharing class CalloutRecipes {
     String defaultNamedCredential;
-    ARSC_RestClient restClient;
+    XAP_REST_RestClient restClient;
     XAP_DAO_DML_InheritedSharingDml dml;
 
-    public CalloutRecipes(String namedCredential, ARSC_RestClient restClient, XAP_DAO_DML_InheritedSharingDml dml) {
+    public CalloutRecipes(String namedCredential, XAP_REST_RestClient restClient, XAP_DAO_DML_InheritedSharingDml dml) {
         this.defaultNamedCredential = namedCredential;
         this.restClient = restClient;
         this.dml = dml;
     }
 
     public CalloutRecipes(String namedCredential) {
-        this(namedCredential, ARSC_RestClient.getInstance(), XAP_DAO_DML_InheritedSharingDml.getInstance());
+        this(namedCredential, XAP_REST_RestClient.getInstance(), XAP_DAO_DML_InheritedSharingDml.getInstance());
     }
 
     public CalloutRecipes() {
@@ -19,7 +19,7 @@ public inherited sharing class CalloutRecipes {
 
 
     public String rawCallout() {
-        ARSC_RestRequest restRequest = new ARSC_RestRequest()
+        XAP_REST_RestRequest restRequest = new XAP_REST_RestRequest()
                 .setEndPoint('https://mockbin.org/bin/24d66572-81e6-46bd-986b-610f1b5c4e00/view');
 
         HttpResponse response = this.restClient.get(restRequest);
@@ -31,7 +31,7 @@ public inherited sharing class CalloutRecipes {
     }
 
     public List<Account> httpGetCalloutToSecondOrg() {
-        ARSC_RestRequest restRequest = new ARSC_RestRequest()
+        XAP_REST_RestRequest restRequest = new XAP_REST_RestRequest()
                 .setNamedCredential(this.defaultNamedCredential)
                 .setPath('services/apexrest/IntegrationService');
 
@@ -51,7 +51,7 @@ public inherited sharing class CalloutRecipes {
     }
 
     public Integer httpDeleteCalloutToSecondOrg(Id contactId) {
-        ARSC_RestRequest restRequest = new ARSC_RestRequest()
+        XAP_REST_RestRequest restRequest = new XAP_REST_RestRequest()
                 .setNamedCredential(this.defaultNamedCredential)
                 .setPath('services/apexrest/IntegrationService/')
                 .setQuery('?contactId=' + contactId);
@@ -62,7 +62,7 @@ public inherited sharing class CalloutRecipes {
 
     public Integer httpPostCalloutToSecondOrg(List<Contact> contactRecords) {
         try {
-            ARSC_RestRequest restRequest = new ARSC_RestRequest()
+            XAP_REST_RestRequest restRequest = new XAP_REST_RestRequest()
                     .setNamedCredential(this.defaultNamedCredential)
                     .setPath('services/apexrest/IntegrationService/')
                     .setBody(JSON.serialize(contactRecords));
@@ -78,7 +78,7 @@ public inherited sharing class CalloutRecipes {
 
     public Integer httpPutCalloutToSecondOrg(List<Contact> contactRecords) {
         try {
-            ARSC_RestRequest restRequest = new ARSC_RestRequest()
+            XAP_REST_RestRequest restRequest = new XAP_REST_RestRequest()
                     .setNamedCredential('Second_Org')
                     .setPath('services/apexrest/IntegrationService/')
                     .setBody(JSON.serialize(contactRecords));
@@ -94,7 +94,7 @@ public inherited sharing class CalloutRecipes {
 
     public Integer httpPatchCalloutToSecondOrg(List<Account> accountRecords) {
         try {
-            ARSC_RestRequest restRequest = new ARSC_RestRequest()
+            XAP_REST_RestRequest restRequest = new XAP_REST_RestRequest()
                     .setNamedCredential(this.defaultNamedCredential)
                     .setPath('services/apexrest/IntegrationService/')
                     .setBody(JSON.serialize(accountRecords));
@@ -109,7 +109,7 @@ public inherited sharing class CalloutRecipes {
     }
 
     public Map<String, Object> httpCalloutWithUntypedResponse() {
-        ARSC_RestRequest restRequest = new ARSC_RestRequest()
+        XAP_REST_RestRequest restRequest = new XAP_REST_RestRequest()
                 .setNamedCredential('ExternalEndpoint')
                 .setPath('fakeEndpoint/');
 

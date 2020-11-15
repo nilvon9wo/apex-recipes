@@ -16,7 +16,7 @@
                       <option name="entries">
                         <list>
                           <MetadataEntry>
-                            <option name="name" value="ARSC_RestRequestException" />
+                            <option name="name" value="XAP_REST_RestRequestException" />
                             <option name="selected" value="true" />
                           </MetadataEntry>
                           <MetadataEntry>

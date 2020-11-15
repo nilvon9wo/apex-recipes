@@ -1,5 +1,5 @@
 @IsTest
-public with sharing class ARSC_RestRequest_Tests {
+public with sharing class XAP_REST_RestRequest_Tests {
     private static final User TEST_USER = TEST_DummyUserFactoryOutlet.TEST_ADMIN_USER;
 
     @IsTest
@@ -7,10 +7,10 @@ public with sharing class ARSC_RestRequest_Tests {
         // Arrange : Nothing to do here
 
         // Act
-        ARSC_RestRequest restRequestUnderTest;
+        XAP_REST_RestRequest restRequestUnderTest;
         Test.startTest();
         System.runAs(TEST_USER) {
-            restRequestUnderTest = new ARSC_RestRequest().setNamedCredential('dummyNamedCredential');
+            restRequestUnderTest = new XAP_REST_RestRequest().setNamedCredential('dummyNamedCredential');
         }
         Test.stopTest();
 

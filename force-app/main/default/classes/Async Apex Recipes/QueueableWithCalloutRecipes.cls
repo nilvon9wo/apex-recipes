@@ -1,10 +1,10 @@
 public inherited sharing class QueueableWithCalloutRecipes implements Queueable, Database.AllowsCallouts {
-    private ARSC_RestClient restClient;
+    private XAP_REST_RestClient restClient;
     private DAO_AccountSelector accountSelector;
     private XAP_DAO_DML_InheritedSharingDml dml;
 
     private QueueableWithCalloutRecipes(
-            ARSC_RestClient restClient,
+            XAP_REST_RestClient restClient,
             DAO_AccountSelector accountSelector,
             XAP_DAO_DML_InheritedSharingDml dml
     ) {
@@ -15,7 +15,7 @@ public inherited sharing class QueueableWithCalloutRecipes implements Queueable,
 
     public QueueableWithCalloutRecipes() {
         this(
-                ARSC_RestClient.getInstance(),
+                XAP_REST_RestClient.getInstance(),
                 DAO_AccountSelector.getInstance(),
                 XAP_DAO_DML_InheritedSharingDml.getInstance()
         );
@@ -45,7 +45,7 @@ public inherited sharing class QueueableWithCalloutRecipes implements Queueable,
     }
 
     private HttpResponse makeApiCall() {
-        ARSC_RestRequest request = new ARSC_RestRequest()
+        XAP_REST_RestRequest request = new XAP_REST_RestRequest()
                 .setNamedCredential('mockBin')
                 .setPath('/');
         HttpResponse response = this.restClient.makeApiCall(request);
