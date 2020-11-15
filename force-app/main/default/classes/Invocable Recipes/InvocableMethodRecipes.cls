@@ -40,25 +40,13 @@ public inherited sharing class InvocableMethodRecipes {
     }
 
     private List<Contact> selectContactList(List<SObject> sObjectList) {
-        String sObjectType = sObjectList[0].getSObjectType()
-                .getDescribe()
-                .getName()
-                .toLowerCase();
-
-        switch on sObjectType {
-            when 'account' {
-                Set<Id> idSet = new Map<Id, SObject>(sObjectList).keySet();
-                return this.contactSelector.secureSelectByAccountId(idSet);
-            }
-            when 'task' {
-                Set<Id> idSet = this.setExtractor.extractNonNullIdsFrom(sObjectList, Task.WhoId);
-                return this.contactSelector.secureSelectById(idSet);
-            }
-            when else {
-                throw new InvocableMethodRecipesException(
-                        'Unknown object type passed. This method only supports Account and Task.'
-                );
-            }
+        try {
+            return this.contactSelector.selectFrom(sObjectList);
+        }
+        catch (DAO_UnsupportedSObjectException unsupportedSObjectException) {
+            throw new InvocableMethodRecipesException(
+                    unsupportedSObjectException.getMessage()
+            );
         }
     }
 }

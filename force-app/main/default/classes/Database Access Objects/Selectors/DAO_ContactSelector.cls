@@ -1,5 +1,12 @@
 public with sharing virtual class DAO_ContactSelector extends XAP_DAO_SOQL_SObjectSelectorAbs {
+    private XAP_COLL_SObjectValueSetExtractor setExtractor;
+
+    protected DAO_ContactSelector(XAP_COLL_SObjectValueSetExtractor setExtractor) {
+        this.setExtractor = setExtractor;
+    }
+
     protected DAO_ContactSelector() {
+        this(XAP_COLL_SObjectValueSetExtractor.getInstance());
     }
 
     private static DAO_ContactSelector instance;
@@ -19,10 +26,6 @@ public with sharing virtual class DAO_ContactSelector extends XAP_DAO_SOQL_SObje
         }
         set;
     }
-    public DAO_ContactSelector setAccountSelector(DAO_AccountSelector accountSelector) {
-        this.accountSelector = accountSelector;
-        return this;
-    }
 
     public SObjectType getSObjectType() {
         return Contact.SObjectType;
@@ -36,6 +39,10 @@ public with sharing virtual class DAO_ContactSelector extends XAP_DAO_SOQL_SObje
                 Contact.Name
         };
     }
+
+    private static final Set<SObjectType> SOBJECT_TYPES_SUPPORTED_BY_MULTI_SOBJECT_SELECTION = new Set<SObjectType>{
+            Account.SObjectType, Task.SObjectType
+    };
 
     public virtual List<Contact> secureSelectById(Set<Id> idSet) {
         return this.createQueryFactory()
@@ -67,5 +74,46 @@ public with sharing virtual class DAO_ContactSelector extends XAP_DAO_SOQL_SObje
 
         return contactQueryFactory.query();
     }
+
+    public List<Contact> selectFrom(List<SObject> sObjectList) {
+        Map<SObjectType, List<SObject>> sObjectListBySObjectTypeMap = this.buildSObjectListBySObjectTypeMap(sObjectList);
+        List<XAP_DAO_SOQL_WHERE_ClauseIntf> conditionList = new List<XAP_DAO_SOQL_WHERE_ClauseIntf>();
+        if (sObjectListBySObjectTypeMap.containsKey(Account.SObjectType)) {
+            Set<Id> accountIdSet = new Map<Id, SObject>(sObjectList).keySet();
+            conditionList.add(new XAP_DAO_SOQL_WHERE_InIdSetClause(Contact.AccountId, accountIdSet));
+        }
+
+        if (sObjectListBySObjectTypeMap.containsKey(Task.SObjectType)) {
+            Set<Id> idSet = this.setExtractor.extractNonNullIdsFrom(sObjectList, Task.WhoId);
+            conditionList.add(new XAP_DAO_SOQL_WHERE_InIdSetClause(idSet));
+        }
+
+        return this.createQueryFactory()
+                .setEnforceFLS()
+                .setSecurityEnforced()
+                .setCondition(new XAP_DAO_SOQL_WHERE_OrClause(conditionList))
+                .query();
+    }
+
+    private Map<SObjectType, List<SObject>> buildSObjectListBySObjectTypeMap(List<SObject> inputSObjectList) {
+        Map<SObjectType, List<SObject>> sObjectListBySObjectTypeMap = new Map<SObjectType, List<SObject>>();
+        for (SObject sObj : inputSObjectList) {
+            SObjectType sObjectType = sObj.getSObjectType();
+            if (!SOBJECT_TYPES_SUPPORTED_BY_MULTI_SOBJECT_SELECTION.contains(sObjectType)) {
+                throw new DAO_UnsupportedSObjectException(
+                        'Unknown object type passed. This method only supports Account and Task.'
+                );
+            }
+
+            List<SObject> typeSObjectList = sObjectListBySObjectTypeMap.get(sObjectType);
+            if (typeSObjectList == null) {
+                typeSObjectList = new List<SObject>();
+                sObjectListBySObjectTypeMap.put(sObjectType, typeSObjectList);
+            }
+            typeSObjectList.add(sObj);
+        }
+        return sObjectListBySObjectTypeMap;
+    }
+
 
 }
