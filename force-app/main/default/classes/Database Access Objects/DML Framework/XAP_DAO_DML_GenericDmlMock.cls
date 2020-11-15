@@ -26,6 +26,16 @@ public class XAP_DAO_DML_GenericDmlMock implements XAP_DAO_DML_GenericDmlIntf {
 		return this.doInsert(sObjectList, XAP_DAO_DML_OperationModeEnum.ALL_OR_NONE);
 	}
 
+	// Publish Methods -----------------------------------------------------------------------------------------
+	public List<List<SObject>> publishedSObjectListList = new List<List<SObject>>();
+
+	public virtual XAP_DAO_DML_SaveResultListWrapper doPublish(List<SObject> sObjectList) {
+		if (sObjectList != null && !sObjectList.isEmpty()) {
+			this.publishedSObjectListList.add(sObjectList);
+		}
+		return (XAP_DAO_DML_SaveResultListWrapper) this.getNextResultList();
+	}
+
 	// Update Methods -----------------------------------------------------------------------------------------
 	public List<List<SObject>> updatedSObjectListList = new List<List<SObject>>();
 	public List<XAP_DAO_DML_OperationModeEnum> updateWasAllOrNoneList = new List<XAP_DAO_DML_OperationModeEnum>();

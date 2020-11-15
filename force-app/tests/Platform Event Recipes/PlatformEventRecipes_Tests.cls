@@ -1,52 +1,54 @@
-@isTest
+@IsTest
 private inherited sharing class PlatformEventRecipes_Tests {
-    @isTest
+    private static final PlatformEventRecipes RECIPES_UNDER_TEST = new PlatformEventRecipes();
+
+    @IsTest
     static void testEventPublishPositive() {
         Account acct = (Account) TestFactory.createSObject(
-            new Account(name = 'testEvent'),
-            true
+                new Account(Name = 'testEvent'),
+                true
         );
         Event_Recipes_Demo__e event = new Event_Recipes_Demo__e(
-            Url__c = 'https://google.com',
-            Title__c = 'demo.jpg',
-            AccountId__c = acct.Id
+                url__c = 'https://google.com',
+                title__c = 'demo.jpg',
+                accountId__c = acct.Id
         );
         Test.startTest();
-        Database.SaveResult publishResult = PlatformEventRecipes.publishEvent(
-            event
+        XAP_DAO_DML_SaveResultListWrapper publishResult = RECIPES_UNDER_TEST.publishEvent(
+                event
         );
         Test.stopTest();
 
         System.assert(
-            publishResult.isSuccess(),
-            'Expected the publish event to succeed'
+                publishResult.getResultWrapperList()[0].isSuccess(),
+                'Expected the publish event to succeed'
         );
     }
 
-    @isTest
+    @IsTest
     static void testEventPublishNegativeInvalidFields() {
         Event_Recipes_Demo__e event = new Event_Recipes_Demo__e(
-            Url__c = 'https://google.com',
-            Title__c = 'demo.jpg'
+                url__c = 'https://google.com',
+                title__c = 'demo.jpg'
         );
 
         Test.startTest();
-        Database.SaveResult publishResult = PlatformEventRecipes.publishEvent(
-            event
+        XAP_DAO_DML_SaveResultListWrapper publishResult = RECIPES_UNDER_TEST.publishEvent(
+                event
         );
         Test.stopTest();
 
         System.assert(
-            !publishResult.isSuccess(),
-            'Expected the publish event to fail'
+                !publishResult.getResultWrapperList()[0].isSuccess(),
+                'Expected the publish event to fail'
         );
     }
 
-    @isTest
+    @IsTest
     static void testEventPublishNegativeMinAccessUser() {
         Event_Recipes_Demo__e event = new Event_Recipes_Demo__e(
-            Url__c = 'https://google.com',
-            Title__c = 'demo.jpg'
+                url__c = 'https://google.com',
+                title__c = 'demo.jpg'
         );
         Boolean didCatchCorrectException = false;
         User testUser = TestFactory.createMinAccessUser(true);
@@ -54,14 +56,15 @@ private inherited sharing class PlatformEventRecipes_Tests {
         Test.startTest();
         System.runAs(testUser) {
             try {
-                PlatformEventRecipes.publishEvent(event);
-            } catch (PlatformEventRecipes.PlatformEventRecipesException pere) {
+                RECIPES_UNDER_TEST.publishEvent(event);
+            }
+            catch (PlatformEventRecipesException pere) {
                 if (
-                    pere.getMessage()
-                        .containsIgnoreCase(
-                            'User has no permission to publish event'
+                        pere.getMessage()
+                                .containsIgnoreCase(
+                                'User has no permission to publish event'
                         )
-                ) {
+                        ) {
                     didCatchCorrectException = true;
                 }
             }
@@ -69,8 +72,8 @@ private inherited sharing class PlatformEventRecipes_Tests {
         Test.stopTest();
 
         System.assert(
-            didCatchCorrectException,
-            'Expected to have received a PlatformEventRecipesException when a min-access user tries to publish an event'
+                didCatchCorrectException,
+                'Expected to have received a PlatformEventRecipesException when a min-access user tries to publish an event'
         );
     }
 }

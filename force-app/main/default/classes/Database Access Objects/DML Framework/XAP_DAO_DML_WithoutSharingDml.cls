@@ -32,6 +32,10 @@ public virtual without sharing class XAP_DAO_DML_WithoutSharingDml implements XA
 		return this.inheritedSharingDml.doInsert(sObjectList);
 	}
 
+	public XAP_DAO_DML_SaveResultListWrapper doPublish(List<SObject> sObjectList) {
+		return this.inheritedSharingDml.doPublish(sObjectList);
+	}
+
 	public XAP_DAO_DML_SaveResultListWrapper doUpdate(List<SObject> sObjectList, XAP_DAO_DML_OperationModeEnum operationMode) {
 		return this.inheritedSharingDml.doUpdate(sObjectList, operationMode);
 	}

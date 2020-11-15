@@ -1,55 +1,11 @@
-/**
- * @description A reusable, intuitive library for determing wether or not the
- * current use can create, read, edit, or delete objects as well as
- * determining if the user has access or update permissions on specific fields.
- * This class name was chosen to facilitate easy-to-understand and read code.
- * Whenever you need to check FLS or CRUD access your code reads like this
- * `if(CanTheUser.read(new account())){}` making the calling and use of this
- * code easy and intuitive.
- * @group Security Recipes
- */
 public inherited sharing class CanTheUser {
-    @testVisible
+    @TestVisible
     private static Map<String, Set<String>> accessibleFieldsByObject = new Map<String, Set<String>>();
-    @testVisible
+    @TestVisible
     private static Map<String, Set<String>> updatableFieldsByObject = new Map<String, Set<String>>();
 
-    /**
-     * @description Internal custom exception class
-     */
-    public class CanTheUserException extends Exception {
-    }
-
-    public enum CrudType {
-        CREATE,
-        READ,
-        EDIT,
-        DEL
-    }
-
-    public enum FLSType {
-        ACCESSIBLE,
-        UPDATABLE
-    }
-
-    /**
-     * Description this cachebuilder interface allows the CanTheUser clas to
-     * cache per-object results for each object requested. This prevents the
-     * need to repeatedly calculate permission usage by calling
-     * Schema.Describe* calls
-     */
     private class PermissionCache implements Cache.CacheBuilder {
-        /**
-         * @description   Required method for the CacheBuilder interface. Used
-         * here to either calcuate an objects per-user FLS, OR to return it
-         * from Cache.
-         * The return datastructure for this is
-         * Map<String, Map<FLSType,Boolean>> and represents:
-         * FieldName -> FLStype -> True/False
-         * @param objType String object name used as the cache key
-         * @returns       `Object`
-         */
-        public Object doLoad(string objType) {
+        public Object doLoad(String objType) {
             Schema.DescribeSObjectResult[] descResult = Schema.describeSObjects(
                 new List<String>{ objType }
             );
@@ -68,22 +24,6 @@ public inherited sharing class CanTheUser {
         }
     }
 
-    /**
-     * This class' name was chosen to facilitate easy-to-understand and read
-     * code. Whenever you need to check FLS or CRUD access your code reads like
-     * this
-     * `if(CanTheUser.read(new account())){}` making the calling and use of this
-     * code easy and intuitive.
-     */
-
-    /**
-     * @description
-     * @param obj the object type to check
-     * @param permission create, read, update or delete
-     * @return Boolean
-     * @example
-     * System.debug(CanTheUser.crud(new Account(), CanTheUser.CrudType.READ));
-     **/
     public static Boolean crud(SObject obj, CrudType permission) {
         switch on permission {
             when CREATE {
@@ -102,76 +42,26 @@ public inherited sharing class CanTheUser {
         return false;
     }
 
-    /**
-     * @description convenience api for determining if the running user can
-     * create the specified object
-     * @param obj Object type to check create permissions on
-     * @return Boolean
-     * @example
-     * System.debug(CanTheUser.create(new Account()));
-     **/
     public static Boolean create(SObject obj) {
         return CanTheUser.crud(obj, CrudType.CREATE);
     }
 
-    /**
-     * @description convenience api for determining if the running user can
-     * read / access the specified object
-     * @param obj object type to check read permissions on
-     * @return Boolean
-     * @example
-     * System.debug(CanTheUser.read(new Account()));
-     **/
     public static Boolean read(SObject obj) {
         return CanTheUser.crud(obj, CrudType.READ);
     }
 
-    /**
-     * @description convenience api for determining if the running user can
-     * edit / update the specified object
-     * @param obj object type to check edit permissions on
-     * @return Boolean
-     * @example
-     * System.debug(CanTheUser.edit(new Account()));
-     **/
     public static Boolean edit(SObject obj) {
         return CanTheUser.crud(obj, CrudType.EDIT);
     }
 
-    /**
-     * @description convenience api for determining if the running user can
-     * delete/destroy the specified object
-     * @param obj object type to check destroy permissions on
-     * @return Boolean
-     * @example
-     * System.debug(CanTheUser.destroy(new Account()));
-     **/
     public static Boolean destroy(SObject obj) {
         return CanTheUser.crud(obj, CrudType.DEL);
     }
 
-    /**
-     * @description public method to determine if a given field on a given
-     * object is Accessible (readable)
-     * @param obj the object in question, in string form
-     * @param field the field in question in SObjectField form
-     * @return Boolean
-     * @example
-     * System.debug(CanTheuser.flsAccessible('Account', 'Name'));
-     **/
     public static Boolean flsAccessible(String obj, String field) {
         return getFLSForFieldOnObject(obj, field, FLSType.ACCESSIBLE);
     }
 
-    /**
-     * @description  bulk form of flsAccessible
-     * @param obj    Obj name on which to check
-     * @param fields Set of Fields to check for accessibility.
-     * @return      `Map<String, Boolean>`
-     * @example
-     * String[] fields = new String[]{'Name', 'ShippingStreet'};
-     * System.debug(CanTheuser.bulkFLSAccessible('Account', fields));
-     */
     public static Map<String, Boolean> bulkFLSAccessible(
         String obj,
         Set<String> fields
@@ -183,28 +73,10 @@ public inherited sharing class CanTheUser {
         return results;
     }
 
-    /**
-     * @description public method to determine if a given field on a given
-     * object is Updatable.
-     * @param obj the string version of an object name
-     * @param field the field to check
-     * @return Boolean
-     * @example
-     * System.debug(CanTheuser.flsUpdatable('Account', 'Name'));
-     **/
     public static Boolean flsUpdatable(String obj, String field) {
         return getFLSForFieldOnObject(obj, field, FLSType.UPDATABLE);
     }
 
-    /**
-     * @description  bulk form of flsUpdatable call
-     * @param obj    Name of the object
-     * @param fields Set of Field names to check
-     * @return      `Map<String, Boolean>`
-     * @example
-     * String[] fields = new String[]{'Name', 'ShippingStreet'};
-     * System.debug(CanTheuser.bulkFLSUpdatable('Account', fields));
-     */
     public static Map<String, Boolean> bulkFLSUpdatable(
         String obj,
         Set<String> fields
@@ -216,34 +88,20 @@ public inherited sharing class CanTheUser {
         return results;
     }
 
-    /**
-     * @description   Utilizes the Metadata catalog to determine FLS
-     *
-     * Note: this method contains a false-positive PMD violation.
-     * Normally, we'd want to check for FLS/CRUD here, but for metadata catalog
-     * objects that admins cannot remove permissions to we're ok.
-     *
-     * Additionally, even the minimum access profile user has read access
-     * to the FieldPermissions object.
-     *
-     * @param objType String version of the object type to check
-     * @param action  Enum of the FLS action to check permissions for
-     * @return       `set<String>`
-     */
     @SuppressWarnings('PMD.ApexCRUDViolation')
-    @testVisible
-    private static set<String> memoizeFLSMDC(String objType, FLSType action) {
+    @TestVisible
+    private static Set<String> memoizeFLSMDC(String objType, FLSType action) {
         List<FieldPermissions> fields = [
-            SELECT Id, field, permissionsEdit, permissionsRead, SObjectType
+            SELECT Id, Field, PermissionsEdit, PermissionsRead, SobjectType
             FROM FieldPermissions
-            WHERE SObjecttype = :objType
+            WHERE SobjectType = :objType
         ];
 
         if (!CanTheUser.accessibleFieldsByObject.containsKey(objType)) {
             Set<String> accessibleFields = new Set<String>();
             Set<String> updatableFields = new Set<String>();
             for (FieldPermissions field : fields) {
-                String[] parts = field.field.split('\\.');
+                String[] parts = field.Field.split('\\.');
                 if (field.PermissionsRead) {
                     accessibleFields.add(parts[1].toLowerCase());
                 }
@@ -255,7 +113,7 @@ public inherited sharing class CanTheUser {
             CanTheUser.updatableFieldsByObject.put(objType, updatableFields);
         }
 
-        if (action == CanTheUser.FLSType.ACCESSIBLE) {
+        if (action == FLSType.ACCESSIBLE) {
             return CanTheUser.accessibleFieldsByObject.get(objType);
         } else {
             return CanTheUser.updatableFieldsByObject.get(objType);
@@ -275,7 +133,7 @@ public inherited sharing class CanTheUser {
         String field,
         FLSType checkType
     ) {
-        Cache.Partition defaultSession = PlatformCacheRecipes.getDefaultPartition(
+        Cache.Partition defaultSession = new PlatformCacheRecipes().getDefaultPartition(
             PartitionType.SESSION
         );
         Map<String, Map<FLSType, Boolean>> objResults = (Map<String, Map<FLSType, Boolean>>) defaultSession

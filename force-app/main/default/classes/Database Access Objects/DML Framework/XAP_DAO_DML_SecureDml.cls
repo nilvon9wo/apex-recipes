@@ -66,6 +66,16 @@ public virtual inherited sharing class XAP_DAO_DML_SecureDml implements XAP_DAO_
 		throw new XAP_DAO_DML_AccessCtrlDmlException('Insufficient access to insert ' + sObjectList[0].getSObjectType());
 	}
 
+	// Publish ---------------------------------------------------------------------------------------------------------
+
+	public XAP_DAO_DML_SaveResultListWrapper doPublish(List<SObject> sObjectList) {
+		if (this.checkPermissions(sObjectList, CAN_INSERT_SET)) {
+			return this.withDmlFor(this.sharingModeEnum)
+					.doPublish(sObjectList);
+		}
+		throw new XAP_DAO_DML_AccessCtrlDmlException('User has no permission to publish ' + sObjectList[0].getSObjectType());
+	}
+
 	// Update ---------------------------------------------------------------------------------------------------------
 
 	private static final Set<XAP_DAO_DML_OperationTypeEnum> CAN_UPDATE_SET

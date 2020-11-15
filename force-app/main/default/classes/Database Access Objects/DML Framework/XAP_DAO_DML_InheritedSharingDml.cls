@@ -29,6 +29,12 @@ public virtual inherited sharing class XAP_DAO_DML_InheritedSharingDml implement
 		return this.doInsert(sObjectList, XAP_DAO_DML_OperationModeEnum.ALL_OR_NONE);
 	}
 
+	// Publish Methods -----------------------------------------------------------------------------------------
+
+	public virtual XAP_DAO_DML_SaveResultListWrapper doPublish(List<SObject> sObjectList) {
+		return new XAP_DAO_DML_SaveResultListWrapper(EventBus.publish(sObjectList));
+	}
+
 	// Update Methods -----------------------------------------------------------------------------------------
 
 	public virtual XAP_DAO_DML_SaveResultListWrapper doUpdate(List<SObject> sObjectList, XAP_DAO_DML_OperationModeEnum operationMode) {

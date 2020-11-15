@@ -1,34 +1,20 @@
-/**
- * @description Demonstrates how to publish events on the event bus
- * @group Platform Event Recipes
- * @see PlatformEventTriggerHandler, TriggerHandler
- */
 public inherited sharing class PlatformEventRecipes {
-    /**
-     * @description Internal custom exception class
-     */
-    public class PlatformEventRecipesException extends Exception {
+    private XAP_DAO_DML_SecureDml dml;
+
+    public PlatformEventRecipes(XAP_DAO_DML_SecureDml dml) {
+        this.dml = dml;
     }
-    /**
-     * @description publishes a platform event
-     * @param event an Event_Recipes_Demo__e object
-     * @return Database.SaveResult
-     * @example
-     * Account acct = new Account(name = 'Awesome Events Ltd.');
-     * insert acct;
-     * Event_Recipes_Demo__e evt = new Event_Recipes_Demo__e(accountId__c = acct.id, title__c='Updated website', url__c = 'https://developer.salesforce.com');
-     * Database.saveResults result = PlatformEventsRecipes.publishEvent(evt);
-     * System.debug(result);
-     **/
-    public static Database.SaveResult publishEvent(
-        Event_Recipes_Demo__e event
-    ) {
-        if (CanTheUser.create(event)) {
-            return EventBus.publish(event);
-        } else {
-            throw new PlatformEventRecipesException(
-                'User has no permission to publish event'
-            );
+
+    public PlatformEventRecipes() {
+        this(XAP_DAO_DML_SecureDml.getInstance());
+    }
+
+    public XAP_DAO_DML_SaveResultListWrapper publishEvent(Event_Recipes_Demo__e event) {
+        try {
+            return this.dml.doPublish(new List<Event_Recipes_Demo__e>{event});
+        }
+        catch (XAP_DAO_DML_CrudException ex){
+            throw new PlatformEventRecipesException('User has no permission to publish event');
         }
     }
 }

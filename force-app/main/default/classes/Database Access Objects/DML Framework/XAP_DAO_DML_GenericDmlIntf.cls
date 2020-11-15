@@ -3,6 +3,8 @@ public interface XAP_DAO_DML_GenericDmlIntf {
 	XAP_DAO_DML_SaveResultListWrapper doInsert(List<SObject> sObjectList, XAP_DAO_DML_OperationModeEnum operationMode);
 	XAP_DAO_DML_SaveResultListWrapper doInsert(List<SObject> sObjectList);
 
+	XAP_DAO_DML_SaveResultListWrapper doPublish(List<SObject> sObjectList);
+
 	XAP_DAO_DML_SaveResultListWrapper doUpdate(List<SObject> sObjectList, XAP_DAO_DML_OperationModeEnum operationMode);
 	XAP_DAO_DML_SaveResultListWrapper doUpdate(List<SObject> sObjectList);
 
