@@ -1,16 +1,18 @@
 @IsTest
 private class PlatformCacheRecipes_Tests {
+    private static final PlatformCacheRecipes RECIPES_UNDER_TEST = new PlatformCacheRecipes();
+    
     @IsTest
     static void testStoreValueInSessionCachePositive() {
         Test.startTest();
-        PlatformCacheRecipes.storeValueInSessionCache(
+        RECIPES_UNDER_TEST.storeValueInSessionCache(
             'Account',
             'This is a test'
         );
         Test.stopTest();
 
         System.assert(
-            PlatformCacheRecipes.getDefaultPartition(
+            RECIPES_UNDER_TEST.getDefaultPartition(
                     PartitionType.SESSION
                 )
                 .getKeys()
@@ -19,7 +21,7 @@ private class PlatformCacheRecipes_Tests {
         );
         System.assertEquals(
             'This is a test',
-            PlatformCacheRecipes.getDefaultPartition(
+            RECIPES_UNDER_TEST.getDefaultPartition(
                     PartitionType.SESSION
                 )
                 .get('Account'),
@@ -30,7 +32,7 @@ private class PlatformCacheRecipes_Tests {
     @IsTest
     static void testStoreValueInSessionCacheWithTTLPositive() {
         Test.startTest();
-        PlatformCacheRecipes.storeValueInSessionCache(
+        RECIPES_UNDER_TEST.storeValueInSessionCache(
             'Account',
             'This is a test',
             4800
@@ -38,7 +40,7 @@ private class PlatformCacheRecipes_Tests {
         Test.stopTest();
 
         System.assert(
-            PlatformCacheRecipes.getDefaultPartition(
+            RECIPES_UNDER_TEST.getDefaultPartition(
                     PartitionType.SESSION
                 )
                 .getKeys()
@@ -47,7 +49,7 @@ private class PlatformCacheRecipes_Tests {
         );
         System.assertEquals(
             'This is a test',
-            PlatformCacheRecipes.getDefaultPartition(
+            RECIPES_UNDER_TEST.getDefaultPartition(
                     PartitionType.SESSION
                 )
                 .get('Account'),
@@ -57,12 +59,12 @@ private class PlatformCacheRecipes_Tests {
 
     @IsTest
     static void testGetValueFromSessionCachePositive() {
-        PlatformCacheRecipes.storeValueInSessionCache(
+        RECIPES_UNDER_TEST.storeValueInSessionCache(
             'Account',
             'This is a test'
         );
         Test.startTest();
-        String results = PlatformCacheRecipes.getValueFromSessionCache(
+        String results = RECIPES_UNDER_TEST.getValueFromSessionCache(
             'Account'
         );
         Test.stopTest();
@@ -76,7 +78,7 @@ private class PlatformCacheRecipes_Tests {
     @IsTest
     static void testGetValueFromSessionCacheNegativeNoValueForKey() {
         Test.startTest();
-        String results = PlatformCacheRecipes.getValueFromSessionCache(
+        String results = RECIPES_UNDER_TEST.getValueFromSessionCache(
             'Account'
         );
         Test.stopTest();
@@ -89,15 +91,15 @@ private class PlatformCacheRecipes_Tests {
 
     @IsTest
     static void testRemoveKeyFromSessionCachePositive() {
-        PlatformCacheRecipes.storeValueInSessionCache(
+        RECIPES_UNDER_TEST.storeValueInSessionCache(
             'Account',
             'This is a test'
         );
         Test.startTest();
-        PlatformCacheRecipes.removeKeyFromSessionCache('Account');
+        RECIPES_UNDER_TEST.removeKeyFromSessionCache('Account');
         Test.stopTest();
         System.assert(
-            !PlatformCacheRecipes.getDefaultPartition(
+            !RECIPES_UNDER_TEST.getDefaultPartition(
                     PartitionType.SESSION
                 )
                 .getKeys()
@@ -111,7 +113,7 @@ private class PlatformCacheRecipes_Tests {
         Boolean didCatchProperException = false;
         Test.startTest();
         try {
-            PlatformCacheRecipes.removeKeyFromSessionCache('fakekey');
+            RECIPES_UNDER_TEST.removeKeyFromSessionCache('fakekey');
         } catch ( CacheException ce) {
             if (ce.getMessage().containsIgnoreCase('key not found')) {
                 didCatchProperException = true;
@@ -128,11 +130,11 @@ private class PlatformCacheRecipes_Tests {
     @IsTest
     static void testStoreValueInOrgCachePositive() {
         Test.startTest();
-        PlatformCacheRecipes.storeValueInOrgCache('Account', 'This is a test');
+        RECIPES_UNDER_TEST.storeValueInOrgCache('Account', 'This is a test');
         Test.stopTest();
 
         System.assert(
-            PlatformCacheRecipes.getDefaultPartition(
+            RECIPES_UNDER_TEST.getDefaultPartition(
                     PartitionType.ORG
                 )
                 .getKeys()
@@ -141,7 +143,7 @@ private class PlatformCacheRecipes_Tests {
         );
         System.assertEquals(
             'This is a test',
-            PlatformCacheRecipes.getDefaultPartition(
+            RECIPES_UNDER_TEST.getDefaultPartition(
                     PartitionType.ORG
                 )
                 .get('Account'),
@@ -152,7 +154,7 @@ private class PlatformCacheRecipes_Tests {
     @IsTest
     static void testStoreValueInOrgCacheWithTTLPositive() {
         Test.startTest();
-        PlatformCacheRecipes.storeValueInOrgCache(
+        RECIPES_UNDER_TEST.storeValueInOrgCache(
             'Account',
             'This is a test',
             4800
@@ -160,7 +162,7 @@ private class PlatformCacheRecipes_Tests {
         Test.stopTest();
 
         System.assert(
-            PlatformCacheRecipes.getDefaultPartition(
+            RECIPES_UNDER_TEST.getDefaultPartition(
                     PartitionType.ORG
                 )
                 .getKeys()
@@ -169,7 +171,7 @@ private class PlatformCacheRecipes_Tests {
         );
         System.assertEquals(
             'This is a test',
-            PlatformCacheRecipes.getDefaultPartition(
+            RECIPES_UNDER_TEST.getDefaultPartition(
                     PartitionType.ORG
                 )
                 .get('Account'),
@@ -179,9 +181,9 @@ private class PlatformCacheRecipes_Tests {
 
     @IsTest
     static void testGetValueFromOrgCachePositive() {
-        PlatformCacheRecipes.storeValueInOrgCache('Contact', 'This is a test');
+        RECIPES_UNDER_TEST.storeValueInOrgCache('Contact', 'This is a test');
         Test.startTest();
-        String results = PlatformCacheRecipes.getValuefromOrgCache('Contact');
+        String results = RECIPES_UNDER_TEST.getValuefromOrgCache('Contact');
         Test.stopTest();
         System.assertEquals(
             'This is a test',
@@ -193,7 +195,7 @@ private class PlatformCacheRecipes_Tests {
     @IsTest
     static void testGetValueFromOrgCacheNegativeNoValueForKey() {
         Test.startTest();
-        String results = PlatformCacheRecipes.getValuefromOrgCache('Account');
+        String results = RECIPES_UNDER_TEST.getValuefromOrgCache('Account');
         Test.stopTest();
         System.assertEquals(
             'Cache Miss',
@@ -204,12 +206,12 @@ private class PlatformCacheRecipes_Tests {
 
     @IsTest
     static void testRemoveKeyFromOrgCachePositive() {
-        PlatformCacheRecipes.storeValueInOrgCache('Account', 'This is a test');
+        RECIPES_UNDER_TEST.storeValueInOrgCache('Account', 'This is a test');
         Test.startTest();
-        PlatformCacheRecipes.removeKeyFromOrgCache('Account');
+        RECIPES_UNDER_TEST.removeKeyFromOrgCache('Account');
         Test.stopTest();
         System.assert(
-            !PlatformCacheRecipes.getDefaultPartition(
+            !RECIPES_UNDER_TEST.getDefaultPartition(
                     PartitionType.ORG
                 )
                 .getKeys()
@@ -223,7 +225,7 @@ private class PlatformCacheRecipes_Tests {
         Boolean didCatchProperException = false;
         Test.startTest();
         try {
-            PlatformCacheRecipes.removeKeyFromOrgCache('fakekey');
+            RECIPES_UNDER_TEST.removeKeyFromOrgCache('fakekey');
         } catch ( CacheException ce) {
             if (ce.getMessage().containsIgnoreCase('key not found')) {
                 didCatchProperException = true;
