@@ -1,144 +1,135 @@
 public inherited sharing class CanTheUser {
+    private DAO_FieldPermissionsSelector fieldPermissionsSelector;
+    private PlatformCacheRecipes platformCacheRecipes;
+
+    private CanTheUser(
+            DAO_FieldPermissionsSelector fieldPermissionsSelector,
+            PlatformCacheRecipes platformCacheRecipes
+    ) {
+        this.fieldPermissionsSelector = fieldPermissionsSelector;
+        this.platformCacheRecipes = platformCacheRecipes;
+    }
+
+    public CanTheUser() {
+        this(DAO_FieldPermissionsSelector.getInstance(), new PlatformCacheRecipes());
+    }
+
     @TestVisible
     private static Map<String, Set<String>> accessibleFieldsByObject = new Map<String, Set<String>>();
     @TestVisible
     private static Map<String, Set<String>> updatableFieldsByObject = new Map<String, Set<String>>();
 
-    private class PermissionCache implements Cache.CacheBuilder {
-        public Object doLoad(String objType) {
-            Schema.DescribeSObjectResult[] descResult = Schema.describeSObjects(
-                new List<String>{ objType }
-            );
-
-            Map<String, Map<FLSType, Boolean>> results = new Map<String, Map<FLSType, Boolean>>();
-            for (SObjectField field : descResult[0].fields.getMap().values()) {
-                DescribeFieldResult fieldDetails = field.getDescribe();
-                String fieldKey = String.valueOf(field).toLowerCase();
-                results.put(fieldKey, new Map<FLSType, Boolean>());
-                results.get(fieldKey)
-                    .put(FLSType.ACCESSIBLE, fieldDetails.isAccessible());
-                results.get(fieldKey)
-                    .put(FLSType.UPDATABLE, fieldDetails.isUpdateable());
-            }
-            return results;
-        }
+    public Boolean crud(SObject obj, CrudType permission) {
+        DescribeSObjectResult describeSObjectResult = obj.getSObjectType()
+                .getDescribe();
+        return this.crud(describeSObjectResult, permission);
     }
 
-    public static Boolean crud(SObject obj, CrudType permission) {
+    private Boolean crud(DescribeSObjectResult describeSObjectResult, CrudType permission) {
         switch on permission {
             when CREATE {
-                return obj.getSObjectType().getDescribe().isCreateable();
+                return describeSObjectResult.isCreateable();
             }
             when READ {
-                return obj.getSObjectType().getDescribe().isAccessible();
+                return describeSObjectResult.isAccessible();
             }
             when EDIT {
-                return obj.getSObjectType().getDescribe().isUpdateable();
+                return describeSObjectResult.isUpdateable();
             }
             when DEL {
-                return obj.getSObjectType().getDescribe().isDeletable();
+                return describeSObjectResult.isDeletable();
             }
         }
         return false;
     }
 
-    public static Boolean create(SObject obj) {
-        return CanTheUser.crud(obj, CrudType.CREATE);
+    public Boolean create(SObject obj) {
+        return this.crud(obj, CrudType.CREATE);
     }
 
-    public static Boolean read(SObject obj) {
-        return CanTheUser.crud(obj, CrudType.READ);
+    public Boolean read(SObject obj) {
+        return this.crud(obj, CrudType.READ);
     }
 
-    public static Boolean edit(SObject obj) {
-        return CanTheUser.crud(obj, CrudType.EDIT);
+    public Boolean edit(SObject obj) {
+        return this.crud(obj, CrudType.EDIT);
     }
 
-    public static Boolean destroy(SObject obj) {
-        return CanTheUser.crud(obj, CrudType.DEL);
+    public Boolean destroy(SObject obj) {
+        return this.crud(obj, CrudType.DEL);
     }
 
-    public static Boolean flsAccessible(String obj, String field) {
-        return getFLSForFieldOnObject(obj, field, FLSType.ACCESSIBLE);
+    public Boolean flsAccessible(String obj, String field) {
+        return this.getFLSForFieldOnObject(obj, field, FLSType.ACCESSIBLE);
     }
 
-    public static Map<String, Boolean> bulkFLSAccessible(
-        String obj,
-        Set<String> fields
-    ) {
+    public Map<String, Boolean> bulkFLSAccessible(String obj, Set<String> fields) {
         Map<String, Boolean> results = new Map<String, Boolean>();
         for (String field : fields) {
-            results.put(field, flsAccessible(obj, field));
+            results.put(field, this.flsAccessible(obj, field));
         }
         return results;
     }
 
-    public static Boolean flsUpdatable(String obj, String field) {
-        return getFLSForFieldOnObject(obj, field, FLSType.UPDATABLE);
+    public Boolean flsUpdatable(String obj, String field) {
+        return this.getFLSForFieldOnObject(obj, field, FLSType.UPDATABLE);
     }
 
-    public static Map<String, Boolean> bulkFLSUpdatable(
-        String obj,
-        Set<String> fields
+    public Map<String, Boolean> bulkFLSUpdatable(
+            String obj,
+            Set<String> fields
     ) {
         Map<String, Boolean> results = new Map<String, Boolean>();
         for (String field : fields) {
-            results.put(field, flsUpdatable(obj, field));
+            results.put(field, this.flsUpdatable(obj, field));
         }
         return results;
     }
 
     @SuppressWarnings('PMD.ApexCRUDViolation')
     @TestVisible
-    private static Set<String> memoizeFLSMDC(String objType, FLSType action) {
-        List<FieldPermissions> fields = [
-            SELECT Id, Field, PermissionsEdit, PermissionsRead, SobjectType
-            FROM FieldPermissions
-            WHERE SobjectType = :objType
-        ];
-
-        if (!CanTheUser.accessibleFieldsByObject.containsKey(objType)) {
-            Set<String> accessibleFields = new Set<String>();
-            Set<String> updatableFields = new Set<String>();
-            for (FieldPermissions field : fields) {
-                String[] parts = field.Field.split('\\.');
-                if (field.PermissionsRead) {
-                    accessibleFields.add(parts[1].toLowerCase());
-                }
-                if (field.PermissionsEdit) {
-                    updatableFields.add(parts[1].toLowerCase());
-                }
-            }
-            CanTheUser.accessibleFieldsByObject.put(objType, accessibleFields);
-            CanTheUser.updatableFieldsByObject.put(objType, updatableFields);
+    private Set<String> memoizeFLSMDC(String sobjectType, FLSType action) {
+        if (!accessibleFieldsByObject.containsKey(sobjectType)) {
+            this.memoizeFieldPermissions(sobjectType);
         }
 
-        if (action == FLSType.ACCESSIBLE) {
-            return CanTheUser.accessibleFieldsByObject.get(objType);
-        } else {
-            return CanTheUser.updatableFieldsByObject.get(objType);
-        }
+        return (action == FLSType.ACCESSIBLE)
+                ? accessibleFieldsByObject.get(sobjectType)
+                : updatableFieldsByObject.get(sobjectType);
     }
 
-    /**
-     * @description     Abstracted method for retrieving or calculating
-     * (memoization) of the FLS for a given field on a given object.
-     * @param obj       String version of object name to check
-     * @param field     String version of the field to check
-     * @param checkType Enum of Accessible or Updatable.
-     * @returns         `Boolean`
-     */
-    private static Boolean getFLSForFieldOnObject(
-        String obj,
-        String field,
-        FLSType checkType
-    ) {
-        Cache.Partition defaultSession = new PlatformCacheRecipes().getDefaultPartition(
-            PartitionType.SESSION
-        );
-        Map<String, Map<FLSType, Boolean>> objResults = (Map<String, Map<FLSType, Boolean>>) defaultSession
-            .get(PermissionCache.class, obj);
-        Boolean results = objResults.get(field.toLowerCase())?.get(checkType);
-        return (results != null && results) ? true : false;
+    private void memoizeFieldPermissions(String sobjectType) {
+        List<FieldPermissions> fieldPermissionList
+                = this.fieldPermissionsSelector.selectBySObjectType(new Set<String>{sobjectType});
+
+        this.memoizeFieldPermissions(sobjectType, fieldPermissionList);
+    }
+
+    private void memoizeFieldPermissions(String sobjectType, List<FieldPermissions> fieldPermissionList) {
+        Set<String> accessibleFieldSet = new Set<String>();
+        Set<String> updatableFieldSet = new Set<String>();
+
+        for (FieldPermissions field : fieldPermissionList) {
+            String fieldSecondPart = field.Field.split('\\.')[1]
+                    .toLowerCase();
+            if (field.PermissionsRead) {
+                accessibleFieldSet.add(fieldSecondPart);
+            }
+            if (field.PermissionsEdit) {
+                updatableFieldSet.add(fieldSecondPart);
+            }
+        }
+
+        accessibleFieldsByObject.put(sobjectType, accessibleFieldSet);
+        updatableFieldsByObject.put(sobjectType, updatableFieldSet);
+    }
+
+    private Boolean getFLSForFieldOnObject(String obj, String field, FLSType checkType) {
+        Map<String, Map<FLSType, Boolean>> objResults = (Map<String, Map<FLSType, Boolean>>) this.platformCacheRecipes
+                .getDefaultPartition(PartitionType.SESSION)
+                .get(PermissionCache.class, obj);
+        Boolean results = objResults.get(field.toLowerCase())
+                ?.get(checkType);
+        return (results != null && results);
     }
 }
