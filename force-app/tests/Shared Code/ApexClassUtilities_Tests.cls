@@ -1,35 +1,39 @@
-@isTest
+/*
+ * @see Foo, Bar
+ */
+@IsTest
 private class ApexClassUtilities_Tests {
-    @isTest
+    private static final ApexClassUtilities UTILITIES_UNDER_TEST = new ApexClassUtilities();
+    @IsTest
     static void testGetRelatedClassesFromClassBodyPositive() {
         ApexClass acu = [
-            SELECT id, body
+            SELECT Id, Body
             FROM ApexClass
-            WHERE name LIKE 'ApexClassUtilities'
+            WHERE Name LIKE 'ApexClassUtilities_Tests'
         ];
         Test.startTest();
-        String results = ApexClassUtilities.getRelatedClassesFromClassBody(acu);
+        String results = UTILITIES_UNDER_TEST.getRelatedClassesFromClassBody(acu);
         Test.stopTest();
 
         System.assert(
-            results.containsIgnoreCase('RecipeTreeViewController'),
-            'Expected to see RecipeTreeViewController'
+            results.containsIgnoreCase('Foo'),
+            'Expected to see Foo'
         );
         System.assert(
-            results.containsIgnoreCase('FormattedRecipeDisplayController'),
-            'Expected to see FormattedRecipeDisplayController'
+            results.containsIgnoreCase('Bar'),
+            'Expected to see Bar'
         );
     }
 
-    @isTest
+    @IsTest
     static void testGetRelatedClassesFromClassBodyNegativeToComplex() {
         ApexClass klass = [
-            SELECT id, body, name
+            SELECT Id, Body, Name
             FROM ApexClass
-            WHERE name LIKE 'DynamicSOQLRecipes_Tests'
+            WHERE Name LIKE 'DynamicSOQLRecipes_Tests'
         ];
         Test.startTest();
-        String results = ApexClassUtilities.getRelatedClassesFromClassBody(
+        String results = UTILITIES_UNDER_TEST.getRelatedClassesFromClassBody(
             klass
         );
         Test.stopTest();

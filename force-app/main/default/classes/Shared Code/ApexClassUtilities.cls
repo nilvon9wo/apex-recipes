@@ -1,65 +1,29 @@
-/**
- * @description Contains reusable code dealing with ApexClass objects.
- * This is primarily used by the LWC components for displaying code
- * in an org.
- * @group Shared Code
- * @see RecipeTreeViewController, FormattedRecipeDisplayController
- */
 public inherited sharing class ApexClassUtilities {
-    /**
-     * @description Extracts the @group annotation from a class' body.
-     * Also demonstrates the use of Regex matchers in Apex.
-     * @param klass an ApexClass object
-     * @return     `String` This is the text following '@group' through
-     * the end of the line.
-     * @example
-     * ApexClass klass = [SELECT Name, Body FROM ApexClass LIMIT 1];
-     * System.debug(ApexClassUtilities.getGroupBodyFromClassBody(klass));
-     */
-    public static String getGroupFromClassBody(ApexClass klass) {
-        Pattern patternForFindingGroupTagInHeader = Pattern.compile(
-            '.*@group.(.*)'
+    public String getGroupFromClassBody(ApexClass klass) {
+        return this.getFromClassBody(
+                klass,
+                Pattern.compile('.*@group.(.*)'),
+                'Failed to extract group names. Class name: '
         );
-        Matcher matcher = patternForFindingGroupTagInHeader.matcher(klass.body);
-        matcher.find();
-        String groupName = '';
-        try {
-            groupName = matcher.group(1);
-        } catch (StringException matcherException) {
-            System.debug(
-                LoggingLevel.INFO,
-                'Failed to extract group name. Class name: ' + klass.name
-            );
-        }
-
-        return groupName;
     }
 
-    /**
-     * @description Extracts the @see annotation from a class' body.
-     * Also demonstrates the use of Regex matchers in Apex.
-     * @param klass an ApexClass object
-     * @return     `String` This is the text following '@see' through
-     * the end of the line.
-     * @example
-     * ApexClass klass = [SELECT Name, Body FROM ApexClass LIMIT 1];
-     * System.debug(ApexClassUtilities.getRelatedClassesFromClassBody(klass));
-     */
-    public static String getRelatedClassesFromClassBody(ApexClass klass) {
-        Pattern patternForFindingSeeTagInHeader = Pattern.compile(
-            '.*@see.(.*)'
+    public String getRelatedClassesFromClassBody(ApexClass klass) {
+        return this.getFromClassBody(
+                klass,
+                Pattern.compile('.*@see.(.*)'),
+                'Failed to extract related names. Class name: '
         );
-        Matcher matcher = patternForFindingSeeTagInHeader.matcher(klass.body);
+    }
+
+    public String getFromClassBody(ApexClass klass, Pattern pattern, String errorMessage) {
+        Matcher matcher = pattern
+                .matcher(klass.Body);
         matcher.find();
-        String relatedClasses = '';
         try {
-            relatedClasses = matcher.group(1);
-            return relatedClasses;
-        } catch (StringException matcherException) {
-            System.debug(
-                LoggingLevel.INFO,
-                'Failed to extract related names. Class name: ' + klass.name
-            );
+            return matcher.group(1);
+        }
+        catch (StringException matcherException) {
+            System.debug(LoggingLevel.ERROR, errorMessage + klass.Name);
         }
         return '';
     }

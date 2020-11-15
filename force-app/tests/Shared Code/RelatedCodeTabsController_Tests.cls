@@ -1,24 +1,27 @@
-@isTest
+/*
+ * @see Foo, Bar
+ */
+@IsTest
 private class RelatedCodeTabsController_Tests {
-    @isTest
+    @IsTest
     static void testGetRelatedClassesPositive() {
         Test.startTest();
         String[] relatedClasses = RelatedCodeTabsController.getRelatedClasses(
-            'ApiServiceRecipes'
+            'RelatedCodeTabsController_Tests'
         );
         Test.stopTest();
         Set<String> rcSet = new Set<String>(relatedClasses);
         System.assert(
-            rcSet.contains('RestClient'),
-            'Expected to see RestClient listed'
+            rcSet.contains('Foo'),
+            'Expected to see Foo listed'
         );
         System.assert(
-            rcSet.contains('ApiServiceRecipesDataModel'),
-            'Expected to see the DTO object listed'
+            rcSet.contains('Bar'),
+            'Expected to see the Bar listed'
         );
     }
 
-    @isTest
+    @IsTest
     static void testGetRElatedClassesNegative() {
         Boolean didCatchProperException = false;
         Test.startTest();
@@ -39,7 +42,7 @@ private class RelatedCodeTabsController_Tests {
         );
     }
 
-    @isTest
+    @IsTest
     static void testGetRElatedClassesNegativeNoRelated() {
         Test.startTest();
         String[] relatedClasses = RelatedCodeTabsController.getRelatedClasses(

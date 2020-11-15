@@ -1,22 +1,20 @@
-/**
- * @description Provides the necessary data to populate a lightning-tree base
- * component with recipe and group information
- * @group Shared Code
- * @see ApexClassUtilities
- */
 public inherited sharing class RecipeTreeViewController {
+    private ApexClassUtilities classUtilities;
+    private DAO_ApexClassSelector apexClassSelector;
+
+    private RecipeTreeViewController(ApexClassUtilities classUtilities, DAO_ApexClassSelector apexClassSelector) {
+        this.classUtilities = classUtilities;
+        this.apexClassSelector = apexClassSelector;
+    }
+
+    public RecipeTreeViewController() {
+        this(new ApexClassUtilities(), DAO_ApexClassSelector.getInstance());
+    }
+
     private static Map<String, List<String>> groupToListOfNames;
 
-    /**
-     * @description The String here represents a relatively unique tag that
-     * Apex Recipe uses to help group related classes.
-     */
     private static final String APEXRECIPESIDENTIFICATIONTAG = '* @group';
 
-    /**
-     * @description Used to marshall data between Apex and the LWC component
-     * that uses this data
-     */
     public class RecipeTreeData implements Comparable {
         @AuraEnabled
         public String label;
@@ -27,12 +25,6 @@ public inherited sharing class RecipeTreeViewController {
         @AuraEnabled
         public RecipeTreeData[] items;
 
-        /**
-         * @description Required by the Comparable interface, this method,
-         * once implemented allows us to sort of this object type.
-         * @param compareTo A RecipeTreeData object to compare this instance against.
-         * @return         `Integer`
-         */
         public Integer compareTo(Object compareTo) {
             RecipeTreeData compare = (RecipeTreeData) compareTo;
             if (name == compare.name) {
@@ -45,17 +37,13 @@ public inherited sharing class RecipeTreeViewController {
         }
     }
 
-    /**
-     * @description Generates a recursive list of RecipeTreeData objects
-     * to feed to a Lightning-tree-view component. Importantly, the returning
-     * array has two RecipeTreeData objects - One for Recipes, the other
-     * for our supporting, shared code.
-     * @return     `List<RecipeTreeData>`
-     * @example
-     * System.debug(RecipeTreeViewController.generateTreeData());
-     */
-    @AuraEnabled(cacheable=true)
+    @AuraEnabled(Cacheable=true)
     public static List<RecipeTreeData> generateTreeData() {
+        return new RecipeTreeViewController()
+            .createTreeData();
+    }
+
+    public List<RecipeTreeData> createTreeData() {
         List<RecipeTreeData> treeData = new List<RecipeTreeData>();
         RecipeTreeData recipes = new RecipeTreeData();
         recipes.label = 'Recipes';
@@ -95,19 +83,8 @@ public inherited sharing class RecipeTreeViewController {
         return treeData;
     }
 
-    /**
-     * @description Generates a map containing Group names as the Keys tied to
-     * a List of class names.
-     *
-     * Note: this method contains a false-positive PMD violation.
-     * Normally, we'd want to check for FLS/CRUD here, but for ApexClass
-     * a system level object that Admins and users cannot really change
-     * we're ok.
-     *
-     * @return     `Map<String, List<String>>`
-     */
     @SuppressWarnings('PMD.ApexCRUDViolation')
-    private static Map<String, List<String>> generateMapOfGroupToListOfNames() {
+    private Map<String, List<String>> generateMapOfGroupToListOfNames() {
         Map<String, List<String>> returnMap = new Map<String, List<String>>();
         List<List<SObject>> searchResults = [
             FIND :APEXRECIPESIDENTIFICATIONTAG
@@ -117,11 +94,11 @@ public inherited sharing class RecipeTreeViewController {
         ApexClass[] classes = searchResults[0];
 
         for (ApexClass klass : classes) {
-            String groupName = ApexClassUtilities.getGroupFromClassBody(klass);
+            String groupName = this.classUtilities.getGroupFromClassBody(klass);
             if (returnMap.keySet().contains(groupName)) {
-                returnMap.get(groupName).add(klass.name);
+                returnMap.get(groupName).add(klass.Name);
             } else {
-                returnMap.put(groupName, new List<String>{ klass.name });
+                returnMap.put(groupName, new List<String>{ klass.Name });
             }
         }
         return returnMap;

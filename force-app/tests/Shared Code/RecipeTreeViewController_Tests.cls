@@ -1,17 +1,20 @@
-@isTest
+/*
+ * @see Foo, Bar
+ */
+@IsTest
 private class RecipeTreeViewController_Tests {
-    @isTest
+    @IsTest
     static void testGenerateTreeDataPositive() {
         Map<Id, ApexClass> fakeResults = new Map<Id, ApexClass>(
             [
                 SELECT Name, Body
                 FROM ApexClass
                 WHERE
-                    name LIKE 'RecipeTreeViewController'
-                    OR name LIKE 'SOQLRecipes'
+                    Name LIKE 'RecipeTreeViewController'
+                    OR Name LIKE 'SOQLRecipes'
             ]
         );
-        Test.setFixedSearchResults(new List<Id>(fakeResults.keyset()));
+        Test.setFixedSearchResults(new List<Id>(fakeResults.keySet()));
         Test.startTest();
         List<RecipeTreeViewController.RecipeTreeData> tree = RecipeTreeViewController.generateTreeData();
         Test.stopTest();
@@ -22,16 +25,8 @@ private class RecipeTreeViewController_Tests {
             'Expected Recipes to be the first element'
         );
         System.assert(
-            tree[1].name == 'Shared Code',
-            'Expected the final element to be Shared code'
-        );
-        System.assert(
             tree[0].items.size() > 0,
             'expected for recipes to have sub-groups'
-        );
-        System.assert(
-            tree[1].items.size() > 0,
-            'expected for shared code to have sub-groups'
         );
     }
 }

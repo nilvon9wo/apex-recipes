@@ -1,47 +1,54 @@
-/**
- * @description Apex server side controller for discovering other classes
- * related to the one being viewed
- * @group Shared Code
- * @see ApexClassUtilities
- */
 public inherited sharing class RelatedCodeTabsController {
-    /**
-     * @description Inspects the ApexClass body definition for a @see
-     * tag in the opening class level doc block. It then parses the
-     * comma separated list and returns it as a list of strings
-     *
-     * Note: this method contains a false-positive PMD violation.
-     * Normally, we'd want to check for FLS/CRUD here, but for ApexClass
-     * a system level object that Admins and users cannot really change
-     * we're ok.
-     *
-     * @param mainClassName The name of the class to inspect
-     * @return             `List<String>`
-     * @example
-     * System.debug(RelatedCodeTabsController.getRelatedClasses('RelatedCodeTabsController'));
-     */
+    private ApexClassUtilities classUtilities;
+    private DAO_ApexClassSelector apexClassSelector;
+
+    private RelatedCodeTabsController(ApexClassUtilities classUtilities, DAO_ApexClassSelector apexClassSelector) {
+        this.classUtilities = classUtilities;
+        this.apexClassSelector = apexClassSelector;
+    }
+
+    public RelatedCodeTabsController() {
+        this(new ApexClassUtilities(), DAO_ApexClassSelector.getInstance());
+    }
+
     @SuppressWarnings('PMD.ApexCRUDViolation')
-    @AuraEnabled(cacheable=true)
+    @AuraEnabled(Cacheable=true)
     public static List<String> getRelatedClasses(String mainClassName) {
-        List<String> relatedClasses = new List<String>();
+        return new RelatedCodeTabsController()
+            .selectClasses(mainClassName);
+    }
+
+    private List<String> selectClasses(String mainClassName) {
         if (String.isNotBlank(mainClassName)) {
-            ApexClass klass = [
-                SELECT Name, Body
-                FROM ApexClass
-                WHERE Name LIKE :mainClassName
-            ];
-            if (klass.body.contains('@see')) {
-                String[] untrimmed = ApexClassUtilities.getRelatedClassesFromClassBody(
-                        klass
-                    )
-                    .split(',');
-                for (String toTrim : untrimmed) {
-                    relatedClasses.add(toTrim.trim());
-                }
-                return relatedClasses;
+            List<ApexClass> apexClassList = this.apexClassSelector.selectByName(new Set<String>{mainClassName});
+            ApexClass klass = (!apexClassList.isEmpty())
+                    ? apexClassList[0]
+                    : null;
+
+            if (klass == null) {
+                throw new QueryException('no rows for assignment');
+            }
+
+            if (klass.Body.contains('@see')) {
+                return this.selectClasses(klass);
             }
         }
 
+        return new List<String>();
+    }
+
+    private List<String> selectClasses(ApexClass klass) {
+        String[] untrimmed = this.classUtilities.getRelatedClassesFromClassBody(klass)
+                .split(',');
+
+        return this.selectClasses(untrimmed);
+    }
+
+    private List<String> selectClasses(String[] untrimmed) {
+        List<String> relatedClasses = new List<String>();
+        for (String toTrim : untrimmed) {
+            relatedClasses.add(toTrim.trim());
+        }
         return relatedClasses;
     }
 }
