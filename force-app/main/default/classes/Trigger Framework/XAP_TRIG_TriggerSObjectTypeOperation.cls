@@ -7,7 +7,7 @@ public with sharing class XAP_TRIG_TriggerSObjectTypeOperation {
 		this.operation = operation;
 	}
 
-	public XAP_TRIG_TriggerSObjectTypeOperation(XAP_TRIG_TriggerProperties triggerProperties) {
+	public XAP_TRIG_TriggerSObjectTypeOperation(XAP_TRG_TriggerContext triggerProperties) {
 		this.sObjectType = triggerProperties.sObjectType;
 		this.operation = triggerProperties.operationType;
 	}

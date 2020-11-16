@@ -9,7 +9,7 @@ public with sharing class XAP_TRIG_TriggerEventCoordinatorIntTest {
 				.setInsertMode(XFTY_InsertModeEnum.NOW)
 				.supplyBundle();
 
-		XAP_TRIG_TriggerProperties testTriggerProperties = new XAP_TRIG_TriggerProperties();
+		XAP_TRG_TriggerContext testTriggerProperties = new XAP_TRG_TriggerContext();
 		testTriggerProperties.sObjectType = Account.SObjectType;
 		testTriggerProperties.operationType = System.TriggerOperation.BEFORE_INSERT;
 

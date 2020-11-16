@@ -1,17 +1,17 @@
 public abstract class XAP_TRIG_TriggerHandlerAbs implements XAP_TRIG_TriggerHandlerIntf {
 	private XAP_TRIG_TriggerEventCoordinator triggerEventCoordinator;
-	XAP_TRIG_TriggerProperties triggerProperties;
+	XAP_TRG_TriggerContext triggerProperties;
 
 	public XAP_TRIG_TriggerHandlerAbs(
 			XAP_TRIG_TriggerEventCoordinator triggerEventCoordinator,
-			XAP_TRIG_TriggerProperties triggerProperties
+			XAP_TRG_TriggerContext triggerProperties
 	) {
 		this.triggerEventCoordinator = triggerEventCoordinator;
 		this.triggerProperties = triggerProperties;
 	}
 
 	public XAP_TRIG_TriggerHandlerAbs() {
-		this(new XAP_TRIG_TriggerEventCoordinator(), new XAP_TRIG_TriggerProperties());
+		this(new XAP_TRIG_TriggerEventCoordinator(), new XAP_TRG_TriggerContext());
 	}
 
 	private static final Map<Type, XAP_TRIG_TriggerEventHandlerIntf> EVENT_HANDLER_INSTANCE_BY_TYPE_MAP

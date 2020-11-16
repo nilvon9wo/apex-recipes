@@ -16,10 +16,6 @@
                       <option name="entries">
                         <list>
                           <MetadataEntry>
-                            <option name="name" value="XAP_REST_RestRequestException" />
-                            <option name="selected" value="true" />
-                          </MetadataEntry>
-                          <MetadataEntry>
                             <option name="name" value="CustomDMLException" />
                             <option name="selected" value="true" />
                           </MetadataEntry>
@@ -272,6 +268,18 @@
                             <option name="selected" value="true" />
                           </MetadataEntry>
                           <MetadataEntry>
+                            <option name="name" value="XAP_REST_RestRequestException" />
+                            <option name="selected" value="true" />
+                          </MetadataEntry>
+                          <MetadataEntry>
+                            <option name="name" value="XAP_TRG_TriggerHandler" />
+                            <option name="selected" value="true" />
+                          </MetadataEntry>
+                          <MetadataEntry>
+                            <option name="name" value="XAP_TRG_TriggerStepSelector" />
+                            <option name="selected" value="true" />
+                          </MetadataEntry>
+                          <MetadataEntry>
                             <option name="name" value="XAP_UTIL_Randomizer" />
                             <option name="selected" value="true" />
                           </MetadataEntry>
@@ -362,6 +370,18 @@
                         </list>
                       </option>
                       <option name="name" value="ApexClass" />
+                      <option name="wildcard" value="false" />
+                    </MetadataType>
+                    <MetadataType>
+                      <option name="entries">
+                        <list>
+                          <MetadataEntry>
+                            <option name="name" value="XAP_TRG_Trigger_Step__mdt" />
+                            <option name="selected" value="true" />
+                          </MetadataEntry>
+                        </list>
+                      </option>
+                      <option name="name" value="CustomObject" />
                       <option name="wildcard" value="false" />
                     </MetadataType>
                   </set>

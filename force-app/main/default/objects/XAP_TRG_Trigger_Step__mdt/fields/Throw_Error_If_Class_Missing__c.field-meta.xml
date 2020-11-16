@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Throw_Error_If_Class_Missing__c</fullName>
+    <defaultValue>true</defaultValue>
+    <externalId>false</externalId>
+    <fieldManageability>DeveloperControlled</fieldManageability>
+    <label>Throw Error If Class Missing</label>
+    <type>Checkbox</type>
+</CustomField>
