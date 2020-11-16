@@ -4,7 +4,7 @@ public with sharing class XAP_TRIG_TriggerEventCoord_CompareTest {
 
 	@IsTest public static void testCompareShouldReturnListComparison() {
 		// Arrange
-		XAP_TRIG_TriggerSettingSelector mockAutomationSettingSelector = XAP_TRIG_TriggerSettingSelector.getInstance();
+		XAP_TRG_TriggerSettingSelector mockAutomationSettingSelector = XAP_TRG_TriggerSettingSelector.getInstance();
 		XAP_TRIG_SObjectTypeOperationCnvtMock mockSObjectTypeOperationHelper
 				= new XAP_TRIG_SObjectTypeOperationCnvtMock();
 		XAP_TRIG_TriggerEventCoordinator coordinatorUnderTest

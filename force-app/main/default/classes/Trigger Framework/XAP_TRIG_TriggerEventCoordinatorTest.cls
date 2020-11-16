@@ -2,15 +2,15 @@
 public with sharing class XAP_TRIG_TriggerEventCoordinatorTest {
 	private static final User TEST_USER = TEST_DummyUserFactoryOutlet.TEST_ADMIN_USER;
 
-	private static final XAP_TRIG_TriggerSettingSelectorMock MOCK_TRIGGER_SELECTOR
-			= new XAP_TRIG_TriggerSettingSelectorMock();
+	private static final XAP_TRG_TriggerSettingSelectorMock MOCK_TRIGGER_SELECTOR
+			= new XAP_TRG_TriggerSettingSelectorMock();
 	private static final XAP_TRIG_SObjectTypeOperationConvertor SOBJECT_TYPE_OPERATION_CONVERTOR
 			= new XAP_TRIG_SObjectTypeOperationConvertor();
 	private static final XAP_TRIG_TriggerEventCoordinator COORDINATOR_UNDER_TEST
 			= new XAP_TRIG_TriggerEventCoordinator(SOBJECT_TYPE_OPERATION_CONVERTOR, MOCK_TRIGGER_SELECTOR);
 
-	private static final XAP_TRIG_TriggerSetting__c TEST_TRIGGER_SETTINGS
-			= (XAP_TRIG_TriggerSetting__c) new XFTY_DummySObjectSupplier(XAP_TRIG_TriggerSetting__c.SObjectType)
+	private static final XAP_TRG_Trigger_Settings__c TEST_TRIGGER_SETTINGS
+			= (XAP_TRG_Trigger_Settings__c) new XFTY_DummySObjectSupplier(XAP_TRG_Trigger_Settings__c.SObjectType)
 					.supply();
 
 	private static final SObjectType TEST_SOBJECT_TYPE = Account.SObjectType;
@@ -78,7 +78,7 @@ public with sharing class XAP_TRIG_TriggerEventCoordinatorTest {
 
 	@IsTest public static void isExecutableReturnsTrueIfEnabledForSObjectAndNotInProgressButNotEnabledForProfile() {
 		// Arrange
-		XAP_TRIG_TriggerSettingSelectorMock mockTriggerSettingSelector = new XAP_TRIG_TriggerSettingSelectorMock();
+		XAP_TRG_TriggerSettingSelectorMock mockTriggerSettingSelector = new XAP_TRG_TriggerSettingSelectorMock();
 		TEST_TRIGGER_SETTINGS.TriggersEnabled__c = false;
 		mockTriggerSettingSelector.returnedTriggerSetting = TEST_TRIGGER_SETTINGS;
 		XAP_TRIG_SObjectTypeOperationConvertor sObjectTypeOperationHelper = new XAP_TRIG_SObjectTypeOperationConvertor();

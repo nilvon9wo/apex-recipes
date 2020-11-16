@@ -1,6 +1,6 @@
 public with sharing virtual class XAP_TRIG_TriggerEventCoordinator {
 	private XAP_TRIG_SObjectTypeOperationConvertor sObjectTypeOperationHelper;
-	private XAP_TRIG_TriggerSettingSelector triggerSettingSelector;
+	private XAP_TRG_TriggerSettingSelector triggerSettingSelector;
 
 	@TestVisible private static Map<SObjectType, Boolean> IS_ENABLED_BY_SOBJECT_TYPE_MAP;
 	@TestVisible private static final Boolean IS_ENABLED = true;
@@ -8,14 +8,14 @@ public with sharing virtual class XAP_TRIG_TriggerEventCoordinator {
 
 	public XAP_TRIG_TriggerEventCoordinator(
 			XAP_TRIG_SObjectTypeOperationConvertor sObjectTypeOperationHelper,
-			XAP_TRIG_TriggerSettingSelector automationSettingSelector
+			XAP_TRG_TriggerSettingSelector automationSettingSelector
 	) {
 		this.sObjectTypeOperationHelper = sObjectTypeOperationHelper;
 		this.triggerSettingSelector = automationSettingSelector;
 	}
 
 	public XAP_TRIG_TriggerEventCoordinator() {
-		this(new XAP_TRIG_SObjectTypeOperationConvertor(), XAP_TRIG_TriggerSettingSelector.getInstance());
+		this(new XAP_TRIG_SObjectTypeOperationConvertor(), XAP_TRG_TriggerSettingSelector.getInstance());
 	}
 
 	@TestVisible
@@ -37,8 +37,8 @@ public with sharing virtual class XAP_TRIG_TriggerEventCoordinator {
 
 	@TestVisible
 	private virtual Boolean isEnabledForProfile() {
-		XAP_TRIG_TriggerSetting__c triggerSettings = triggerSettingSelector.get();
-		Boolean isEnabled = this.returnValueOrTrue(triggerSettings.TriggersEnabled__c);
+		XAP_TRG_Trigger_Settings__c triggerSettings = triggerSettingSelector.get();
+		Boolean isEnabled = this.returnValueOrTrue(triggerSettings.All_Triggers_Enabled__c);
 		if (!isEnabled) {
 			System.debug(LoggingLevel.WARN, '!!! Triggers disabled for profile');
 		}
@@ -83,10 +83,10 @@ public with sharing virtual class XAP_TRIG_TriggerEventCoordinator {
 	@TestVisible
 	private Map<SObjectType, Boolean> buildIsEnabledBySObjectTypeMap() {
 		// Instantiating this value upon class construction causes unexpected behaviours.
-		XAP_TRIG_TriggerSetting__c triggerSetting = triggerSettingSelector.get();
+		XAP_TRG_Trigger_Settings__c triggerSetting = triggerSettingSelector.get();
 
 		return new Map<SObjectType, Boolean>{
-				Account.SObjectType => triggerSetting.AccountTriggerEnabled__c
+				Account.SObjectType => triggerSetting.Account_Trigger_Enabled__c
 		};
 	}
 

@@ -5,7 +5,7 @@ public with sharing class XAP_TRIG_TriggerEventCoordinatorIntTest {
 
 	@IsTest public static void isExecutableReturnsTrueIfEnabledForProfileAndEnabledForSObjectAndNotInProgress() {
 		// Arrange
-		new XFTY_DummySObjectSupplier(XAP_TRIG_TriggerSetting__c.SObjectType)
+		new XFTY_DummySObjectSupplier(XAP_TRG_Trigger_Settings__c.SObjectType)
 				.setInsertMode(XFTY_InsertModeEnum.NOW)
 				.supplyBundle();
 
