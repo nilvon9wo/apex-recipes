@@ -1,22 +1,17 @@
 public with sharing virtual class XAP_TRIG_TriggerEventCoordinator {
-	private XAP_TRIG_SObjectTypeOperationConvertor sObjectTypeOperationHelper;
 	private XAP_TRG_TriggerSettingSelector triggerSettingSelector;
 
-	@TestVisible private static Map<SObjectType, Boolean> IS_ENABLED_BY_SOBJECT_TYPE_MAP;
-	@TestVisible private static final Boolean IS_ENABLED = true;
-	@TestVisible private static final Boolean IS_DISABLED = false;
-
-	public XAP_TRIG_TriggerEventCoordinator(
-			XAP_TRIG_SObjectTypeOperationConvertor sObjectTypeOperationHelper,
-			XAP_TRG_TriggerSettingSelector automationSettingSelector
-	) {
-		this.sObjectTypeOperationHelper = sObjectTypeOperationHelper;
+	public XAP_TRIG_TriggerEventCoordinator(XAP_TRG_TriggerSettingSelector automationSettingSelector) {
 		this.triggerSettingSelector = automationSettingSelector;
 	}
 
 	public XAP_TRIG_TriggerEventCoordinator() {
-		this(new XAP_TRIG_SObjectTypeOperationConvertor(), XAP_TRG_TriggerSettingSelector.getInstance());
+		this(XAP_TRG_TriggerSettingSelector.getInstance());
 	}
+
+	@TestVisible private static Map<SObjectType, Boolean> IS_ENABLED_BY_SOBJECT_TYPE_MAP;
+	@TestVisible private static final Boolean IS_ENABLED = true;
+	@TestVisible private static final Boolean IS_DISABLED = false;
 
 	@TestVisible
 	private static final Map<SObjectType, Set<System.TriggerOperation>> OPERATION_SET_IN_PROGRESS_BY_SOBJECT_TYPE_MAP
@@ -163,19 +158,14 @@ public with sharing virtual class XAP_TRIG_TriggerEventCoordinator {
 				&& OPERATION_SET_IN_PROGRESS_BY_SOBJECT_TYPE_MAP.get(sObjectTypeOperation.sObjectType).size() == 1;
 	}
 
-//	// Sequence checker  ---------------------------------------------------------------------------------------------------------
-//
-//	public XAP_COLL_ListComparison compare(List<XAP_TRIG_TriggerSObjectTypeOperation> needleSObjectTypeOperationList) {
-//		List<XAP_TRIG_TriggerSObjectTypeOperation> inProgressSObjectTypeOperationList
-//				= sObjectTypeOperationHelper.convert(TRIGGER_IN_PROGRESS_LIST);
-//
-//		return new XAP_COLL_ListComparison(inProgressSObjectTypeOperationList, needleSObjectTypeOperationList);
-//	}
-
 	// Helpers  ---------------------------------------------------------------------------------------------------------
 
 	@TestVisible
 	private Boolean returnValueOrTrue(Boolean value) {
 		return (value != null) ? value : true;
+	}
+
+	public List<XAP_TRG_TriggerContext> getTriggerProgressList() {
+		return TRIGGER_IN_PROGRESS_LIST.clone();
 	}
 }

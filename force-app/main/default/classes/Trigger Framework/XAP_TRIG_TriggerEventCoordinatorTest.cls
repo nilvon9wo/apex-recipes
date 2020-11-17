@@ -4,10 +4,8 @@ public with sharing class XAP_TRIG_TriggerEventCoordinatorTest {
 
 	private static final XAP_TRG_TriggerSettingSelectorMock MOCK_TRIGGER_SELECTOR
 			= new XAP_TRG_TriggerSettingSelectorMock();
-	private static final XAP_TRIG_SObjectTypeOperationConvertor SOBJECT_TYPE_OPERATION_CONVERTOR
-			= new XAP_TRIG_SObjectTypeOperationConvertor();
 	private static final XAP_TRIG_TriggerEventCoordinator COORDINATOR_UNDER_TEST
-			= new XAP_TRIG_TriggerEventCoordinator(SOBJECT_TYPE_OPERATION_CONVERTOR, MOCK_TRIGGER_SELECTOR);
+			= new XAP_TRIG_TriggerEventCoordinator(MOCK_TRIGGER_SELECTOR);
 
 	private static final XAP_TRG_Trigger_Settings__c TEST_TRIGGER_SETTINGS
 			= (XAP_TRG_Trigger_Settings__c) new XFTY_DummySObjectSupplier(XAP_TRG_Trigger_Settings__c.SObjectType)
@@ -81,9 +79,8 @@ public with sharing class XAP_TRIG_TriggerEventCoordinatorTest {
 		XAP_TRG_TriggerSettingSelectorMock mockTriggerSettingSelector = new XAP_TRG_TriggerSettingSelectorMock();
 		TEST_TRIGGER_SETTINGS.All_Triggers_Enabled__c = false;
 		mockTriggerSettingSelector.returnedTriggerSetting = TEST_TRIGGER_SETTINGS;
-		XAP_TRIG_SObjectTypeOperationConvertor sObjectTypeOperationHelper = new XAP_TRIG_SObjectTypeOperationConvertor();
 		XAP_TRIG_TriggerEventCoordinator coordinatorUnderTest
-				= new XAP_TRIG_TriggerEventCoordinator(sObjectTypeOperationHelper, mockTriggerSettingSelector);
+				= new XAP_TRIG_TriggerEventCoordinator(mockTriggerSettingSelector);
 
 		// Act
 		Boolean result;
