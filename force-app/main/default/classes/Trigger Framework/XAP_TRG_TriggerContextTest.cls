@@ -1,5 +1,5 @@
 @IsTest
-public with sharing class XAP_TRIG_TriggerPropertiesTest {
+public with sharing class XAP_TRG_TriggerContextTest {
 	private static final User TEST_USER = TEST_DummyUserFactoryOutlet.TEST_ADMIN_USER;
 	private static final List<Account> TEST_SOBJECT_LIST = (List<Account>) new XFTY_DummySObjectSupplier(Account.SObjectType)
 			.supplyList();
@@ -162,5 +162,4 @@ public with sharing class XAP_TRIG_TriggerPropertiesTest {
 		// Assert
 		System.assertEquals(null, resultOperation);
 	}
-
 }
