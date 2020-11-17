@@ -28,18 +28,17 @@ public with sharing class XAP_TRG_TriggerHandler {
 
     public XAP_TRG_TriggerHandler execute(XAP_TRG_TriggerContext context) {
         if (this.operationCoordinator.isExecutable(context)) {
-            this.operationCoordinator.addToInProgress(context);
-            List<XAP_TRG_TriggerSteppable> stepList = this.stepLookup.get(context);
-            this.execute(context, stepList);
-            this.operationCoordinator.removeFromInProgress(context);
+            this.execute(context, this.stepLookup.get(context));
         }
         return this;
     }
 
     private XAP_TRG_TriggerHandler execute(XAP_TRG_TriggerContext context, List<XAP_TRG_TriggerSteppable> stepList) {
+        this.operationCoordinator.addToInProgress(context);
         for (XAP_TRG_TriggerSteppable step : stepList) {
             this.execute(context, step);
         }
+        this.operationCoordinator.removeFromInProgress(context);
         return this;
     }
 
