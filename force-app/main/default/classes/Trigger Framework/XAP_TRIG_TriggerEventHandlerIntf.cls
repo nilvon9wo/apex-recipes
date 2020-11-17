@@ -1,3 +1,0 @@
-public interface XAP_TRIG_TriggerEventHandlerIntf {
-	XAP_TRIG_TriggerEventHandlerIntf handle(XAP_TRG_TriggerContext triggerProperties);
-}

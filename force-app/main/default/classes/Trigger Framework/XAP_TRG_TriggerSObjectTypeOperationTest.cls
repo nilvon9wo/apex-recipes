@@ -1,5 +1,5 @@
 @IsTest
-public with sharing class XAP_TRIG_TriggerSObjectTypeOperationTest {
+public with sharing class XAP_TRG_TriggerSObjectTypeOperationTest {
 	private static final User TEST_USER = TEST_DummyUserFactoryOutlet.TEST_ADMIN_USER;
 
 	private static final SObjectType TEST_SOBJECT_TYPE = Account.SObjectType;

@@ -1,12 +1,22 @@
-public with sharing virtual class XAP_TRIG_TriggerEventCoordinator {
+public with sharing virtual class XAP_TRG_TriggerEventCoordinator {
 	private XAP_TRG_TriggerSettingSelector triggerSettingSelector;
 
-	public XAP_TRIG_TriggerEventCoordinator(XAP_TRG_TriggerSettingSelector automationSettingSelector) {
+	@TestVisible
+	private XAP_TRG_TriggerEventCoordinator(XAP_TRG_TriggerSettingSelector automationSettingSelector) {
 		this.triggerSettingSelector = automationSettingSelector;
 	}
 
-	public XAP_TRIG_TriggerEventCoordinator() {
+	@TestVisible
+	private XAP_TRG_TriggerEventCoordinator() {
 		this(XAP_TRG_TriggerSettingSelector.getInstance());
+	}
+
+	private static XAP_TRG_TriggerEventCoordinator instance;
+	public static XAP_TRG_TriggerEventCoordinator getInstance() {
+		if (instance == null) {
+			instance = new XAP_TRG_TriggerEventCoordinator();
+		}
+		return null;
 	}
 
 	@TestVisible private static Map<SObjectType, Boolean> IS_ENABLED_BY_SOBJECT_TYPE_MAP;
