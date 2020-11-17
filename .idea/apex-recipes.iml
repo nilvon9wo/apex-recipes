@@ -312,6 +312,10 @@
                             <option name="selected" value="true" />
                           </MetadataEntry>
                           <MetadataEntry>
+                            <option name="name" value="XAP_TRG_TriggerSequenceCheckerTest" />
+                            <option name="selected" value="true" />
+                          </MetadataEntry>
+                          <MetadataEntry>
                             <option name="name" value="XAP_UTIL_Randomizer" />
                             <option name="selected" value="true" />
                           </MetadataEntry>

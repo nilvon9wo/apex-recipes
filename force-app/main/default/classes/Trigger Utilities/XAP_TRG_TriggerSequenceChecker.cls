@@ -1,6 +1,7 @@
 public with sharing class XAP_TRG_TriggerSequenceChecker {
     private XAP_TRG_SObjectTypeOperationConvertor sObjectTypeOperationHelper;
 
+    @TestVisible
     private XAP_TRG_TriggerSequenceChecker(XAP_TRG_SObjectTypeOperationConvertor sObjectTypeOperationHelper) {
         this.sObjectTypeOperationHelper = sObjectTypeOperationHelper;
     }
