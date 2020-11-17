@@ -31,12 +31,49 @@ public with sharing class XAP_TRG_TriggerStepCache {
 
     private Map<String, XAP_TRG_TriggerSteppable> stepByClassNameMap = new Map<String, XAP_TRG_TriggerSteppable>();
 
-    public List<XAP_TRG_Trigger_Step__mdt> get(XAP_TRG_TriggerContext triggerContext) {
-        String key = this.createKey(triggerContext);
-        return this.stepListByKeyMap.get(key);
+    public List<XAP_TRG_TriggerSteppable> get(XAP_TRG_TriggerContext context) {
+        String key = this.createKey(context);
+        List<XAP_TRG_Trigger_Step__mdt> stepRecordsList = this.stepListByKeyMap.get(key);
+        if (stepRecordsList.isEmpty()) {
+            throw new XAP_TRG_TriggerException('No steps found for ' + context.sObjectType + ' ' + context.operationType);
+        }
+
+        return this.get(stepRecordsList);
     }
 
-    public XAP_TRG_TriggerSteppable get(XAP_TRG_Trigger_Step__mdt stepRecord) {
+    private List<XAP_TRG_TriggerSteppable> get(List<XAP_TRG_Trigger_Step__mdt> stepRecordsList) {
+        List<XAP_TRG_TriggerSteppable> stepInstanceList = new List<XAP_TRG_TriggerSteppable>();
+        XAP_TRG_Trigger_Step__mdt previousStepRecord = new XAP_TRG_Trigger_Step__mdt();
+        for (XAP_TRG_Trigger_Step__mdt currentStepRecord : stepRecordsList) {
+            if (
+                    currentStepRecord.Is_Active__c
+                            && this.checkSortOrderUniqueness(currentStepRecord, previousStepRecord)
+                    ) {
+                stepInstanceList.add(this.get(currentStepRecord));
+                previousStepRecord = currentStepRecord;
+            }
+            else {
+                System.debug(LoggingLevel.WARN, 'Inactive step: ' + currentStepRecord.DeveloperName);
+            }
+        }
+        return stepInstanceList;
+    }
+
+    private Boolean checkSortOrderUniqueness(
+            XAP_TRG_Trigger_Step__mdt currentStepRecord,
+            XAP_TRG_Trigger_Step__mdt previousStepRecord
+    ) {
+        if (currentStepRecord.Sort_Order__c == previousStepRecord.Sort_Order__c) {
+            throw new XAP_TRG_TriggerException(
+                    'Ambiguous sort value in ' + currentStepRecord.DeveloperName + '.  '
+                            + 'Each sort value can only be user once '
+                            + 'per combination of SObject Type, Operation Timing, and Operation Type.'
+            );
+        }
+        return true;
+    }
+
+    private  XAP_TRG_TriggerSteppable get(XAP_TRG_Trigger_Step__mdt stepRecord) {
         String className = stepRecord.Class_Name__c;
         XAP_TRG_TriggerSteppable stepInstance = this.stepByClassNameMap.get(className);
         return (stepInstance == null)
