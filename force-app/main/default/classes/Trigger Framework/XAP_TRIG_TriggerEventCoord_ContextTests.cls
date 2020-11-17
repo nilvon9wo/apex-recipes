@@ -4,8 +4,8 @@ public with sharing class XAP_TRIG_TriggerEventCoord_ContextTests {
 	private static final XAP_TRIG_TriggerEventCoordinator COORDINATOR_UNDER_TEST = new XAP_TRIG_TriggerEventCoordinator();
 	private static final SObjectType TEST_SOBJECT_TYPE = Account.SObjectType;
 	private static final System.TriggerOperation TEST_OPERATION = System.TriggerOperation.BEFORE_INSERT;
-	private static final XAP_TRIG_TriggerSObjectTypeOperation TEST_SOBJECT_OPERATION
-			= new XAP_TRIG_TriggerSObjectTypeOperation(TEST_SOBJECT_TYPE, TEST_OPERATION);
+	private static final XAP_TRG_TriggerSObjectTypeOperation TEST_SOBJECT_OPERATION
+			= new XAP_TRG_TriggerSObjectTypeOperation(TEST_SOBJECT_TYPE, TEST_OPERATION);
 
 	// isExecuting tests ----------------------------------------------------------------------------------
 

@@ -145,14 +145,14 @@ public with sharing virtual class XAP_TRIG_TriggerEventCoordinator {
 
 	// Context providers (experimental methods, not currently needed for CB)-----------------------------------------------
 
-	public Boolean isExecuting(XAP_TRIG_TriggerSObjectTypeOperation sObjectTypeOperation) {
+	public Boolean isExecuting(XAP_TRG_TriggerSObjectTypeOperation sObjectTypeOperation) {
 		return
 				OPERATION_SET_IN_PROGRESS_BY_SOBJECT_TYPE_MAP.get(sObjectTypeOperation.sObjectType) != null
 						&& OPERATION_SET_IN_PROGRESS_BY_SOBJECT_TYPE_MAP.get(sObjectTypeOperation.sObjectType)
 						.contains(sObjectTypeOperation.operation);
 	}
 
-	public Boolean isExecutingExclusively(XAP_TRIG_TriggerSObjectTypeOperation sObjectTypeOperation) {
+	public Boolean isExecutingExclusively(XAP_TRG_TriggerSObjectTypeOperation sObjectTypeOperation) {
 		return this.isExecuting(sObjectTypeOperation)
 				&& OPERATION_SET_IN_PROGRESS_BY_SOBJECT_TYPE_MAP.size() == 1
 				&& OPERATION_SET_IN_PROGRESS_BY_SOBJECT_TYPE_MAP.get(sObjectTypeOperation.sObjectType).size() == 1;
