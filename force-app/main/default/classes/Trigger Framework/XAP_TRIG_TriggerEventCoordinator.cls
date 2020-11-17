@@ -163,14 +163,14 @@ public with sharing virtual class XAP_TRIG_TriggerEventCoordinator {
 				&& OPERATION_SET_IN_PROGRESS_BY_SOBJECT_TYPE_MAP.get(sObjectTypeOperation.sObjectType).size() == 1;
 	}
 
-	// Sequence checker  ---------------------------------------------------------------------------------------------------------
-
-	public XAP_COLL_ListComparison compare(List<XAP_TRIG_TriggerSObjectTypeOperation> needleSObjectTypeOperationList) {
-		List<XAP_TRIG_TriggerSObjectTypeOperation> inProgressSObjectTypeOperationList
-				= sObjectTypeOperationHelper.convert(TRIGGER_IN_PROGRESS_LIST);
-
-		return new XAP_COLL_ListComparison(inProgressSObjectTypeOperationList, needleSObjectTypeOperationList);
-	}
+//	// Sequence checker  ---------------------------------------------------------------------------------------------------------
+//
+//	public XAP_COLL_ListComparison compare(List<XAP_TRIG_TriggerSObjectTypeOperation> needleSObjectTypeOperationList) {
+//		List<XAP_TRIG_TriggerSObjectTypeOperation> inProgressSObjectTypeOperationList
+//				= sObjectTypeOperationHelper.convert(TRIGGER_IN_PROGRESS_LIST);
+//
+//		return new XAP_COLL_ListComparison(inProgressSObjectTypeOperationList, needleSObjectTypeOperationList);
+//	}
 
 	// Helpers  ---------------------------------------------------------------------------------------------------------
 

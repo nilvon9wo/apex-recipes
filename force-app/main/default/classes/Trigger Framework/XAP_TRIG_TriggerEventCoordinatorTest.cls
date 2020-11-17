@@ -79,7 +79,7 @@ public with sharing class XAP_TRIG_TriggerEventCoordinatorTest {
 	@IsTest public static void isExecutableReturnsTrueIfEnabledForSObjectAndNotInProgressButNotEnabledForProfile() {
 		// Arrange
 		XAP_TRG_TriggerSettingSelectorMock mockTriggerSettingSelector = new XAP_TRG_TriggerSettingSelectorMock();
-		TEST_TRIGGER_SETTINGS.TriggersEnabled__c = false;
+		TEST_TRIGGER_SETTINGS.All_Triggers_Enabled__c = false;
 		mockTriggerSettingSelector.returnedTriggerSetting = TEST_TRIGGER_SETTINGS;
 		XAP_TRIG_SObjectTypeOperationConvertor sObjectTypeOperationHelper = new XAP_TRIG_SObjectTypeOperationConvertor();
 		XAP_TRIG_TriggerEventCoordinator coordinatorUnderTest
