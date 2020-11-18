@@ -1,91 +1,78 @@
 public inherited sharing class AccountServiceLayer {
-    private CanTheUser canUser;
+    private XAP_DAO_DML_SecureDml dml;
 
-    public AccountServiceLayer(CanTheUser canUser) {
-        this.canUser = canUser;
+    public AccountServiceLayer(XAP_DAO_DML_SecureDml dml) {
+        this.dml = dml;
     }
 
     public AccountServiceLayer() {
-        this(new CanTheUser());
+        this(XAP_DAO_DML_SecureDml.getInstance());
     }
 
     @TestVisible
     private static String didExecuteMethod;
 
-    public static void justWriteALogStatement(String toLog) {
+    public void justWriteALogStatement(String toLog) {
         AccountServiceLayer.didExecuteMethod = toLog;
-        System.debug(
-            LoggingLevel.INFO,
-            'Account id = and log statement = ' + toLog
-        );
     }
 
     @SuppressWarnings('PMD.ApexCRUDViolation')
-    public static void changeShippingStreet(List<Account> accounts) {
-        new AccountServiceLayer()
-                .changeShipStreet(accounts);
+    public void changeShippingStreet(List<Account> accounts) {
+        this.changeShipStreet(accounts);
     }
 
-    private void changeShipStreet(List<Account> accounts) {
-        List<Account> updated = new List<Account>();
-        for (Account account : accounts) {
-            Account uAcct = account.clone(true);
-            uAcct.ShippingStreet = '229b Baker st.';
-            updated.add(uAcct);
+    private void changeShipStreet(List<Account> accountList) {
+        List<Account> updatedAccountList = new List<Account>();
+        for (Account account : accountList) {
+            Account updatedAccount = account.clone(true);
+            updatedAccount.ShippingStreet = '229b Baker st.';
+            updatedAccountList.add(updatedAccount);
         }
-        if (
-                this.canUser.edit(updated[0]) &&
-                        this.canUser.flsUpdatable('Account', 'shippingStreet')
-                ) {
-            update updated;
-        } else {
+
+        try {
+            this.dml.doUpdate(updatedAccountList);
+        }
+        catch (XAP_DAO_DML_CrudException crudException) {
             throw new CanTheUserException(
-                    'User has no permission to edit accounts'
+                    'User has no permission to edit accountList'
             );
         }
+
     }
 
-    public static List<Account> incrementCounterInDescription(
-        List<Account> incomingAccounts,
-        Boolean save
-    ) {
-        for (Account ia : incomingAccounts) {
+    public List<Account> incrementCounterInDescription(List<Account> incomingAccountList, Boolean save) {
+        for (Account incomingAccount : incomingAccountList) {
             Integer counter = 0;
             try {
-                if (ia.Description != null) {
-                    counter = Integer.valueOf(ia.Description);
+                if (incomingAccount.Description != null) {
+                    counter = Integer.valueOf(incomingAccount.Description);
                 }
-            } catch (System.TypeException te) {
-                System.debug(
-                    LoggingLevel.INFO,
-                    'failed safely to 0 during init'
-                );
+            }
+            catch (System.TypeException typeException) {
+                System.debug(LoggingLevel.WARN, 'failed safely to 0 during init');
             }
             counter++;
-            ia.Description = String.valueOf(counter);
+            incomingAccount.Description = String.valueOf(counter);
         }
         if (save) {
-            safelySave(incomingAccounts);
+            this.safelySave(incomingAccountList);
         }
-        return incomingAccounts;
+        return incomingAccountList;
     }
 
     @TestVisible
-    private static void safelySave(List<Account> accounts) {
+    private void safelySave(List<Account> accountList) {
         try {
-            System.SObjectAccessDecision decision = Security.stripInaccessible(
-                AccessType.UPDATABLE,
-                accounts
-            );
-            update decision.getRecords();
-        } catch (DmlException dmle) {
-            System.debug(
-                LoggingLevel.INFO,
-                'Hey, a DML error occurred while updating.'
-            );
-            throw new ASLException(dmle.getMessage());
-        } catch (System.NoAccessException nae) {
-            throw new ASLException(nae.getMessage());
+            System.SObjectAccessDecision decision
+                    = Security.stripInaccessible(AccessType.UPDATABLE, accountList);
+            this.dml.doUpdate(decision.getRecords());
+        }
+        catch (DmlException dmlException) {
+            System.debug(LoggingLevel.ERROR, 'Hey, a DML error occurred while updating.');
+            throw new ASLException(dmlException.getMessage());
+        }
+        catch (System.NoAccessException noAccessException) {
+            throw new ASLException(noAccessException.getMessage());
         }
     }
 }

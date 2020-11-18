@@ -1,11 +1,13 @@
 public inherited sharing class AccountTriggerHandler extends TriggerHandler {
+    private AccountServiceLayer accountServiceLayer;
     private CanTheUser canUser;
     private List<Account> triggerNew;
     private List<Account> triggerOld;
     private Map<Id, Account> triggerMapNew;
     private Map<Id, Account> triggerMapOld;
 
-    public AccountTriggerHandler(CanTheUser canUser) {
+    public AccountTriggerHandler(AccountServiceLayer accountServiceLayer, CanTheUser canUser) {
+        this.accountServiceLayer = accountServiceLayer;
         this.canUser = canUser;
         this.triggerOld = (List<Account>) Trigger.old;
         this.triggerNew = (List<Account>) Trigger.new;
@@ -14,21 +16,21 @@ public inherited sharing class AccountTriggerHandler extends TriggerHandler {
     }
     
     public AccountTriggerHandler() {
-        this(new CanTheUser());
+        this(new AccountServiceLayer(), new CanTheUser());
     }
 
     @TestVisible
     private static Exception circuitBreaker;
 
     public override void beforeInsert() {
-        AccountServiceLayer.incrementCounterInDescription(
+        this.accountServiceLayer.incrementCounterInDescription(
             this.triggerNew,
             false
         );
     }
 
     public override void afterInsert() {
-        AccountServiceLayer.changeShippingStreet(this.triggerNew);
+        this.accountServiceLayer.changeShippingStreet(this.triggerNew);
     }
 
     public override void beforeUpdate() {

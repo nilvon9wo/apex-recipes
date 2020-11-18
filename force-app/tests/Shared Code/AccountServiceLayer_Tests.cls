@@ -1,14 +1,15 @@
 @IsTest
 private inherited sharing class AccountServiceLayer_Tests {
+    private static final AccountServiceLayer LAYER_UNDER_TEST = new AccountServiceLayer();
     @IsTest
     static void justWriteALogStatementPositive() {
         Test.startTest();
-        AccountServiceLayer.justWriteALogStatement('Hello Stream Viewers');
+        LAYER_UNDER_TEST.justWriteALogStatement('Hello Stream Viewers');
         Test.stopTest();
 
         System.assertEquals(
             'Hello Stream Viewers',
-            AccountServiceLayer.didExecuteMethod,
+                AccountServiceLayer.didExecuteMethod,
             'Expected the log to match the input parameter.'
         );
     }
@@ -27,7 +28,7 @@ private inherited sharing class AccountServiceLayer_Tests {
         Test.startTest();
         System.runAs(testUser) {
             try {
-                AccountServiceLayer.changeShippingStreet(accounts);
+                LAYER_UNDER_TEST.changeShippingStreet(accounts);
             } catch (CanTheUserException ctue) {
                 if (
                     ctue.getMessage()
@@ -54,7 +55,7 @@ private inherited sharing class AccountServiceLayer_Tests {
         );
 
         Test.startTest();
-        List<Account> updatedAccounts = AccountServiceLayer.incrementCounterInDescription(
+        List<Account> updatedAccounts = LAYER_UNDER_TEST.incrementCounterInDescription(
             theAccounts,
             false
         );
@@ -79,7 +80,7 @@ private inherited sharing class AccountServiceLayer_Tests {
             5
         );
         Test.startTest();
-        List<Account> updatedAccounts = AccountServiceLayer.incrementCounterInDescription(
+        List<Account> updatedAccounts = LAYER_UNDER_TEST.incrementCounterInDescription(
             theAccounts,
             false
         );
@@ -107,7 +108,7 @@ private inherited sharing class AccountServiceLayer_Tests {
 
         Test.startTest();
         try {
-            AccountServiceLayer.incrementCounterInDescription(
+            LAYER_UNDER_TEST.incrementCounterInDescription(
                 theAccounts,
                 true
             );
@@ -143,7 +144,7 @@ private inherited sharing class AccountServiceLayer_Tests {
         Boolean didCatchTheRightException = false;
         Test.startTest();
         try {
-            AccountServiceLayer.safelySave(theAccounts);
+            LAYER_UNDER_TEST.safelySave(theAccounts);
         } catch (ASLException asle) {
             System.debug(LoggingLevel.INFO, asle.getMessage());
             didCatchTheRightException = true;
@@ -168,7 +169,7 @@ private inherited sharing class AccountServiceLayer_Tests {
         Test.startTest();
         System.runAs(testUser) {
             try {
-                AccountServiceLayer.safelySave(theAccounts);
+                LAYER_UNDER_TEST.safelySave(theAccounts);
             } catch (ASLException asle) {
                 if (asle.getMessage().containsIgnoreCase('No Access')) {
                     didCatchTheRightException = true;
