@@ -19,7 +19,7 @@ public class XAP_DAO_DML_SecurityUtils {
 	public static final Boolean OPERATION_IS_PERMITTED = true;
 
 	private static final Set<String> IGNORED_FIELD_NAME_SET = new Set<String>{
-			'Id', 'ExternalSalesforceId__c'
+			'ExternalSalesforceId__c', 'Id', 'IsCustomerPortal', 'IsDeleted', 'IsPartner', 'SystemModstamp'
 	};
 
 	public Boolean checkInsert(SObjectType sObjectType, List<String> fieldNameList) {

@@ -7,5 +7,5 @@ trigger AccountTrigger on Account(
     after delete,
     after undelete
 ) {
-    new AccountTriggerHandler().run();
+    XAP_TRG_TriggerHandler.execute();
 }

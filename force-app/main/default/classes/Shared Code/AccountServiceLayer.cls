@@ -1,12 +1,20 @@
 public inherited sharing class AccountServiceLayer {
     private XAP_DAO_DML_SecureDml dml;
 
-    public AccountServiceLayer(XAP_DAO_DML_SecureDml dml) {
+    private AccountServiceLayer(XAP_DAO_DML_SecureDml dml) {
         this.dml = dml;
     }
 
-    public AccountServiceLayer() {
+    private AccountServiceLayer() {
         this(XAP_DAO_DML_SecureDml.getInstance());
+    }
+
+    private static AccountServiceLayer instance;
+    public static AccountServiceLayer getInstance() {
+        if (instance == null) {
+            instance = new AccountServiceLayer();
+        }
+        return instance;
     }
 
     @TestVisible

@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomMetadata xmlns="http://soap.sforce.com/2006/04/metadata" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+    <label>ARTR_ACT_AccountDeleteTaskFactory</label>
+    <protected>false</protected>
+    <values>
+        <field>Class_Name__c</field>
+        <value xsi:type="xsd:string">ARTR_ACT_AccountDeleteTaskFactory</value>
+    </values>
+    <values>
+        <field>Description__c</field>
+        <value xsi:nil="true"/>
+    </values>
+    <values>
+        <field>Help_Text__c</field>
+        <value xsi:nil="true"/>
+    </values>
+    <values>
+        <field>Is_Active__c</field>
+        <value xsi:type="xsd:boolean">true</value>
+    </values>
+    <values>
+        <field>Operation_Timing__c</field>
+        <value xsi:type="xsd:string">After</value>
+    </values>
+    <values>
+        <field>Operation_Type__c</field>
+        <value xsi:type="xsd:string">Delete</value>
+    </values>
+    <values>
+        <field>Reuse_Instance__c</field>
+        <value xsi:type="xsd:boolean">true</value>
+    </values>
+    <values>
+        <field>SObject_Type__c</field>
+        <value xsi:type="xsd:string">Account</value>
+    </values>
+    <values>
+        <field>Sort_Order__c</field>
+        <value xsi:type="xsd:double">700.0</value>
+    </values>
+    <values>
+        <field>Throw_Error_If_Class_Missing__c</field>
+        <value xsi:type="xsd:boolean">true</value>
+    </values>
+</CustomMetadata>

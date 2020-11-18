@@ -10,8 +10,16 @@ public inherited sharing class CanTheUser {
         this.platformCacheRecipes = platformCacheRecipes;
     }
 
-    public CanTheUser() {
+    private CanTheUser() {
         this(DAO_FieldPermissionsSelector.getInstance(), new PlatformCacheRecipes());
+    }
+
+    private static CanTheUser instance;
+    public static CanTheUser getInstance() {
+        if (instance == null) {
+            instance = new CanTheUser();
+        }
+        return instance;
     }
 
     @TestVisible

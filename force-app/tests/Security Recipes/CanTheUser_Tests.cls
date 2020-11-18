@@ -1,6 +1,6 @@
 @IsTest
 private inherited sharing class CanTheUser_Tests {
-    private static final CanTheUser CAN_UNDER_TEST = new CanTheUser();
+    private static final CanTheUser CAN_UNDER_TEST = CanTheUser.getInstance();
     @IsTest
     static void canCrudAccountCreatePositive() {
         System.assert(

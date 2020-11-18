@@ -1,5 +1,9 @@
 @IsTest
 private inherited sharing class AccountTriggerHandler_Tests {
+    static {
+        TEST_DummyXapTriggerSettingFactoryOutlet.prepareIntegrationTest();
+    }
+
     @IsTest
     static void beforeInsertTestPositive() {
         Account acct = (Account) TestFactory.createSObject(
@@ -190,7 +194,7 @@ private inherited sharing class AccountTriggerHandler_Tests {
         for (Account acct : testData) {
             acct.ShippingStreet = '';
         }
-        AccountTriggerHandler.circuitBreaker = new DmlException();
+        ARTR_DAO_TaskInserter.circuitBreaker = new DmlException();
         Test.startTest();
         try {
             update testData;

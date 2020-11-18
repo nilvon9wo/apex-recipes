@@ -10,10 +10,10 @@ public class XAP_DAO_DML_FieldLevelSecurityException extends XAP_DAO_DML_Securit
 		this.sObjectType = sObjectType;
 		this.sObjectField = sObjectField;
 		if (operationType == XAP_DAO_DML_OperationTypeEnum.CREATE) {
-			this.setMessage(sObjectType + '.' + sObjectField + 'is not insertable');
+			this.setMessage(sObjectType + '.' + sObjectField + ' is not insertable');
 		}
 		else if (operationType == XAP_DAO_DML_OperationTypeEnum.MODIFY) {
-			this.setMessage(sObjectType + '.' + sObjectField + 'is not updatable');
+			this.setMessage(sObjectType + '.' + sObjectField + ' is not updatable');
 		}
 	}
 }

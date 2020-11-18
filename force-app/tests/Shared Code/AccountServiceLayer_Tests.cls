@@ -1,6 +1,6 @@
 @IsTest
 private inherited sharing class AccountServiceLayer_Tests {
-    private static final AccountServiceLayer LAYER_UNDER_TEST = new AccountServiceLayer();
+    private static final AccountServiceLayer LAYER_UNDER_TEST = AccountServiceLayer.getInstance();
     @IsTest
     static void justWriteALogStatementPositive() {
         Test.startTest();

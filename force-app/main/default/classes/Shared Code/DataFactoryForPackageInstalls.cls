@@ -6,7 +6,7 @@ public inherited sharing class DataFactoryForPackageInstalls {
     }
 
     public DataFactoryForPackageInstalls() {
-        this(new CanTheUser());
+        this(CanTheUser.getInstance());
     }
 
     @SuppressWarnings('PMD.ApexCRUDViolation')
