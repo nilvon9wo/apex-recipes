@@ -464,11 +464,55 @@
                       <option name="entries">
                         <list>
                           <MetadataEntry>
+                            <option name="name" value="XAP_TRG_Trigger_Step.ARTAR_ACT_AccountDescrCounterIncrementer" />
+                            <option name="selected" value="true" />
+                          </MetadataEntry>
+                          <MetadataEntry>
+                            <option name="name" value="XAP_TRG_Trigger_Step.ARTR_ACT_AccountCloner" />
+                            <option name="selected" value="true" />
+                          </MetadataEntry>
+                          <MetadataEntry>
+                            <option name="name" value="XAP_TRG_Trigger_Step.ARTR_ACT_AccountDeleteTaskFactory" />
+                            <option name="selected" value="true" />
+                          </MetadataEntry>
+                          <MetadataEntry>
+                            <option name="name" value="XAP_TRG_Trigger_Step.ARTR_ACT_AccountShippingStateChanger" />
+                            <option name="selected" value="true" />
+                          </MetadataEntry>
+                          <MetadataEntry>
+                            <option name="name" value="XAP_TRG_Trigger_Step.ARTR_ACT_AccountShippingStreetChanger" />
+                            <option name="selected" value="true" />
+                          </MetadataEntry>
+                          <MetadataEntry>
+                            <option name="name" value="XAP_TRG_Trigger_Step.ARTR_ACT_AccountUndeleteTaskFactory" />
+                            <option name="selected" value="true" />
+                          </MetadataEntry>
+                          <MetadataEntry>
+                            <option name="name" value="XAP_TRG_Trigger_Step.ARTR_ACT_AccountUpdateTaskFactory" />
+                            <option name="selected" value="true" />
+                          </MetadataEntry>
+                          <MetadataEntry>
+                            <option name="name" value="XAP_TRG_Trigger_Step.ARTR_DAO_AccountCloneInserter" />
+                            <option name="selected" value="true" />
+                          </MetadataEntry>
+                          <MetadataEntry>
                             <option name="name" value="XAP_TRG_Trigger_Step.ARTR_DAO_AccountUpdater" />
                             <option name="selected" value="true" />
                           </MetadataEntry>
                           <MetadataEntry>
                             <option name="name" value="XAP_TRG_Trigger_Step.ARTR_DAO_EventRecipesDemoAccountSelector" />
+                            <option name="selected" value="true" />
+                          </MetadataEntry>
+                          <MetadataEntry>
+                            <option name="name" value="XAP_TRG_Trigger_Step.ARTR_DAO_TaskInserter_For_Account_Delete" />
+                            <option name="selected" value="true" />
+                          </MetadataEntry>
+                          <MetadataEntry>
+                            <option name="name" value="XAP_TRG_Trigger_Step.ARTR_DAO_TaskInserter_For_Account_Undel" />
+                            <option name="selected" value="true" />
+                          </MetadataEntry>
+                          <MetadataEntry>
+                            <option name="name" value="XAP_TRG_Trigger_Step.ARTR_DAO_TaskInserter_For_Account_Update" />
                             <option name="selected" value="true" />
                           </MetadataEntry>
                           <MetadataEntry>
