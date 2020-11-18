@@ -64,7 +64,7 @@ public class XAP_TRG_TriggerContext {
 		return this.valueByKeyMap.get(key);
 	}
 
-	private XAP_TRG_TriggerContext set(Object key, Object value) {
+	public XAP_TRG_TriggerContext set(Object key, Object value) {
 		if (!this.valueByKeyMap.containsKey(key)) {
 			this.valueByKeyMap.put(key, value);
 		}

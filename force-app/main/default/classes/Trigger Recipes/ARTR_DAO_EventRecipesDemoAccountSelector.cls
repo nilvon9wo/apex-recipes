@@ -1,23 +1,19 @@
-public inherited sharing class PlatformEventRecipesTriggerHandler implements XAP_TRG_TriggerSteppable {
+public inherited sharing class ARTR_DAO_EventRecipesDemoAccountSelector implements XAP_TRG_TriggerSteppable {
     private DAO_AccountSelector accountSelector;
     private XAP_COLL_SObjectValueSetExtractor setExtractor;
-    private XAP_DAO_DML_InheritedSharingDml dml;
 
-    public PlatformEventRecipesTriggerHandler(
+    public ARTR_DAO_EventRecipesDemoAccountSelector(
             DAO_AccountSelector accountSelector,
-            XAP_COLL_SObjectValueSetExtractor setExtractor,
-            XAP_DAO_DML_InheritedSharingDml dml
+            XAP_COLL_SObjectValueSetExtractor setExtractor
     ) {
         this.accountSelector = accountSelector;
         this.setExtractor = setExtractor;
-        this.dml = dml;
     }
 
-    public PlatformEventRecipesTriggerHandler() {
+    public ARTR_DAO_EventRecipesDemoAccountSelector() {
         this(
                 DAO_AccountSelector.getInstance(),
-                XAP_COLL_SObjectValueSetExtractor.getInstance(),
-                XAP_DAO_DML_InheritedSharingDml.getInstance()
+                XAP_COLL_SObjectValueSetExtractor.getInstance()
         );
     }
 
@@ -28,11 +24,6 @@ public inherited sharing class PlatformEventRecipesTriggerHandler implements XAP
         Map<Id, Account> accountByIdMap
                 = new Map<Id, Account>((List<Account>) this.accountSelector.selectById(accountIdSet));
 
-        for (Event_Recipes_Demo__e curEvent : newDemoList) {
-            accountByIdMap.get(curEvent.accountId__c).Website = curEvent.Url__c;
-        }
-        this.dml.doUpdate(accountByIdMap.values());
-
-        return new XAP_TRG_TriggerStepSuccess(context);
+        return new XAP_TRG_TriggerStepSuccess(context.set(ARTR_TriggerStepKeys.ACCOUNT_BY_ID_MAP, accountByIdMap));
     }
 }

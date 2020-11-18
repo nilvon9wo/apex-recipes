@@ -22,8 +22,9 @@ public with sharing class XAP_TRG_TriggerHandler {
         return instance;
     }
 
-    public XAP_TRG_TriggerHandler execute() {
-        return this.execute(new XAP_TRG_TriggerContext());
+    public static XAP_TRG_TriggerHandler execute() {
+        return getInstance()
+                .execute(new XAP_TRG_TriggerContext());
     }
 
     public XAP_TRG_TriggerHandler execute(XAP_TRG_TriggerContext context) {

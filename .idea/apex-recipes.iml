@@ -16,6 +16,22 @@
                       <option name="entries">
                         <list>
                           <MetadataEntry>
+                            <option name="name" value="ARTR_DAO_AccountUpdater" />
+                            <option name="selected" value="true" />
+                          </MetadataEntry>
+                          <MetadataEntry>
+                            <option name="name" value="ARTR_DAO_EventRecipesDemoAccountSelector" />
+                            <option name="selected" value="true" />
+                          </MetadataEntry>
+                          <MetadataEntry>
+                            <option name="name" value="ARTR_ERD_AccountWebsiteSetter" />
+                            <option name="selected" value="true" />
+                          </MetadataEntry>
+                          <MetadataEntry>
+                            <option name="name" value="ARTR_TriggerStepKeys" />
+                            <option name="selected" value="true" />
+                          </MetadataEntry>
+                          <MetadataEntry>
                             <option name="name" value="CustomDMLException" />
                             <option name="selected" value="true" />
                           </MetadataEntry>
@@ -308,11 +324,11 @@
                             <option name="selected" value="true" />
                           </MetadataEntry>
                           <MetadataEntry>
-                            <option name="name" value="XAP_TRG_TriggerStepSelector" />
+                            <option name="name" value="XAP_TRG_TriggerSequenceCheckerTest" />
                             <option name="selected" value="true" />
                           </MetadataEntry>
                           <MetadataEntry>
-                            <option name="name" value="XAP_TRG_TriggerSequenceCheckerTest" />
+                            <option name="name" value="XAP_TRG_TriggerStepSelector" />
                             <option name="selected" value="true" />
                           </MetadataEntry>
                           <MetadataEntry>

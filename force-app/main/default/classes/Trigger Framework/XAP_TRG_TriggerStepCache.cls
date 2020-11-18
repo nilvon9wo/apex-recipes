@@ -43,14 +43,14 @@ public with sharing class XAP_TRG_TriggerStepCache {
 
     private List<XAP_TRG_TriggerSteppable> get(List<XAP_TRG_Trigger_Step__mdt> stepRecordsList) {
         List<XAP_TRG_TriggerSteppable> stepInstanceList = new List<XAP_TRG_TriggerSteppable>();
-        XAP_TRG_Trigger_Step__mdt previousStepRecord = new XAP_TRG_Trigger_Step__mdt();
+        Decimal previousSortOrder;
         for (XAP_TRG_Trigger_Step__mdt currentStepRecord : stepRecordsList) {
             if (
                     currentStepRecord.Is_Active__c
-                            && this.checkSortOrderUniqueness(currentStepRecord, previousStepRecord)
+                            && this.checkSortOrderUniqueness(currentStepRecord, previousSortOrder)
                     ) {
                 stepInstanceList.add(this.get(currentStepRecord));
-                previousStepRecord = currentStepRecord;
+                previousSortOrder = currentStepRecord.Sort_Order__c;
             }
             else {
                 System.debug(LoggingLevel.WARN, 'Inactive step: ' + currentStepRecord.DeveloperName);
@@ -61,9 +61,9 @@ public with sharing class XAP_TRG_TriggerStepCache {
 
     private Boolean checkSortOrderUniqueness(
             XAP_TRG_Trigger_Step__mdt currentStepRecord,
-            XAP_TRG_Trigger_Step__mdt previousStepRecord
+            Decimal previousSortOrder
     ) {
-        if (currentStepRecord.Sort_Order__c == previousStepRecord.Sort_Order__c) {
+        if (currentStepRecord.Sort_Order__c == previousSortOrder) {
             throw new XAP_TRG_TriggerException(
                     'Ambiguous sort value in ' + currentStepRecord.DeveloperName + '.  '
                             + 'Each sort value can only be user once '
