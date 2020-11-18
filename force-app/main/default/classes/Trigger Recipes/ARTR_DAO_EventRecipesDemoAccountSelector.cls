@@ -19,6 +19,7 @@ public inherited sharing class ARTR_DAO_EventRecipesDemoAccountSelector implemen
 
     public XAP_TRG_TriggerStepResultable execute(XAP_TRG_TriggerContext context) {
         List<Event_Recipes_Demo__e> newDemoList = (List<Event_Recipes_Demo__e>) context.newSObjectList;
+
         Set<Id> accountIdSet
                 = this.setExtractor.extractNonNullIdsFrom(newDemoList, Event_Recipes_Demo__e.accountId__c);
         Map<Id, Account> accountByIdMap

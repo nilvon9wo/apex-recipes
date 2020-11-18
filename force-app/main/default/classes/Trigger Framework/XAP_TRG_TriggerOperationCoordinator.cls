@@ -16,7 +16,7 @@ public with sharing virtual class XAP_TRG_TriggerOperationCoordinator {
 		if (instance == null) {
 			instance = new XAP_TRG_TriggerOperationCoordinator();
 		}
-		return null;
+		return instance;
 	}
 
 	@TestVisible private static Map<SObjectType, Boolean> IS_ENABLED_BY_SOBJECT_TYPE_MAP;
@@ -91,7 +91,8 @@ public with sharing virtual class XAP_TRG_TriggerOperationCoordinator {
 		XAP_TRG_Trigger_Settings__c triggerSetting = triggerSettingSelector.get();
 
 		return new Map<SObjectType, Boolean>{
-				Account.SObjectType => triggerSetting.Account_Trigger_Enabled__c
+				Account.SObjectType => triggerSetting.Account_Trigger_Enabled__c,
+				Event_Recipes_Demo__e.SObjectType => triggerSetting.Event_Recipes_Demo_Trigger_Enabled__c
 		};
 	}
 

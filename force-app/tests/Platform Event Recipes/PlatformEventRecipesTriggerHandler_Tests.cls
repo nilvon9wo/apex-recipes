@@ -1,15 +1,19 @@
-@isTest
+@IsTest
 private inherited sharing class PlatformEventRecipesTriggerHandler_Tests {
-    @isTest
+    static {
+        TEST_DummyXapTriggerSettingFactoryOutlet.prepareIntegrationTest();
+    }
+
+    @IsTest
     static void testPlatformEventRecipesTriggerHandlerPositive() {
         Account acct = (Account) TestFactory.createSObject(
-            new Account(name = 'testEvent'),
+            new Account(Name = 'testEvent'),
             true
         );
         Event_Recipes_Demo__e event = new Event_Recipes_Demo__e(
-            Url__c = 'https://google.com',
-            Title__c = 'demo.jpg',
-            AccountId__c = acct.Id
+            url__c = 'https://google.com',
+            title__c = 'demo.jpg',
+            accountId__c = acct.Id
         );
 
         Test.startTest();

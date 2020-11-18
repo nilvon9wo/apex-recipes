@@ -152,8 +152,8 @@ public with sharing class XAP_TRG_TriggerStepCache {
     }
 
     private String createKey(XAP_TRG_Trigger_Step__mdt step) {
-        String operationName = step.DeveloperName + '_' + step.Operation_Type__c;
-        return this.createKey(step.SObject_Type__c, step.DeveloperName);
+        String operationName = step.Operation_Timing__c + '_' + step.Operation_Type__c;
+        return this.createKey(step.SObject_Type__c, operationName);
     }
 
     private String createKey(String sObjectName, String operationName) {
