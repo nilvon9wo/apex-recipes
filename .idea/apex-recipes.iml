@@ -428,6 +428,26 @@
                       <option name="entries">
                         <list>
                           <MetadataEntry>
+                            <option name="name" value="XAP_TRG_Trigger_Step.ARTR_DAO_AccountUpdater" />
+                            <option name="selected" value="true" />
+                          </MetadataEntry>
+                          <MetadataEntry>
+                            <option name="name" value="XAP_TRG_Trigger_Step.ARTR_DAO_EventRecipesDemoAccountSelector" />
+                            <option name="selected" value="true" />
+                          </MetadataEntry>
+                          <MetadataEntry>
+                            <option name="name" value="XAP_TRG_Trigger_Step.ARTR_ERD_AccountWebsiteSetter" />
+                            <option name="selected" value="true" />
+                          </MetadataEntry>
+                        </list>
+                      </option>
+                      <option name="name" value="CustomMetadata" />
+                      <option name="wildcard" value="false" />
+                    </MetadataType>
+                    <MetadataType>
+                      <option name="entries">
+                        <list>
+                          <MetadataEntry>
                             <option name="name" value="XAP_TRG_Trigger_Settings__c" />
                             <option name="selected" value="true" />
                           </MetadataEntry>

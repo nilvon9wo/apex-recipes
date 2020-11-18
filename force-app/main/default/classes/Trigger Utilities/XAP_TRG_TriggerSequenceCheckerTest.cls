@@ -6,10 +6,9 @@ public with sharing class XAP_TRG_TriggerSequenceCheckerTest {
 		// Arrange
 		XAP_TRG_SObjectTypeOperationCnvtMock mockSObjectTypeOperationHelper
 				= new XAP_TRG_SObjectTypeOperationCnvtMock();
+		XAP_TRG_TriggerOperationCoordinatorMock mockTriggerOperationsCoordinator = new XAP_TRG_TriggerOperationCoordinatorMock();
 		XAP_TRG_TriggerSequenceChecker checkerUnderTest
-				= new XAP_TRG_TriggerSequenceChecker(mockSObjectTypeOperationHelper);
-
-		List<XAP_TRG_TriggerContext> triggerInProgressList;
+				= new XAP_TRG_TriggerSequenceChecker(mockSObjectTypeOperationHelper, mockTriggerOperationsCoordinator);
 
 		List<XAP_TRG_TriggerSObjectTypeOperation> testSObjectTypeOperationList = new List<XAP_TRG_TriggerSObjectTypeOperation>();
 		List<XAP_TRG_TriggerSObjectTypeOperation> returnedSObjectTypeOperationList = testSObjectTypeOperationList.clone();
@@ -19,7 +18,7 @@ public with sharing class XAP_TRG_TriggerSequenceCheckerTest {
 		XAP_COLL_ListComparison resultComparison;
 		Test.startTest();
 		System.runAs(TEST_USER) {
-			resultComparison = checkerUnderTest.compare(triggerInProgressList, testSObjectTypeOperationList);
+			resultComparison = checkerUnderTest.compare(testSObjectTypeOperationList);
 		}
 		Test.stopTest();
 

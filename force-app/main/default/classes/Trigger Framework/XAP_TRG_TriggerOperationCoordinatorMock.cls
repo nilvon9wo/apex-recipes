@@ -20,4 +20,11 @@ public with sharing class XAP_TRG_TriggerOperationCoordinatorMock extends XAP_TR
 		this.receivedEnabledObjectTypeSet = sObjectTypeSet;
 		return this.returnedEnabledBySObjectTypeAfterEnableMap;
 	}
+
+	public Boolean wasGetTriggerProgressListCalled = false;
+	public List<XAP_TRG_TriggerContext> returnedTriggerProgressList;
+	public override List<XAP_TRG_TriggerContext> getTriggerProgressList() {
+		this.wasGetTriggerProgressListCalled = true;
+		return this.returnedTriggerProgressList;
+	}
 }

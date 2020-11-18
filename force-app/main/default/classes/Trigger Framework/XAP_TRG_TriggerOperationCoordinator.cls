@@ -174,8 +174,7 @@ public with sharing virtual class XAP_TRG_TriggerOperationCoordinator {
 	private Boolean returnValueOrTrue(Boolean value) {
 		return (value != null) ? value : true;
 	}
-
-	public List<XAP_TRG_TriggerContext> getTriggerProgressList() {
+	public virtual List<XAP_TRG_TriggerContext> getTriggerProgressList() {
 		return TRIGGER_IN_PROGRESS_LIST.clone();
 	}
 }
