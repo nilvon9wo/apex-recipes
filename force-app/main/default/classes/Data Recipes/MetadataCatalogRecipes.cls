@@ -1,3 +1,4 @@
+//@group Data Recipes
 public inherited sharing class MetadataCatalogRecipes {
     private DAO_EntityDefinitionSelector entityDefinitionSelector;
     private DAO_FieldDefinitionSelector fieldDefinitionSelector;

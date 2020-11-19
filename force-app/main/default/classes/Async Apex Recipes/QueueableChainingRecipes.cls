@@ -1,3 +1,5 @@
+//@group Async Apex Recipes
+//@see QueueableRecipes
 public inherited sharing class QueueableChainingRecipes implements Queueable {
     private DAO_AccountSelector accountSelector;
     private XAP_ASYNC_Enqueuer enqueuer;

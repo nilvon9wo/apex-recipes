@@ -1,3 +1,5 @@
+//@group Data Recipes
+//@see CanTheUser
 public inherited sharing class SOQLRecipes {
     private DAO_AccountSelector accountSelector;
     private DAO_ContactSelector contactSelector;

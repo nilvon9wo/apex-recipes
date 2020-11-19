@@ -1,3 +1,4 @@
+//@group Data Recipes
 public inherited sharing class DynamicSOQLRecipes {
     private DAO_AccountSelector accountSelector;
 

@@ -1,3 +1,5 @@
+//@group Async Apex Recipes
+//@see RestClient
 public inherited sharing class QueueableWithCalloutRecipes implements Queueable, Database.AllowsCallouts {
     private XAP_REST_RestClient restClient;
     private DAO_AccountSelector accountSelector;

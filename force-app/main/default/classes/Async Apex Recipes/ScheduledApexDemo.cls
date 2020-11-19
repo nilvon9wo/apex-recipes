@@ -1,3 +1,5 @@
+//@group Async Apex Recipes
+//@see ScheduledApexDemo, BatchApexRecipes
 public inherited sharing class ScheduledApexDemo {
     @TestVisible
     private Integer counter = 0;

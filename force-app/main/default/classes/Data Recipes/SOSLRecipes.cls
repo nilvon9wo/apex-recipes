@@ -1,3 +1,4 @@
+//@group Data Recipes
 public inherited sharing class SOSLRecipes {
     private DAO_AccountAndContactFinder accountAndContactFinder;
 

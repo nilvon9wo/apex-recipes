@@ -1,3 +1,4 @@
+//@group Async Apex Recipes
 public inherited sharing class AtFutureRecipes {
     @TestVisible
     private static Boolean testCircuitBreaker = false;

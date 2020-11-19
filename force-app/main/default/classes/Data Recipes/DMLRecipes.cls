@@ -1,3 +1,5 @@
+//@group Data Recipes
+//@see CanTheUser
 @SuppressWarnings('PMD.CyclomaticComplexity')
 public inherited sharing class DMLRecipes {
     private XAP_DAO_DML_SecureDml dml;

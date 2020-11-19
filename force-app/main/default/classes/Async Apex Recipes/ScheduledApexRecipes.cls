@@ -1,3 +1,5 @@
+//@group Async Apex Recipes
+//@see ScheduledApexRecipes
 public inherited sharing class ScheduledApexRecipes implements Schedulable {
     private ScheduledApexDemo demo;
 
