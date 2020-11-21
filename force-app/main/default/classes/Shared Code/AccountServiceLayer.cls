@@ -41,31 +41,33 @@ public inherited sharing class AccountServiceLayer {
             this.dml.doUpdate(updatedAccountList);
         }
         catch (XAP_DAO_DML_CrudException crudException) {
-            throw new CanTheUserException(
-                    'User has no permission to edit accountList'
-            );
+            throw new CanTheUserException('User has no permission to edit accountList');
         }
 
     }
 
     public List<Account> incrementCounterInDescription(List<Account> incomingAccountList, Boolean save) {
         for (Account incomingAccount : incomingAccountList) {
-            Integer counter = 0;
-            try {
-                if (incomingAccount.Description != null) {
-                    counter = Integer.valueOf(incomingAccount.Description);
-                }
-            }
-            catch (System.TypeException typeException) {
-                System.debug(LoggingLevel.WARN, 'failed safely to 0 during init');
-            }
-            counter++;
+            Integer counter = this.calculateNewDescription(incomingAccount);
             incomingAccount.Description = String.valueOf(counter);
         }
         if (save) {
             this.safelySave(incomingAccountList);
         }
         return incomingAccountList;
+    }
+
+    private Integer calculateNewDescription(Account incomingAccount) {
+        Integer descriptionValue = 0;
+        try {
+            if (incomingAccount.Description != null) {
+                descriptionValue = Integer.valueOf(incomingAccount.Description);
+            }
+        }
+        catch (System.TypeException typeException) {
+            System.debug(LoggingLevel.WARN, 'failed safely to 0 during init');
+        }
+        return descriptionValue + 1;
     }
 
     @TestVisible
