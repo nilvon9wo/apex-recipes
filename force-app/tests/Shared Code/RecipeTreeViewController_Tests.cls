@@ -16,7 +16,7 @@ private class RecipeTreeViewController_Tests {
         );
         Test.setFixedSearchResults(new List<Id>(fakeResults.keySet()));
         Test.startTest();
-        List<RecipeTreeViewController.RecipeTreeData> tree = RecipeTreeViewController.generateTreeData();
+        List<RecipeTreeData> tree = RecipeTreeViewController.generateTreeData();
         Test.stopTest();
 
         System.assertEquals(2, tree.size(), 'Expected to find two sub trees');

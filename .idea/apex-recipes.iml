@@ -84,6 +84,10 @@
                             <option name="selected" value="true" />
                           </MetadataEntry>
                           <MetadataEntry>
+                            <option name="name" value="RecipeTreeData" />
+                            <option name="selected" value="true" />
+                          </MetadataEntry>
+                          <MetadataEntry>
                             <option name="name" value="TEST_DummyAccountFactoryOutlet" />
                             <option name="selected" value="true" />
                           </MetadataEntry>

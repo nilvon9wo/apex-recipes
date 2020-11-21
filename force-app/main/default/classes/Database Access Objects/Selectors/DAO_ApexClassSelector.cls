@@ -29,4 +29,13 @@ public with sharing virtual class DAO_ApexClassSelector extends XAP_DAO_SOQL_SOb
                 .setCondition(new XAP_DAO_SOQL_WHERE_InStringSetClause(ApexClass.Name, nameSet))
                 .query();
     }
+
+    public virtual List<List<SObject>> findByTag(String tag) {
+        return [
+                FIND :tag
+                IN ALL FIELDS
+                        RETURNING ApexClass(Name, Body)
+        ];
+    }
+
 }

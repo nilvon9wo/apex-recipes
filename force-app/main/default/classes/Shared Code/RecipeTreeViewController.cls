@@ -11,30 +11,34 @@ public inherited sharing class RecipeTreeViewController {
         this(new ApexClassUtilities(), DAO_ApexClassSelector.getInstance());
     }
 
-    private static Map<String, List<String>> groupToListOfNames;
+    private static final String APEX_RECIPES_IDENTIFICATION_TAG = '* @group';
 
-    private static final String APEXRECIPESIDENTIFICATIONTAG = '* @group';
-
-    public class RecipeTreeData implements Comparable {
-        @AuraEnabled
-        public String label;
-        @AuraEnabled
-        public String name;
-        @AuraEnabled
-        public Boolean expanded = false;
-        @AuraEnabled
-        public RecipeTreeData[] items;
-
-        public Integer compareTo(Object compareTo) {
-            RecipeTreeData compare = (RecipeTreeData) compareTo;
-            if (name == compare.name) {
-                return 0;
+    private static Map<String, List<String>> classNameListByGroupNameMap {
+        get {
+            if (classNameListByGroupNameMap == null) {
+                classNameListByGroupNameMap = new RecipeTreeViewController()
+                        .buildClassNameListByGroupNameMap();
             }
-            if (name > compare.name) {
-                return 1;
-            }
-            return -1;
+            return classNameListByGroupNameMap;
         }
+        private set;
+    }
+
+    @SuppressWarnings('PMD.ApexCRUDViolation')
+    private Map<String, List<String>> buildClassNameListByGroupNameMap() {
+        ApexClass[] classes = this.apexClassSelector.findByTag(APEX_RECIPES_IDENTIFICATION_TAG)[0];
+
+        Map<String, List<String>> classNameListByGroupNameMap = new Map<String, List<String>>();
+        for (ApexClass klass : classes) {
+            String groupName = this.classUtilities.getGroupFromClassBody(klass);
+            List<String> classNameList = classNameListByGroupNameMap.get(groupName);
+            if (classNameList == null) {
+                classNameList = new List<String>();
+                classNameListByGroupNameMap.put(groupName, classNameList);
+            }
+            classNameList.add(klass.Name);
+        }
+        return classNameListByGroupNameMap;
     }
 
     @AuraEnabled(Cacheable=true)
@@ -44,63 +48,50 @@ public inherited sharing class RecipeTreeViewController {
     }
 
     public List<RecipeTreeData> createTreeData() {
-        List<RecipeTreeData> treeData = new List<RecipeTreeData>();
-        RecipeTreeData recipes = new RecipeTreeData();
-        recipes.label = 'Recipes';
-        recipes.name = 'Recipes';
-        recipes.expanded = true;
-        recipes.items = new List<RecipeTreeData>();
+        RecipeTreeData recipeTreeData = this.createRootLevelRecipeTree();
+
         RecipeTreeData sharedCode = new RecipeTreeData();
-        groupToListOfNames = generateMapOfGroupToListOfNames();
-        List<String> sortedGroupNames = new List<String>();
-        sortedGroupNames.addAll(groupToListOfNames.keySet());
-        sortedGroupNames.sort();
-        for (String groupName : sortedGroupNames) {
-            groupName = groupName.trim();
-            RecipeTreeData groupLevel = new RecipeTreeData();
-            groupLevel.label = groupName;
-            groupLevel.name = groupName;
-            groupLevel.items = new List<RecipeTreeData>();
-            for (String className : groupToListOfNames.get(groupName)) {
-                className = className.trim();
-                RecipeTreeData classLevel = new RecipeTreeData();
-                classLevel.label = className;
-                classLevel.name = className;
-                classLevel.items = new List<RecipeTreeData>();
-                groupLevel.items.add(classLevel);
-                groupLevel.items.sort();
-            }
+        List<String> sortedGroupNameList = this.buildSortedGroupNameList();
+        for (String groupName : sortedGroupNameList) {
+            RecipeTreeData groupLevel = this.createGroupLevelRecipeTree(groupName);
+
             if (groupName.equalsIgnoreCase('shared code')) {
                 sharedCode = groupLevel;
-            } else {
-                recipes.items.add(groupLevel);
-                recipes.items.sort();
+            }
+            else {
+                recipeTreeData.items.add(groupLevel);
+                recipeTreeData.items.sort();
             }
         }
-        treeData.add(recipes);
-        treeData.add(sharedCode);
 
-        return treeData;
+        return new List<RecipeTreeData>{
+                recipeTreeData,
+                sharedCode
+        };
     }
 
-    @SuppressWarnings('PMD.ApexCRUDViolation')
-    private Map<String, List<String>> generateMapOfGroupToListOfNames() {
-        Map<String, List<String>> returnMap = new Map<String, List<String>>();
-        List<List<SObject>> searchResults = [
-            FIND :APEXRECIPESIDENTIFICATIONTAG
-            IN ALL FIELDS
-            RETURNING ApexClass(Name, Body)
-        ];
-        ApexClass[] classes = searchResults[0];
+    private RecipeTreeData createRootLevelRecipeTree() {
+        RecipeTreeData recipeTreeData = new RecipeTreeData('Recipes');
+        recipeTreeData.expanded = true;
+        return recipeTreeData;
+    }
 
-        for (ApexClass klass : classes) {
-            String groupName = this.classUtilities.getGroupFromClassBody(klass);
-            if (returnMap.keySet().contains(groupName)) {
-                returnMap.get(groupName).add(klass.Name);
-            } else {
-                returnMap.put(groupName, new List<String>{ klass.Name });
-            }
+    private RecipeTreeData createGroupLevelRecipeTree(String groupName) {
+        RecipeTreeData groupLevel = new RecipeTreeData(groupName);
+        for (String className : classNameListByGroupNameMap.get(groupName)) {
+            groupLevel.items.add(this.createClassLevelRecipeTree(className));
+            groupLevel.items.sort();
         }
-        return returnMap;
+        return groupLevel;
+    }
+
+    private RecipeTreeData createClassLevelRecipeTree(String className) {
+        return new RecipeTreeData(className);
+    }
+
+    private List<String> buildSortedGroupNameList() {
+        List<String> sortedGroupNameList = new List<String>(classNameListByGroupNameMap.keySet());
+        sortedGroupNameList.sort();
+        return sortedGroupNameList;
     }
 }
