@@ -6,7 +6,7 @@ private class DataFactoryForPackageInstalls_Tests {
         DataFactoryForPackageInstalls.generateData();
         Test.stopTest();
 
-        Junction__c[] junctionObjs = [SELECT ID FROM Junction__c];
+        Junction__c[] junctionObjs = [SELECT Id FROM Junction__c];
         System.assertEquals(
             50,
             junctionObjs.size(),
