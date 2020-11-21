@@ -6,7 +6,7 @@ private class FormattedRecipeDisplayAuraCtrl_Tests {
     @IsTest
     static void testGetRecipeCodePositive() {
         String[] classes = new List<String>{
-            'FormattedRecipeDisplayController_Tests'
+            'FormattedRecipeDisplayAuraCtrl_Tests'
         };
 
         Test.startTest();

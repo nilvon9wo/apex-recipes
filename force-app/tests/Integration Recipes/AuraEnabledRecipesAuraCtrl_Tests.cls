@@ -1,5 +1,5 @@
 @IsTest
-private inherited sharing class AuraEnabledRecipes_Tests {
+private inherited sharing class AuraEnabledRecipesAuraCtrl_Tests {
     @IsTest
     static void testUpdateAccountNamePositive() {
         Account acct = (Account) TestFactory.createSObject(

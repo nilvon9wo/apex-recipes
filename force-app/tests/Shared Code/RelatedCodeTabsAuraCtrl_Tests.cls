@@ -7,7 +7,7 @@ private class RelatedCodeTabsAuraCtrl_Tests {
     static void testGetRelatedClassesPositive() {
         Test.startTest();
         String[] relatedClasses = RelatedCodeTabsAuraCtrl.getRelatedClasses(
-            'RelatedCodeTabsController_Tests'
+            'RelatedCodeTabsAuraCtrl_Tests'
         );
         Test.stopTest();
         Set<String> rcSet = new Set<String>(relatedClasses);
@@ -22,7 +22,7 @@ private class RelatedCodeTabsAuraCtrl_Tests {
     }
 
     @IsTest
-    static void testGetRElatedClassesNegative() {
+    static void testGetRelatedClassesNegative() {
         Boolean didCatchProperException = false;
         Test.startTest();
         try {
@@ -43,7 +43,7 @@ private class RelatedCodeTabsAuraCtrl_Tests {
     }
 
     @IsTest
-    static void testGetRElatedClassesNegativeNoRelated() {
+    static void testGetRelatedClassesNegativeNoRelated() {
         Test.startTest();
         String[] relatedClasses = RelatedCodeTabsAuraCtrl.getRelatedClasses(
             'DMLRecipes_Tests'
