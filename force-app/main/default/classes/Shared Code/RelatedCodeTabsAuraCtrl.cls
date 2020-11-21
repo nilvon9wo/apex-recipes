@@ -38,17 +38,17 @@ public inherited sharing class RelatedCodeTabsAuraCtrl {
     }
 
     private List<String> selectClasses(ApexClass klass) {
-        String[] untrimmed = this.classUtilities.getRelatedClassesFromClassBody(klass)
+        String[] relatedClassNameList = this.classUtilities.getRelatedClassesFromClassBody(klass)
                 .split(',');
 
-        return this.selectClasses(untrimmed);
+        return this.trimNames(relatedClassNameList);
     }
 
-    private List<String> selectClasses(String[] untrimmed) {
-        List<String> relatedClasses = new List<String>();
-        for (String toTrim : untrimmed) {
-            relatedClasses.add(toTrim.trim());
+    private List<String> trimNames(String[] untrimmedNameList) {
+        List<String> trimmedNameList = new List<String>();
+        for (String untrimmedName : untrimmedNameList) {
+            trimmedNameList.add(untrimmedName.trim());
         }
-        return relatedClasses;
+        return trimmedNameList;
     }
 }
