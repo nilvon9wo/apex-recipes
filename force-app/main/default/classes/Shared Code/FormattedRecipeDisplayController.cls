@@ -13,7 +13,7 @@ public inherited sharing class FormattedRecipeDisplayController {
     @AuraEnabled(Cacheable=true)
     public static ClassData getRecipeCode(String recipeName) {
         return new FormattedRecipeDisplayController()
-            .selectRecipeCode(recipeName);
+                .selectRecipeCode(recipeName);
     }
 
     private ClassData selectRecipeCode(String recipeName) {
