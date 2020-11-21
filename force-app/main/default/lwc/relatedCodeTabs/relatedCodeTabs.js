@@ -1,5 +1,5 @@
 import { LightningElement, api, wire } from 'lwc';
-import getRelatedClasses from '@salesforce/apex/RelatedCodeTabsController.getRelatedClasses';
+import getRelatedClasses from '@salesforce/apex/RelatedCodeTabsAuraCtrl.getRelatedClasses';
 
 export default class RelatedCodeTabs extends LightningElement {
     @api recipeName;

@@ -6,7 +6,7 @@ private class RelatedCodeTabsController_Tests {
     @IsTest
     static void testGetRelatedClassesPositive() {
         Test.startTest();
-        String[] relatedClasses = RelatedCodeTabsController.getRelatedClasses(
+        String[] relatedClasses = RelatedCodeTabsAuraCtrl.getRelatedClasses(
             'RelatedCodeTabsController_Tests'
         );
         Test.stopTest();
@@ -26,7 +26,7 @@ private class RelatedCodeTabsController_Tests {
         Boolean didCatchProperException = false;
         Test.startTest();
         try {
-            RelatedCodeTabsController.getRelatedClasses(
+            RelatedCodeTabsAuraCtrl.getRelatedClasses(
                 'FormattedRecipeController_Tests' // this is a non-existant class
             );
         } catch (QueryException qe) {
@@ -45,7 +45,7 @@ private class RelatedCodeTabsController_Tests {
     @IsTest
     static void testGetRElatedClassesNegativeNoRelated() {
         Test.startTest();
-        String[] relatedClasses = RelatedCodeTabsController.getRelatedClasses(
+        String[] relatedClasses = RelatedCodeTabsAuraCtrl.getRelatedClasses(
             'DMLRecipes_Tests'
         );
 

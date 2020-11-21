@@ -1,20 +1,20 @@
-public inherited sharing class RelatedCodeTabsController {
+public inherited sharing class RelatedCodeTabsAuraCtrl {
     private ApexClassUtilities classUtilities;
     private DAO_ApexClassSelector apexClassSelector;
 
-    private RelatedCodeTabsController(ApexClassUtilities classUtilities, DAO_ApexClassSelector apexClassSelector) {
+    private RelatedCodeTabsAuraCtrl(ApexClassUtilities classUtilities, DAO_ApexClassSelector apexClassSelector) {
         this.classUtilities = classUtilities;
         this.apexClassSelector = apexClassSelector;
     }
 
-    public RelatedCodeTabsController() {
+    public RelatedCodeTabsAuraCtrl() {
         this(new ApexClassUtilities(), DAO_ApexClassSelector.getInstance());
     }
 
     @SuppressWarnings('PMD.ApexCRUDViolation')
     @AuraEnabled(Cacheable=true)
     public static List<String> getRelatedClasses(String mainClassName) {
-        return new RelatedCodeTabsController()
+        return new RelatedCodeTabsAuraCtrl()
             .selectClasses(mainClassName);
     }
 
