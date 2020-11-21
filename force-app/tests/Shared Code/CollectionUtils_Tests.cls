@@ -1,6 +1,6 @@
-@isTest
+@IsTest
 private class CollectionUtils_Tests {
-    @isTest
+    @IsTest
     static void testDemonstrateIdMapFromCollectionByKeyPositiveWithList() {
         List<Account> accounts = (List<Account>) TestFactory.createSObjectList(
             new Account(),
@@ -14,13 +14,12 @@ private class CollectionUtils_Tests {
         );
 
         Test.startTest();
-        Map<Id, Account> checkAccountMap = (Map<Id, Account>) CollectionUtils.idMapFromCollectionByKey(
-            'id',
-            accounts
+        Map<Id, Account> checkAccountMap = (Map<Id, Account>) CollectionUtils.mapLastQualifiedSObjectBySpecifiedIdField(
+            accounts, Account.Id
         );
-        Map<Id, Contact> checkContactMap = (Map<Id, Contact>) CollectionUtils.idMapFromCollectionByKey(
-            'id',
-            contacts
+        Map<Id, Contact> checkContactMap = (Map<Id, Contact>) CollectionUtils.mapLastQualifiedSObjectBySpecifiedIdField(
+            contacts, Contact.Id
+
         );
         Test.stopTest();
 
@@ -35,7 +34,7 @@ private class CollectionUtils_Tests {
             'Expected to get 5 contacts back'
         );
 
-        for (id accountId : checkAccountMap.keySet()) {
+        for (Id accountId : checkAccountMap.keySet()) {
             System.assertEquals(
                 checkAccountMap.get(accountId).getSObjectType(),
                 Account.getSObjectType(),
@@ -43,7 +42,7 @@ private class CollectionUtils_Tests {
             );
         }
 
-        for (id contactId : checkContactMap.keySet()) {
+        for (Id contactId : checkContactMap.keySet()) {
             System.assertEquals(
                 checkContactMap.get(contactId).getSObjectType(),
                 Contact.getSObjectType(),
@@ -52,7 +51,7 @@ private class CollectionUtils_Tests {
         }
     }
 
-    @isTest
+    @IsTest
     static void testDemonstrateStringMapFromCollectionByKeyPositiveWithList() {
         List<Account> accounts = (List<Account>) TestFactory.createSObjectList(
             new Account(),
@@ -60,13 +59,12 @@ private class CollectionUtils_Tests {
             true
         );
         for (Account acct : accounts) {
-            acct.name = acct.id;
+            acct.Name = acct.Id;
         }
         update accounts;
         Test.startTest();
-        Map<String, Account> checkAccountMap = (Map<String, Account>) CollectionUtils.stringMapFromCollectionByKey(
-            'name',
-            accounts
+        Map<String, Account> checkAccountMap = (Map<String, Account>) CollectionUtils.mapLastQualifiedSObjectBySpecifiedStringField(
+                accounts, Account.Name
         );
 
         Test.stopTest();
@@ -77,7 +75,7 @@ private class CollectionUtils_Tests {
             'Expected to get 5 accounts back'
         );
 
-        for (id accountId : checkAccountMap.keySet()) {
+        for (Id accountId : checkAccountMap.keySet()) {
             System.assertEquals(
                 checkAccountMap.get(accountId).getSObjectType(),
                 Account.getSObjectType(),
@@ -86,7 +84,7 @@ private class CollectionUtils_Tests {
         }
     }
 
-    @isTest
+    @IsTest
     static void testMapFromCollectionWithListOfValuesPostive() {
         List<Account> accounts = (List<Account>) TestFactory.createSObjectList(
             new Account(),
@@ -98,7 +96,7 @@ private class CollectionUtils_Tests {
         for (Account acct : accounts) {
             contactList.addAll(
                 (List<Contact>) TestFactory.createSObjectList(
-                    new Contact(accountId = acct.id),
+                    new Contact(AccountId = acct.Id),
                     5,
                     false
                 )
@@ -107,15 +105,14 @@ private class CollectionUtils_Tests {
         insert contactList;
 
         Test.startTest();
-        Map<Id, List<Contact>> checkResults = (Map<Id, List<Contact>>) CollectionUtils.mapFromCollectionWithCollectionValues(
-            'AccountId',
-            contactList
+        Map<Id, List<Contact>> checkResults = (Map<Id, List<Contact>>) CollectionUtils.mapBySpecifiedIdField(
+            contactList, Contact.AccountId
         );
         Test.stopTest();
 
         System.assertEquals(
             5,
-            checkResults.keyset().size(),
+            checkResults.keySet().size(),
             'Expected to find 5 accountIds'
         );
 
@@ -133,7 +130,7 @@ private class CollectionUtils_Tests {
             for (Contact contact : checkResults.get(accountId)) {
                 System.assertEquals(
                     contact.getSObjectType(),
-                    Contact.getSObjectType(),
+                    contact.getSObjectType(),
                     'Expected to find contacts'
                 );
             }
