@@ -1,5 +1,5 @@
 public class ClassData {
-    public ClassData(ApexClass klass, String groupName) {
+    private ClassData(ApexClass klass, String groupName) {
         this.name = klass.Name;
         this.apiVersion = klass.ApiVersion;
         this.body = klass.Body;
@@ -7,7 +7,7 @@ public class ClassData {
         this.groupName = groupName;
     }
 
-    public ClassData(ApexClass klass, ApexClassUtilities classUtilities) {
+    private ClassData(ApexClass klass, ApexClassUtilities classUtilities) {
         this(
                 klass,
                 (!klass.Name.endsWith('_Tests'))
