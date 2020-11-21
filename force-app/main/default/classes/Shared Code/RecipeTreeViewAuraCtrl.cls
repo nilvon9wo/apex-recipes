@@ -1,13 +1,13 @@
-public inherited sharing class RecipeTreeViewController {
+public inherited sharing class RecipeTreeViewAuraCtrl {
     private ApexClassUtilities classUtilities;
     private DAO_ApexClassSelector apexClassSelector;
 
-    private RecipeTreeViewController(ApexClassUtilities classUtilities, DAO_ApexClassSelector apexClassSelector) {
+    private RecipeTreeViewAuraCtrl(ApexClassUtilities classUtilities, DAO_ApexClassSelector apexClassSelector) {
         this.classUtilities = classUtilities;
         this.apexClassSelector = apexClassSelector;
     }
 
-    public RecipeTreeViewController() {
+    public RecipeTreeViewAuraCtrl() {
         this(new ApexClassUtilities(), DAO_ApexClassSelector.getInstance());
     }
 
@@ -16,7 +16,7 @@ public inherited sharing class RecipeTreeViewController {
     private static Map<String, List<String>> classNameListByGroupNameMap {
         get {
             if (classNameListByGroupNameMap == null) {
-                classNameListByGroupNameMap = new RecipeTreeViewController()
+                classNameListByGroupNameMap = new RecipeTreeViewAuraCtrl()
                         .buildClassNameListByGroupNameMap();
             }
             return classNameListByGroupNameMap;
@@ -43,7 +43,7 @@ public inherited sharing class RecipeTreeViewController {
 
     @AuraEnabled(Cacheable=true)
     public static List<RecipeTreeData> generateTreeData() {
-        return new RecipeTreeViewController()
+        return new RecipeTreeViewAuraCtrl()
             .createTreeData();
     }
 

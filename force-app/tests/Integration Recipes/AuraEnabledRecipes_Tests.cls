@@ -8,7 +8,7 @@ private inherited sharing class AuraEnabledRecipes_Tests {
         );
 
         Test.startTest();
-        AuraEnabledRecipes.updateAccountName(acct.Id, 'New Name');
+        AuraEnabledRecipesAuraCtrl.updateAccountName(acct.Id, 'New Name');
         Test.stopTest();
 
         Account updatedAcct = [SELECT Name FROM Account WHERE Id = :acct.Id];
@@ -30,7 +30,7 @@ private inherited sharing class AuraEnabledRecipes_Tests {
 
         Test.startTest();
         try {
-            AuraEnabledRecipes.updateAccountName(acct.Id, '');
+            AuraEnabledRecipesAuraCtrl.updateAccountName(acct.Id, '');
         } catch (System.AuraHandledException ahe) {
             if (
                 ahe.getMessage().containsIgnoreCase('Script-thrown exception')
@@ -57,7 +57,7 @@ private inherited sharing class AuraEnabledRecipes_Tests {
         User u = TestFactory.createMinAccessUser(true);
         System.runAs(u) {
             try {
-                AuraEnabledRecipes.updateAccountName(acct.Id, 'newValue');
+                AuraEnabledRecipesAuraCtrl.updateAccountName(acct.Id, 'newValue');
             } catch (System.AuraHandledException ahe) {
                 if (
                     ahe.getMessage()
@@ -76,7 +76,7 @@ private inherited sharing class AuraEnabledRecipes_Tests {
     @IsTest
     static void testGetFieldValue() {
         System.assert(
-            AuraEnabledRecipes.getFieldValue().equalsIgnoreCase('hello world'),
+            AuraEnabledRecipesAuraCtrl.getFieldValue().equalsIgnoreCase('hello world'),
             'Expected to receive hello world'
         );
     }

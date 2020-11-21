@@ -1,5 +1,5 @@
 import { LightningElement, wire } from 'lwc';
-import generateTreeData from '@salesforce/apex/RecipeTreeViewController.generateTreeData';
+import generateTreeData from '@salesforce/apex/RecipeTreeViewAuraCtrl.generateTreeData';
 
 export default class RecipeTreeView extends LightningElement {
     @wire(generateTreeData)

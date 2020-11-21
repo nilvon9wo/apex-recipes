@@ -1,7 +1,7 @@
 import { LightningElement, api, wire } from 'lwc';
 import { loadScript, loadStyle } from 'lightning/platformResourceLoader';
 import highlight from '@salesforce/resourceUrl/highlight';
-import getRecipeCode from '@salesforce/apex/FormattedRecipeDisplayController.getRecipeCode';
+import getRecipeCode from '@salesforce/apex/FormattedRecipeDisplayAuraCtrl.getRecipeCode';
 
 export default class FormattedRecipeDisplay extends LightningElement {
     @api recipeName = ''; // = 'SOQLRecipes';

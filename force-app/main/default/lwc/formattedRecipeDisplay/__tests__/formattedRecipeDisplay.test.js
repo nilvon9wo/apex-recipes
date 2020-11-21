@@ -1,7 +1,7 @@
 import { createElement } from 'lwc';
 import FormattedRecipeDisplay from 'c/formattedRecipeDisplay';
 import { registerApexTestWireAdapter } from '@salesforce/sfdx-lwc-jest';
-import getRecipeCode from '@salesforce/apex/FormattedRecipeDisplayController.getRecipeCode';
+import getRecipeCode from '@salesforce/apex/FormattedRecipeDisplayAuraCtrl.getRecipeCode';
 import { loadScript, loadStyle } from 'lightning/platformResourceLoader';
 
 // Realistic data with a list of records

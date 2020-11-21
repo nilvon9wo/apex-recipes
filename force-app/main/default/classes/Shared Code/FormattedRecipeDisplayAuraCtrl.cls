@@ -1,18 +1,18 @@
-public inherited sharing class FormattedRecipeDisplayController {
+public inherited sharing class FormattedRecipeDisplayAuraCtrl {
     DAO_ApexClassSelector apexClassSelector;
 
-    private FormattedRecipeDisplayController(DAO_ApexClassSelector apexClassSelector) {
+    private FormattedRecipeDisplayAuraCtrl(DAO_ApexClassSelector apexClassSelector) {
         this.apexClassSelector = apexClassSelector;
     }
 
-    private FormattedRecipeDisplayController() {
+    private FormattedRecipeDisplayAuraCtrl() {
         this(DAO_ApexClassSelector.getInstance());
     }
 
     @SuppressWarnings('PMD.ApexCRUDViolation')
     @AuraEnabled(Cacheable=true)
     public static ClassData getRecipeCode(String recipeName) {
-        return new FormattedRecipeDisplayController()
+        return new FormattedRecipeDisplayAuraCtrl()
                 .selectRecipeCode(recipeName);
     }
 

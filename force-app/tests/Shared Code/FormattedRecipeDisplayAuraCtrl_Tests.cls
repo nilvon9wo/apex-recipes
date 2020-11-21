@@ -2,7 +2,7 @@
  * @group Foo
  */
 @IsTest
-private class FormattedRecipeDisplayController_Tests {
+private class FormattedRecipeDisplayAuraCtrl_Tests {
     @IsTest
     static void testGetRecipeCodePositive() {
         String[] classes = new List<String>{
@@ -11,7 +11,7 @@ private class FormattedRecipeDisplayController_Tests {
 
         Test.startTest();
         for (String klass : classes) {
-            ClassData result = FormattedRecipeDisplayController.getRecipeCode(
+            ClassData result = FormattedRecipeDisplayAuraCtrl.getRecipeCode(
                 klass
             );
             System.assertEquals(

@@ -5,15 +5,15 @@
         <visible>true</visible>
     </applicationVisibilities>
     <classAccesses>
-        <apexClass>AuraEnabledRecipes</apexClass>
+        <apexClass>AuraEnabledRecipesAuraCtrl</apexClass>
         <enabled>true</enabled>
     </classAccesses>
     <classAccesses>
-        <apexClass>FormattedRecipeDisplayController</apexClass>
+        <apexClass>FormattedRecipeDisplayAuraCtrl</apexClass>
         <enabled>true</enabled>
     </classAccesses>
     <classAccesses>
-        <apexClass>RecipeTreeViewController</apexClass>
+        <apexClass>RecipeTreeViewAuraCtrl</apexClass>
         <enabled>true</enabled>
     </classAccesses>
     <classAccesses>

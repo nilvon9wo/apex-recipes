@@ -2,7 +2,7 @@
  * @see Foo, Bar
  */
 @IsTest
-private class RecipeTreeViewController_Tests {
+private class RecipeTreeViewAuraCtrl_Tests {
     @IsTest
     static void testGenerateTreeDataPositive() {
         Map<Id, ApexClass> fakeResults = new Map<Id, ApexClass>(
@@ -16,7 +16,7 @@ private class RecipeTreeViewController_Tests {
         );
         Test.setFixedSearchResults(new List<Id>(fakeResults.keySet()));
         Test.startTest();
-        List<RecipeTreeData> tree = RecipeTreeViewController.generateTreeData();
+        List<RecipeTreeData> tree = RecipeTreeViewAuraCtrl.generateTreeData();
         Test.stopTest();
 
         System.assertEquals(2, tree.size(), 'Expected to find two sub trees');

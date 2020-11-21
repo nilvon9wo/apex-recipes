@@ -1,13 +1,13 @@
-public inherited sharing class AuraEnabledRecipes {
+public inherited sharing class AuraEnabledRecipesAuraCtrl {
     private DAO_AccountSelector accountSelector;
     private XAP_DAO_DML_SecureDml dml;
 
-    public AuraEnabledRecipes(DAO_AccountSelector accountSelector, XAP_DAO_DML_SecureDml dml) {
+    public AuraEnabledRecipesAuraCtrl(DAO_AccountSelector accountSelector, XAP_DAO_DML_SecureDml dml) {
         this.accountSelector = accountSelector;
         this.dml = dml;
     }
 
-    public AuraEnabledRecipes() {
+    public AuraEnabledRecipesAuraCtrl() {
         this(DAO_AccountSelector.getInstance(), XAP_DAO_DML_SecureDml.getInstance());
     }
 
@@ -16,7 +16,7 @@ public inherited sharing class AuraEnabledRecipes {
     @SuppressWarnings('PMD.ApexCRUDViolation')
     @AuraEnabled
     public static Boolean updateAccountName(Id accountId, String newValue) {
-        return new AuraEnabledRecipes()
+        return new AuraEnabledRecipesAuraCtrl()
                 .doUpdate(new Account(
                         Id = accountId,
                         Name = newValue

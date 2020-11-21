@@ -2,7 +2,7 @@
  * @see Foo, Bar
  */
 @IsTest
-private class RelatedCodeTabsController_Tests {
+private class RelatedCodeTabsAuraCtrl_Tests {
     @IsTest
     static void testGetRelatedClassesPositive() {
         Test.startTest();

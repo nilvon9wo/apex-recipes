@@ -1,7 +1,7 @@
 import { createElement } from 'lwc';
 import RecipeTreeView from 'c/recipeTreeView';
 import { registerApexTestWireAdapter } from '@salesforce/sfdx-lwc-jest';
-import generateTreeData from '@salesforce/apex/RecipeTreeViewController.generateTreeData';
+import generateTreeData from '@salesforce/apex/RecipeTreeViewAuraCtrl.generateTreeData';
 
 // Realistic data with a list of records
 const mockGenerateTreeData = require('./data/generateTreeData.json');
