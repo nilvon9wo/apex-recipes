@@ -1,24 +1,39 @@
 public virtual class TriggerHandler {
-    private static Map<String, LoopCount> loopCountMap;
-    private static Set<String> bypassedHandlers;
-
-    @TestVisible
-    private TriggerContext context;
-
     @TestVisible
     private Boolean isTriggerExecuting;
 
-    static {
-        loopCountMap = new Map<String, LoopCount>();
-        bypassedHandlers = new Set<String>();
-    }
+    @TestVisible
+    private System.TriggerOperation context;
 
     public TriggerHandler() {
         this.setTriggerContext();
     }
 
+    @TestVisible
+    private void setTriggerContext() {
+        this.setTriggerContext(null, false);
+    }
+
+    @TestVisible
+    private void setTriggerContext(System.TriggerOperation operation, Boolean testMode) {
+        if (!Trigger.isExecuting && !testMode) {
+            this.isTriggerExecuting = false;
+            return;
+        }
+        else {
+            this.isTriggerExecuting = true;
+        }
+
+        this.context = (!testMode)
+            ? Trigger.operationType
+            : operation;
+    }
+
+    private static Map<String, LoopCount> loopCountMap = new Map<String, LoopCount>();
+    private static Set<String> bypassedHandlerSet = new Set<String>();
+
     public void run() {
-        if (!validateRun()) {
+        if (!this.validateRun()) {
             return;
         }
 
@@ -53,7 +68,8 @@ public virtual class TriggerHandler {
         String handlerName = getHandlerName();
         if (!TriggerHandler.loopCountMap.containsKey(handlerName)) {
             TriggerHandler.loopCountMap.put(handlerName, new LoopCount(max));
-        } else {
+        }
+        else {
             TriggerHandler.loopCountMap.get(handlerName).setMax(max);
         }
     }
@@ -63,104 +79,33 @@ public virtual class TriggerHandler {
     }
 
     public static void bypass(String handlerName) {
-        TriggerHandler.bypassedHandlers.add(handlerName);
+        TriggerHandler.bypassedHandlerSet.add(handlerName);
     }
 
     public static void clearBypass(String handlerName) {
-        TriggerHandler.bypassedHandlers.remove(handlerName);
+        TriggerHandler.bypassedHandlerSet.remove(handlerName);
     }
 
     public static Boolean isBypassed(String handlerName) {
-        return TriggerHandler.bypassedHandlers.contains(handlerName);
+        return TriggerHandler.bypassedHandlerSet.contains(handlerName);
     }
 
     public static void clearAllBypasses() {
-        TriggerHandler.bypassedHandlers.clear();
+        TriggerHandler.bypassedHandlerSet.clear();
     }
 
-    @TestVisible
-    private void setTriggerContext() {
-        this.setTriggerContext(null, false);
-    }
-
-    @TestVisible
-    private void setTriggerContext(String ctx, Boolean testMode) {
-        if (!Trigger.isExecuting && !testMode) {
-            this.isTriggerExecuting = false;
-            return;
-        } else {
-            this.isTriggerExecuting = true;
-        }
-
-        if (Trigger.isExecuting && !testMode) {
-            switch on Trigger.operationType {
-                when BEFORE_INSERT {
-                    context = TriggerContext.BEFORE_INSERT;
-                }
-                when BEFORE_UPDATE {
-                    context = TriggerContext.BEFORE_UPDATE;
-                }
-                when BEFORE_DELETE {
-                    context = TriggerContext.BEFORE_DELETE;
-                }
-                when AFTER_INSERT {
-                    context = TriggerContext.AFTER_INSERT;
-                }
-                when AFTER_UPDATE {
-                    context = TriggerContext.AFTER_UPDATE;
-                }
-                when AFTER_DELETE {
-                    context = TriggerContext.AFTER_DELETE;
-                }
-                when AFTER_UNDELETE {
-                    context = TriggerContext.AFTER_UNDELETE;
-                }
-            }
-        } else if (ctx != null && testMode) {
-            switch on ctx {
-                when 'before insert' {
-                    context = TriggerContext.BEFORE_INSERT;
-                }
-                when 'before update' {
-                    context = TriggerContext.BEFORE_UPDATE;
-                }
-                when 'before delete' {
-                    context = TriggerContext.BEFORE_DELETE;
-                }
-                when 'after insert' {
-                    context = TriggerContext.AFTER_INSERT;
-                }
-                when 'after update' {
-                    context = TriggerContext.AFTER_UPDATE;
-                }
-                when 'after delete' {
-                    context = TriggerContext.AFTER_DELETE;
-                }
-                when 'after undelete' {
-                    context = TriggerContext.AFTER_UNDELETE;
-                }
-                when else {
-                    throw new TriggerHandlerException(
-                        'Unexpected trigger context set'
-                    );
-                }
-            }
-        }
-    }
 
     @TestVisible
     private void addToLoopCount() {
         String handlerName = getHandlerName();
         if (TriggerHandler.loopCountMap.containsKey(handlerName)) {
             Boolean exceeded = TriggerHandler.loopCountMap.get(handlerName)
-                .increment();
+                    .increment();
+
             if (exceeded) {
                 Integer max = TriggerHandler.loopCountMap.get(handlerName).max;
                 throw new TriggerHandlerException(
-                    'Maximum loop count of ' +
-                    String.valueOf(max) +
-                    ' reached in ' +
-                    handlerName
+                        'Maximum loop count of ' + String.valueOf(max) + ' reached in ' + handlerName
                 );
             }
         }
@@ -170,19 +115,17 @@ public virtual class TriggerHandler {
     private Boolean validateRun() {
         if (!this.isTriggerExecuting || this.context == null) {
             throw new TriggerHandlerException(
-                'Trigger handler called outside of Trigger execution'
+                    'Trigger handler called outside of Trigger execution'
             );
         }
-        if (TriggerHandler.bypassedHandlers.contains(getHandlerName())) {
-            return false;
-        }
-        return true;
+
+        return (!TriggerHandler.bypassedHandlerSet.contains(this.getHandlerName()));
     }
 
     @TestVisible
     private String getHandlerName() {
         return String.valueOf(this)
-            .substring(0, String.valueOf(this).indexOf(':'));
+                .substring(0, String.valueOf(this).indexOf(':'));
     }
 
     @TestVisible
@@ -241,13 +184,8 @@ public virtual class TriggerHandler {
         }
 
         public Boolean exceeded() {
-            if (this.max < 0) {
-                return false;
-            }
-            if (this.count > this.max) {
-                return true;
-            }
-            return false;
+            return this.max > 0
+                    && this.count > this.max;
         }
 
         public Integer getMax() {

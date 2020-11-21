@@ -296,31 +296,31 @@ private class TriggerHandler_Test {
     }
 
     private static void beforeInsertMode() {
-        handler.setTriggerContext('before insert', true);
+        handler.setTriggerContext(System.TriggerOperation.BEFORE_INSERT, true);
     }
 
     private static void beforeUpdateMode() {
-        handler.setTriggerContext('before update', true);
+        handler.setTriggerContext(System.TriggerOperation.BEFORE_UPDATE, true);
     }
 
     private static void beforeDeleteMode() {
-        handler.setTriggerContext('before delete', true);
+        handler.setTriggerContext(System.TriggerOperation.BEFORE_DELETE, true);
     }
 
     private static void afterInsertMode() {
-        handler.setTriggerContext('after insert', true);
+        handler.setTriggerContext(System.TriggerOperation.AFTER_INSERT, true);
     }
 
     private static void afterUpdateMode() {
-        handler.setTriggerContext('after update', true);
+        handler.setTriggerContext(System.TriggerOperation.AFTER_UPDATE, true);
     }
 
     private static void afterDeleteMode() {
-        handler.setTriggerContext('after delete', true);
+        handler.setTriggerContext(System.TriggerOperation.AFTER_DELETE, true);
     }
 
     private static void afterUndeleteMode() {
-        handler.setTriggerContext('after undelete', true);
+        handler.setTriggerContext(System.TriggerOperation.AFTER_UNDELETE, true);
     }
 
     private class TestHandler extends TriggerHandler {
