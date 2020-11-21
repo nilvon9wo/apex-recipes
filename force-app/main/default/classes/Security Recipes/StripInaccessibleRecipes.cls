@@ -19,7 +19,7 @@ public inherited sharing class StripInaccessibleRecipes {
 
     public List<Campaign> stripInaccessibleFromQuery() {
         List<Campaign> campaignList = ((DAO_CampaignSelector) this.campaignSelector.turnCrudEnforcementOff())
-                .selectAllDisregardingCrud();
+                .selectAll();
         SObjectAccessDecision securityDecision
                 = Security.stripInaccessible(AccessType.READABLE, campaignList);
         return (List<Campaign>) securityDecision.getRecords();

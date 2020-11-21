@@ -22,7 +22,7 @@ public with sharing virtual class DAO_CampaignSelector extends XAP_DAO_SOQL_SObj
         };
     }
 
-    public virtual List<Campaign> selectAllDisregardingCrud() {
+    public virtual List<Campaign> selectAll() {
         return this.createQueryFactory()
                 .query();
     }

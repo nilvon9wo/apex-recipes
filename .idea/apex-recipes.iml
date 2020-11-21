@@ -76,6 +76,10 @@
                             <option name="selected" value="true" />
                           </MetadataEntry>
                           <MetadataEntry>
+                            <option name="name" value="DAO_AppMenuItemSelector" />
+                            <option name="selected" value="true" />
+                          </MetadataEntry>
+                          <MetadataEntry>
                             <option name="name" value="DynamicSoqlException" />
                             <option name="selected" value="true" />
                           </MetadataEntry>
