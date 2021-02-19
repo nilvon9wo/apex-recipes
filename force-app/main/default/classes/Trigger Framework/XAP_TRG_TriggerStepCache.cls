@@ -87,8 +87,6 @@ public with sharing class XAP_TRG_TriggerStepCache {
         }
 
         if (stepType != null) {
-            System.debug('######### stepRecord: ' + stepRecord);
-            System.debug('######### stepType: ' + stepType);
             try {
                 return this.createStepInstance(stepRecord, stepType);
             }
@@ -114,15 +112,10 @@ public with sharing class XAP_TRG_TriggerStepCache {
 
 
     private XAP_TRG_TriggerSteppable createStepInstance(XAP_TRG_Trigger_Step__mdt stepRecord, Type stepType) {
-        System.debug('########### createStepInstance stepRecord: ' + stepRecord);
-        System.debug('########### createStepInstance stepType: ' + stepType);
         XAP_TRG_TriggerSteppable stepInstance = (XAP_TRG_TriggerSteppable) stepType.newInstance();
-        System.debug('########### createStepInstance stepInstance: ' + stepInstance);
-
         if (stepRecord.Reuse_Instance__c) {
             this.stepByClassNameMap.put(stepRecord.Class_Name__c, stepInstance);
         }
-
         return stepInstance;
     }
 
